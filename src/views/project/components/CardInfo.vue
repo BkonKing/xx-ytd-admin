@@ -1,11 +1,15 @@
 <template>
   <div class="cardInfo">
     <div>
-      <p>活跃用户</p>
+      <p>公司</p>
       <p>{{ activeUser }}</p>
     </div>
     <div>
-      <p>新增用户</p>
+      <p>合同</p>
+      <p>{{ newUser }}</p>
+    </div>
+    <div>
+      <p>订单</p>
       <p>{{ newUser }}</p>
     </div>
   </div>
@@ -31,7 +35,6 @@ export default {
 @import "~@/components/index.less";
 
 .cardInfo {
-
   .clearfix();
 
   margin-top: 16px;
@@ -39,7 +42,7 @@ export default {
   & > div {
     position: relative;
     float: left;
-    width: 50%;
+    width: 33.33%;
     text-align: left;
     p {
       margin: 0;

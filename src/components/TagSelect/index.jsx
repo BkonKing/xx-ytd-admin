@@ -74,7 +74,7 @@ export default {
           }
         }
       }
-      const checkAllElement = <Option key={'total'} checked={this.localCheckAll} {...props}>All</Option>
+      const checkAllElement = <Option key={'total'} checked={this.localCheckAll} {...props}>全部</Option>
       return !this.hideCheckAll && checkAllElement || null
     },
     // expandable

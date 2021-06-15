@@ -2,19 +2,15 @@
   <page-header-wrapper>
     <a-card :bordered="false" class="ant-pro-components-tag-select">
       <a-form :form="form" layout="inline">
-        <standard-form-row title="所属类目" block style="padding-bottom: 11px;">
+        <standard-form-row title="参与公司" block style="padding-bottom: 11px;">
           <a-form-item>
-            <tag-select>
-              <tag-select-option value="Category1">类目一</tag-select-option>
-              <tag-select-option value="Category2">类目二</tag-select-option>
-              <tag-select-option value="Category3">类目三</tag-select-option>
-              <tag-select-option value="Category4">类目四</tag-select-option>
-              <tag-select-option value="Category5">类目五</tag-select-option>
-              <tag-select-option value="Category6">类目六</tag-select-option>
-              <tag-select-option value="Category7">类目七</tag-select-option>
-              <tag-select-option value="Category8">类目八</tag-select-option>
-              <tag-select-option value="Category9">类目九</tag-select-option>
-              <tag-select-option value="Category10">类目十</tag-select-option>
+            <tag-select v-model="tagActive">
+              <tag-select-option
+                v-for="tag in tagList"
+                :key="tag.value"
+                :value="tag.value"
+                >{{ tag.text }}</tag-select-option
+              >
             </tag-select>
           </a-form-item>
         </standard-form-row>
@@ -24,13 +20,12 @@
             <a-col :lg="8" :md="10" :sm="10" :xs="24">
               <a-form-item
                 :wrapper-col="{ sm: { span: 16 }, xs: { span: 24 } }"
-                label="作者"
+                label="项目"
               >
                 <a-select
                   style="max-width: 200px; width: 100%;"
                   mode="multiple"
-                  placeholder="不限"
-                  v-decorator="['author']"
+                  placeholder="ID、名称"
                   @change="handleChange"
                 >
                   <a-select-option value="lisa">王昭君</a-select-option>
@@ -40,12 +35,11 @@
             <a-col :lg="8" :md="10" :sm="10" :xs="24">
               <a-form-item
                 :wrapper-col="{ sm: { span: 16 }, xs: { span: 24 } }"
-                label="好评度"
+                label="项目阶段"
               >
                 <a-select
                   style="max-width: 200px; width: 100%;"
-                  placeholder="不限"
-                  v-decorator="['rate']"
+                  placeholder="请选择"
                 >
                   <a-select-option value="good">优秀</a-select-option>
                   <a-select-option value="normal">普通</a-select-option>
@@ -61,42 +55,27 @@
       <a-list
         :loading="loading"
         :data-source="data"
-        :grid="{ gutter: 24, xl: 4, lg: 3, md: 3, sm: 2, xs: 1 }"
+        :grid="{ gutter: 24, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }"
         style="margin-top: 24px;"
       >
-        <a-list-item slot="renderItem" slot-scope="item">
-          <a-card :body-style="{ paddingBottom: 20 }" hoverable>
+        <a-list-item slot="renderItem" slot-scope="item, index">
+          <a-card
+            class="add-project-card"
+            v-if="index === 0"
+            :body-style="{ paddingBottom: 20 }"
+            @click="addProject"
+          >
+            <a-icon type="plus"></a-icon>新增项目
+          </a-card>
+          <a-card v-else :body-style="{ paddingBottom: 20 }" hoverable>
             <a-card-meta :title="item.title">
               <template slot="avatar">
-                <a-avatar size="small" :src="item.avatar" />
+                <a-avatar size="large" :src="item.avatar" />
               </template>
             </a-card-meta>
             <template slot="actions">
-              <a-tooltip title="下载">
-                <a-icon type="download" />
-              </a-tooltip>
-              <a-tooltip title="编辑">
-                <a-icon type="edit" />
-              </a-tooltip>
-              <a-tooltip title="分享">
-                <a-icon type="share-alt" />
-              </a-tooltip>
-              <a-dropdown>
-                <a class="ant-dropdown-link">
-                  <a-icon type="ellipsis" />
-                </a>
-                <a-menu slot="overlay">
-                  <a-menu-item>
-                    <a href="javascript:;">1st menu item</a>
-                  </a-menu-item>
-                  <a-menu-item>
-                    <a href="javascript:;">2nd menu item</a>
-                  </a-menu-item>
-                  <a-menu-item>
-                    <a href="javascript:;">3rd menu item</a>
-                  </a-menu-item>
-                </a-menu>
-              </a-dropdown>
+              <span>编辑</span>
+              <span>删除</span>
             </template>
             <div class="">
               <card-info active-user="100" new-user="999"></card-info>
@@ -105,13 +84,28 @@
         </a-list-item>
       </a-list>
     </div>
+
+    <a-modal
+      :title="title"
+      :visible="visible"
+      :confirm-loading="confirmLoading"
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
+      <project-form></project-form>
+    </a-modal>
   </page-header-wrapper>
 </template>
 
 <script>
 import moment from 'moment'
-import { TagSelect, StandardFormRow /* Ellipsis, AvatarList */ } from '@/components'
+import {
+  TagSelect,
+  StandardFormRow
+  /* Ellipsis, AvatarList */
+} from '@/components'
 import CardInfo from './components/CardInfo'
+import projectForm from './components/ProjectForm.vue'
 const TagSelectOption = TagSelect.Option
 // const AvatarListItem = AvatarList.AvatarItem
 
@@ -123,13 +117,44 @@ export default {
     TagSelect,
     TagSelectOption,
     StandardFormRow,
-    CardInfo
+    CardInfo,
+    projectForm
   },
   data () {
     return {
       data: [],
       form: this.$form.createForm(this),
-      loading: true
+      tagActive: [],
+      tagList: [
+        {
+          value: 'Category1',
+          text: '类目1'
+        },
+        {
+          value: 'Category2',
+          text: '类目2'
+        },
+        {
+          value: 'Category3',
+          text: '类目3'
+        },
+        {
+          value: 'Category4',
+          text: '类目4'
+        },
+        {
+          value: 'Category5',
+          text: '类目5'
+        },
+        {
+          value: 'Category6',
+          text: '类目6'
+        }
+      ],
+      loading: true,
+      title: '',
+      visible: false,
+      confirmLoading: false
     }
   },
   filters: {
@@ -137,7 +162,7 @@ export default {
       return moment(date).fromNow()
     }
   },
-  mounted () {
+  created () {
     this.getList()
   },
   methods: {
@@ -145,17 +170,42 @@ export default {
       console.log(`selected ${value}`)
     },
     getList () {
-      this.$http.get('/list/article', { params: { count: 8 } }).then(res => {
-        console.log('res', res)
-        this.data = res.result
-        this.loading = false
-      })
+      const data = [{}, {}, {}, {}, {}, {}]
+      this.data = [{}, ...data]
+      this.loading = false
+    },
+    addProject () {
+      this.title = '新增项目'
+      this.showModal()
+    },
+    showModal () {
+      this.visible = true
+    },
+    handleOk (e) {
+      this.ModalText = 'The modal will be closed after two seconds'
+      this.confirmLoading = true
+      setTimeout(() => {
+        this.visible = false
+        this.confirmLoading = false
+      }, 2000)
+    },
+    handleCancel (e) {
+      console.log('Clicked cancel button')
+      this.visible = false
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.add-project-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 201px;
+  background: none;
+  border: 1px dashed #ccc;
+}
 .ant-pro-components-tag-select {
   /deep/ .ant-pro-tag-select .ant-tag {
     margin-right: 24px;
@@ -185,7 +235,7 @@ export default {
 
     > span {
       flex: 1 1;
-      color: rgba(0,0,0,.45);
+      color: rgba(0, 0, 0, 0.45);
       font-size: 12px;
     }
 

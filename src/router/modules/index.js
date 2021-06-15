@@ -52,6 +52,44 @@ export default [
         keepAlive: true
       }
     }]
+  },
+  {
+    path: '/order',
+    name: 'Order',
+    component: RouteView,
+    meta: {
+      title: '订单管理',
+      keepAlive: true
+    },
+    children: [
+      {
+        path: '/order/index',
+        name: 'OrderIndex',
+        component: () => import('@/views/order/index'),
+        meta: {
+          title: '订单列表',
+          keepAlive: true
+        }
+      },
+      {
+        path: '/order/edit',
+        name: 'OrderEdit',
+        component: () => import('@/views/order/edit'),
+        meta: {
+          title: '订单编辑',
+          keepAlive: true
+        }
+      },
+      {
+        path: '/order/detail',
+        name: 'OrderDetail',
+        component: () => import('@/views/order/detail'),
+        meta: {
+          title: '订单详情',
+          keepAlive: true
+        }
+      }
+    ]
   }
   // forms
   // {

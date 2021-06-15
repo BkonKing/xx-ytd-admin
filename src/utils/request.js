@@ -11,7 +11,8 @@ import Vue from 'vue'
 const request = axios.create({
   headers: {
     Authorization: Cookies.get('access_token'),
-    Projectid: Cookies.get('project_id')
+    Projectid: Cookies.get('project_id'),
+    'Content-Type': 'application/x-www-form-urlencoded'
   },
   // API 请求的默认前缀
   baseURL: Cookies.get('project_id') && Cookies.get('project_id') > 0 ? process.env.VUE_APP_WSOLID_API_BASE_URL : process.env.VUE_APP_API_BASE_URL,

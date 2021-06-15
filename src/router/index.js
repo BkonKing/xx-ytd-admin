@@ -37,7 +37,7 @@ export const constantRoutes = [{
   redirect: '/user/login',
   hidden: true,
   children: [{
-    path: 'login',
+    path: '/user/login',
     name: 'login',
     component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
   }]

@@ -1,17 +1,29 @@
 <template>
-  <page-header-wrapper>
-    <a-card :bordered="false">
+  <page-header-wrapper
+    :tab-list="tabList"
+    :tab-active-key="tabActiveKey"
+    :tab-change="handleTabChange"
+  >
+    <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
-              <a-form-item label="规则编号">
-                <a-input v-model="queryParam.id" placeholder=""/>
+              <a-form-item label="合同状态">
+                <a-select
+                  mode="multiple"
+                  v-model="queryParam.status"
+                  placeholder="请选择"
+                >
+                  <a-select-option value="0">全部</a-select-option>
+                  <a-select-option value="1">关闭</a-select-option>
+                  <a-select-option value="2">运行中</a-select-option>
+                </a-select>
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
-              <a-form-item label="使用状态">
-                <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
+              <a-form-item label="所属项目">
+                <a-select v-model="queryParam.projectId" placeholder="请选择">
                   <a-select-option value="0">全部</a-select-option>
                   <a-select-option value="1">关闭</a-select-option>
                   <a-select-option value="2">运行中</a-select-option>
@@ -20,18 +32,8 @@
             </a-col>
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
-                <a-form-item label="调用次数">
-                  <a-input-number v-model="queryParam.callNo" style="width: 100%"/>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="更新日期">
-                  <a-date-picker v-model="queryParam.date" style="width: 100%" placeholder="请输入更新日期"/>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="使用状态">
-                  <a-select v-model="queryParam.useStatus" placeholder="请选择" default-value="0">
+                <a-form-item label="所属公司">
+                  <a-select v-model="queryParam.system" placeholder="请选择">
                     <a-select-option value="0">全部</a-select-option>
                     <a-select-option value="1">关闭</a-select-option>
                     <a-select-option value="2">运行中</a-select-option>
@@ -39,41 +41,86 @@
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="使用状态">
-                  <a-select placeholder="请选择" default-value="0">
+                <a-form-item label="合同类型">
+                  <a-select v-model="queryParam.type" placeholder="请选择">
                     <a-select-option value="0">全部</a-select-option>
                     <a-select-option value="1">关闭</a-select-option>
                     <a-select-option value="2">运行中</a-select-option>
                   </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="订单">
+                  <a-input
+                    v-model="queryParam.contract"
+                    placeholder="ID"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="合同">
+                  <a-input
+                    v-model="queryParam.contract"
+                    placeholder="编号、名称"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="供应商">
+                  <a-input
+                    v-model="queryParam.gys"
+                    placeholder="ID、名称"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="付款情况">
+                  <a-select
+                    v-model="queryParam.fk"
+                    placeholder="请选择"
+                    default-value="0"
+                  >
+                    <a-select-option value="0">全部</a-select-option>
+                    <a-select-option value="1">关闭</a-select-option>
+                    <a-select-option value="2">运行中</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="创建时间">
+                  <a-range-picker @change="onChange" />
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="!advanced && 8 || 24" :sm="24">
-              <span class="table-page-search-submitButtons" :style="advanced && { float: 'right', overflow: 'hidden' } || {} ">
-                <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-                <a-button style="margin-left: 8px" @click="() => this.queryParam = {}">重置</a-button>
+            <a-col :md="(!advanced && 8) || 24" :sm="24">
+              <span
+                class="table-page-search-submitButtons"
+                :style="
+                  (advanced && { float: 'right', overflow: 'hidden' }) || {}
+                "
+              >
+                <a-button type="primary" @click="$refs.table.refresh(true)"
+                  >查询</a-button
+                >
+                <a-button
+                  style="margin-left: 8px"
+                  @click="() => (this.queryParam = {})"
+                  >重置</a-button
+                >
                 <a @click="toggleAdvanced" style="margin-left: 8px">
-                  {{ advanced ? '收起' : '展开' }}
-                  <a-icon :type="advanced ? 'up' : 'down'"/>
+                  {{ advanced ? "收起" : "展开" }}
+                  <a-icon :type="advanced ? 'up' : 'down'" />
                 </a>
               </span>
             </a-col>
           </a-row>
         </a-form>
       </div>
-
+    </a-card>
+    <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
-        <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
-          <a-menu slot="overlay">
-            <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
-            <!-- lock | unlock -->
-            <a-menu-item key="2"><a-icon type="lock" />锁定</a-menu-item>
-          </a-menu>
-          <a-button style="margin-left: 8px">
-            批量操作 <a-icon type="down" />
-          </a-button>
-        </a-dropdown>
+        <a-button type="primary">审核</a-button>
+        <a-button @click="handleAdd">新增</a-button>
       </div>
 
       <s-table
@@ -86,74 +133,62 @@
         :rowSelection="rowSelection"
         showPagination="auto"
       >
-        <span slot="serial" slot-scope="text, record, index">
+        <span slot="checkTime" slot-scope="text, record, index">
           {{ index + 1 }}
-        </span>
-        <span slot="status" slot-scope="text">
-          <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
-        </span>
-        <span slot="description" slot-scope="text">
-          <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
 
         <span slot="action" slot-scope="text, record">
           <template>
-            <a @click="handleEdit(record)">配置</a>
-            <a-divider type="vertical" />
-            <a @click="handleSub(record)">订阅报警</a>
+            <a @click="handleEdit(record)">查看</a>
+            <a @click="handleSub(record)">编辑</a>
+            <a @click="handleSub(record)">删除</a>
+            <a @click="handleSub(record)">审核</a>
           </template>
         </span>
       </s-table>
-
-      <create-form
-        ref="createModal"
-        :visible="visible"
-        :loading="confirmLoading"
-        :model="mdl"
-        @cancel="handleCancel"
-        @ok="handleOk"
-      />
-      <step-by-step-modal ref="modal" @ok="handleOk"/>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
 import moment from 'moment'
-import { STable, Ellipsis } from '@/components'
+import { STable } from '@/components'
 import { getRoleList, getServiceList } from '@/api/manage'
-
-import StepByStepModal from './modules/StepByStepModal'
-import CreateForm from './modules/CreateForm'
 
 const columns = [
   {
-    title: '#',
-    scopedSlots: { customRender: 'serial' }
+    title: '审核时间',
+    dataIndex: 'no',
+    scopedSlots: { customRender: 'checkTime' }
   },
   {
-    title: '规则编号',
+    title: '合同状态',
     dataIndex: 'no'
   },
   {
-    title: '描述',
-    dataIndex: 'description',
-    scopedSlots: { customRender: 'description' }
+    title: '所属项目',
+    dataIndex: 'description'
   },
   {
-    title: '服务调用次数',
-    dataIndex: 'callNo',
-    sorter: true,
-    needTotal: true,
-    customRender: (text) => text + ' 次'
+    title: '合同编号',
+    dataIndex: 'callNo'
   },
   {
-    title: '状态',
-    dataIndex: 'status',
-    scopedSlots: { customRender: 'status' }
+    title: '合同名称',
+    dataIndex: 'status'
   },
   {
-    title: '更新时间',
+    title: '订单',
+    dataIndex: 'updatedAt',
+    sorter: true
+  },
+  {
+    title: '金额',
+    dataIndex: 'updatedAt',
+    sorter: true
+  },
+  {
+    title: '创建时间',
     dataIndex: 'updatedAt',
     sorter: true
   },
@@ -187,14 +222,20 @@ const statusMap = {
 export default {
   name: 'TableList',
   components: {
-    STable,
-    Ellipsis,
-    CreateForm,
-    StepByStepModal
+    STable
   },
   data () {
     this.columns = columns
     return {
+      tabList: [
+        { key: '1', tab: '全部' },
+        { key: '2', tab: '待审核' },
+        { key: '3', tab: '正常' },
+        { key: '4', tab: '延期' },
+        { key: '5', tab: '终止' },
+        { key: '6', tab: '未通过' }
+      ],
+      tabActiveKey: '1',
       // create model
       visible: false,
       confirmLoading: false,
@@ -207,10 +248,9 @@ export default {
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         console.log('loadData request parameters:', requestParameters)
-        return getServiceList(requestParameters)
-          .then(res => {
-            return res.result
-          })
+        return getServiceList(requestParameters).then(res => {
+          return res.result
+        })
       },
       selectedRowKeys: [],
       selectedRows: []
@@ -236,6 +276,9 @@ export default {
     }
   },
   methods: {
+    handleTabChange (key) {
+      this.tabActiveKey = key
+    },
     handleAdd () {
       this.mdl = null
       this.visible = true
@@ -316,3 +359,11 @@ export default {
   }
 }
 </script>
+
+<style lang="less" scoped>
+.table-page-search-wrapper {
+  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
+    width: 80px;
+  }
+}
+</style>
