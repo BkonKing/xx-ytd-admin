@@ -19,6 +19,11 @@ import './permission' // 路由权限控制
 import './styles/global.less' // 全局样式
 import './styles/antd-reset.less' // ant 样式覆盖
 
+import 'viewerjs/dist/viewer.css'
+import VueViewer from 'v-viewer'
+
+Vue.use(VueViewer)
+
 Vue.config.productionTip = false
 
 // use pro-layout components
