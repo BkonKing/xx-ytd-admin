@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import {
   UserLayout,
   BasicLayout
+  // RouteView
   // BlankLayout
 } from '@/layouts'
 // import userRoutes from './modules/user'
@@ -14,8 +15,14 @@ const asyncRoutes = []
 const moduleRoutes = require.context('./modules', true, /\.js$/)
 
 moduleRoutes.keys().forEach((name) => {
-  asyncRoutes.push(moduleRoutes(name).default)
+  const route = moduleRoutes(name).default
+  if (Array.isArray(route)) {
+    asyncRoutes.push(...route)
+  } else {
+    asyncRoutes.push(route)
+  }
 })
+
 export {
   asyncRoutes
 }
@@ -37,23 +44,14 @@ export const constantRoutes = [{
 },
 
 {
-  path: '/',
   name: 'index',
+  path: '',
   component: BasicLayout,
-  hideChildrenInMenu: true,
+  redirect: '/dashboard/workplace',
   meta: {
     title: '首页'
   },
-  redirect: 'home',
-  children: [{
-    path: '/home',
-    name: 'home',
-    component: () => import('@/views/user/home'),
-    meta: {
-      title: '首页',
-      icon: 'table'
-    }
-  }].concat(asyncRoutes)
+  children: asyncRoutes
 },
 
 {

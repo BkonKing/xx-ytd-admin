@@ -31,7 +31,7 @@ const assetsCDN = {
 
 // vue.config.js
 const vueConfig = {
-  publicPath: process.env.NODE_ENV === 'production' ? '/dist' : './',
+  // publicPath: process.env.NODE_ENV === 'production' ? '/dist' : './',
   configureWebpack: {
     // webpack plugins
     plugins: [
@@ -128,7 +128,7 @@ const vueConfig = {
 
   // disable source map in production
   productionSourceMap: false,
-  lintOnSave: undefined,
+  lintOnSave: true,
   // babel-loader no-ignore node_modules/*
   transpileDependencies: []
 }
