@@ -11,6 +11,7 @@ import Vue from 'vue'
 const request = axios.create({
   headers: {
     Authorization: Cookies.get('access_token'),
+    'Content-Type': 'application/x-www-form-urlencoded',
     Projectid: Cookies.get('project_id')
   },
   // API 请求的默认前缀

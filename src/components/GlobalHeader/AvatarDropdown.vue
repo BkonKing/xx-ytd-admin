@@ -29,7 +29,7 @@
 
 <script>
 import { Modal } from 'ant-design-vue'
-
+import { logout } from '@/api/login'
 export default {
   name: 'AvatarDropdown',
   props: {
@@ -57,7 +57,9 @@ export default {
           // return new Promise((resolve, reject) => {
           //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)
           // }).catch(() => console.log('Oops errors!'))
-          return this.$store.dispatch('Logout').then(() => {
+          logout().then(() => {
+            window.localStorage.removeItem('access_token')
+            this.$message.success('退出登录成功')
             this.$router.push({ name: 'login' })
           })
         },

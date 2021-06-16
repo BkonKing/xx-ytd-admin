@@ -24,42 +24,42 @@ export {
  * 基础路由
  * @type { *[] }
  */
-export const constantRoutes = [{
-  path: '/user',
-  component: UserLayout,
-  redirect: '/user/login',
-  hidden: true,
-  children: [{
-    path: 'login',
-    name: 'login',
-    component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
-  }]
-},
-
-{
-  path: '/',
-  name: 'index',
-  component: BasicLayout,
-  hideChildrenInMenu: true,
-  meta: {
-    title: '首页'
+export const constantRoutes = [
+  {
+    path: '/user',
+    component: UserLayout,
+    redirect: '/user/login',
+    hidden: true,
+    children: [{
+      path: 'login',
+      name: 'login',
+      component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
+    }]
   },
-  redirect: 'home',
-  children: [{
-    path: '/home',
-    name: 'home',
-    component: () => import('@/views/user/home'),
+  {
+    path: '/',
+    name: 'index',
+    component: BasicLayout,
+    hideChildrenInMenu: true,
     meta: {
-      title: '首页',
-      icon: 'table'
-    }
-  }].concat(asyncRoutes)
-},
+      title: '首页'
+    },
+    redirect: 'home',
+    children: [{
+      path: '/home',
+      name: 'home',
+      component: () => import('@/views/user/home'),
+      meta: {
+        title: '首页',
+        icon: 'table'
+      }
+    }].concat(asyncRoutes)
+  },
 
-{
-  path: '/404',
-  component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
-}
+  {
+    path: '/404',
+    component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
+  }
 ]
 
 // 找不到路由则显示404
@@ -73,3 +73,8 @@ export default new Router({
   mode: process.env.NODE_ENV !== 'production' || process.env.VUE_APP_PREVIEW === 'true' ? 'history' : 'hash',
   routes: constantRoutes.concat(errorRoute)
 })
+const originalPush = Router.prototype.push
+Router.prototype.push = function push (location, onResolve, onReject) {
+  if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+  return originalPush.call(this, location).catch(err => err)
+}
