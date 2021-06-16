@@ -1,108 +1,110 @@
 <template>
   <div class="main">
-    <a-form
+    <a-form-model
       id="formLogin"
       class="user-layout-login"
       ref="formLogin"
-      :form="form"
-      @submit="handleSubmit"
+      :model="form"
+      :rules="rules"
     >
-      <a-alert v-if="isLoginError" type="error" showIcon style="margin-bottom: 24px;" message="账户或密码错误" />
-      <a-form-item>
+
+      <a-form-model-item prop="account">
         <a-input
           size="large"
           type="text"
-          placeholder="账户: admin"
-          v-decorator="[
-            'account',
-            {rules: [{ required: true, message: '请输入帐户名' }], validateTrigger: 'change'}
-          ]"
+          placeholder="账户"
+          v-model="form.account"
         >
           <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
         </a-input>
-      </a-form-item>
+      </a-form-model-item>
 
-      <a-form-item>
+      <a-form-model-item prop="password">
         <a-input-password
           size="large"
-          placeholder="密码: admin or ant.design"
-          v-decorator="[
-            'password',
-            {rules: [{ required: true, message: '请输入密码' }], validateTrigger: 'blur'}
-          ]"
+          placeholder="密码"
+          v-model="form.password"
         >
           <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
         </a-input-password>
-      </a-form-item>
+      </a-form-model-item>
+        <a-form-model-item>
+          {{autoLogin}}
+        <a-checkbox v-model="autoLogin">自动登录</a-checkbox>
+        <!-- <router-link
+          :to="{ name: 'recover', params: { user: 'aaa'} }"
+          class="forge-password"
+          style="float: right;"
+        >忘记密码</router-link> -->
+      </a-form-model-item>
 
-      <a-form-item style="margin-top:24px">
+      <a-form-model-item style="margin-top:24px">
         <a-button
           size="large"
           type="primary"
-          htmlType="submit"
+
           class="login-button"
           :loading="state.loginBtn"
           :disabled="state.loginBtn"
+          @click="submit"
         >确定</a-button>
-      </a-form-item>
+      </a-form-model-item>
 
-    </a-form>
+    </a-form-model>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+// import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
-
+import { login } from '@/api/login'
 export default {
   data () {
     return {
+      form: {
+        account: '',
+        password: ''
+      },
       loginBtn: false,
       // login type: 0 email, 1 username, 2 telephone
       loginType: 0,
       isLoginError: false,
-      form: this.$form.createForm(this),
       state: {
         time: 60,
         loginBtn: false,
         // login type: 0 email, 1 username, 2 telephone
         loginType: 0,
         smsSendBtn: false
+      },
+      autoLogin: false,
+      rules: {
+        account: [
+          { required: true, message: '请输入账户', trigger: 'change' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'change' }
+        ]
       }
     }
   },
   created () {},
   methods: {
-    ...mapActions(['Login', 'Logout']),
-    handleSubmit (e) {
-      e.preventDefault()
-      const {
-        form: { validateFields },
-        state,
-        Login
-      } = this
-
-      state.loginBtn = true
-
-      const validateFieldsKey = ['account', 'password']
-
-      validateFields(validateFieldsKey, { force: true }, (err, values) => {
-        if (!err) {
-          console.log('login form', values)
-          const loginParams = { ...values }
-          delete loginParams.account
-          loginParams.account = values.account
-          loginParams.password = values.password
-          Login(loginParams)
-            .then((res) => this.loginSuccess(res))
-            .catch(err => this.requestFailed(err))
-            .finally(() => {
-              state.loginBtn = false
+    submit () {
+      this.$refs.formLogin.validate(async result => {
+        if (result) {
+          await login(this.form)
+            .then((res) => {
+              if (this.autoLogin) {
+                window.localStorage.setItem('account', this.form.account)
+                window.localStorage.setItem('passowrd', this.form.password)
+              }
+              // console.log(res.oauthToken)
+              window.localStorage.setItem('access_token', res.oauthToken)
+              this.$message.success('登录成功')
+              this.$router.push('/')
             })
         } else {
-          setTimeout(() => {
-            state.loginBtn = false
-          }, 600)
+          this.$message.error('验证失败')
         }
       })
     },
@@ -119,7 +121,7 @@ export default {
         })
       })
       */
-      this.$router.push({ path: '/' })
+      this.$router.push('/home')
       // 延迟 1 秒显示欢迎信息
       setTimeout(() => {
         this.$notification.success({
@@ -147,7 +149,9 @@ export default {
   label {
     font-size: 14px;
   }
-
+  .forge-password {
+    font-size: 14px;
+  }
   .getCaptcha {
     display: block;
     width: 100%;

@@ -2,15 +2,15 @@
   <div class="cardInfo">
     <div>
       <p>公司</p>
-      <p>{{ activeUser }}</p>
+      <p>{{ companyNum }}</p>
     </div>
     <div>
       <p>合同</p>
-      <p>{{ newUser }}</p>
+      <p>{{ contractNum }}</p>
     </div>
     <div>
       <p>订单</p>
-      <p>{{ newUser }}</p>
+      <p>{{ orderNum }}</p>
     </div>
   </div>
 </template>
@@ -19,11 +19,15 @@
 export default {
   name: 'CardInfo',
   props: {
-    activeUser: {
+    companyNum: {
       type: [String, Number],
       default: 0
     },
-    newUser: {
+    contractNum: {
+      type: [String, Number],
+      default: 0
+    },
+    orderNum: {
       type: [String, Number],
       default: 0
     }

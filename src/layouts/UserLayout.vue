@@ -4,22 +4,26 @@
       <div class="top">
         <div class="header">
           <a href="/">
-            <img src="~@/assets/logo.png" class="logo" alt="logo" />
-            <span class="title">美好生活后台管理系统</span>
+            <span class="title">物资管理系统</span>
           </a>
         </div>
         <div class="desc">
-          美好生活后台管理系统
+          账号密码登录
         </div>
       </div>
 
       <router-view />
 
-      <div class="footer">
-        <div class="copyright">
-          Copyright &copy; 2018 mhsh
+        <div class="footer">
+          <div class="links">
+            <a href="#">帮助</a>
+            <a href="#">隐私</a>
+            <a href="#">条款</a>
+          </div>
+          <div class="copyright">
+            Copyright &copy; 2020 福建线下信息科技有限公司
+          </div>
         </div>
-      </div>
     </div>
   </div>
 </template>
@@ -100,7 +104,7 @@ export default {
       .desc {
         font-size: 14px;
         color: rgba(0, 0, 0, 0.45);
-        margin-top: 12px;
+        margin-top: 80px;
         margin-bottom: 40px;
       }
     }

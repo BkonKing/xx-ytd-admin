@@ -5,19 +5,6 @@ import {
   asyncRoutes
 } from '@/router'
 
-export const login = [
-  RegExp(userApi.Login),
-  'post',
-  {
-    code: '200',
-    success: true,
-    message: 'OK',
-    data: {
-      access_token: '123123'
-    }
-  }
-]
-
 export const loginout = [
   RegExp(userApi.Logout),
   'post',

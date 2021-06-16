@@ -119,7 +119,7 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button type="primary">审核</a-button>
+        <a-button type="primary" @click="shenhe">审核</a-button>
         <a-button @click="handleAdd">新增</a-button>
       </div>
 
@@ -162,7 +162,7 @@ const columns = [
     scopedSlots: { customRender: 'checkTime' }
   },
   {
-    title: '合同状态',
+    title: '审核状态',
     dataIndex: 'no'
   },
   {
@@ -170,20 +170,20 @@ const columns = [
     dataIndex: 'description'
   },
   {
-    title: '合同编号',
+    title: '订单ID',
     dataIndex: 'callNo'
   },
   {
-    title: '合同名称',
+    title: '材料数量',
     dataIndex: 'status'
   },
   {
-    title: '订单',
+    title: '金额',
     dataIndex: 'updatedAt',
     sorter: true
   },
   {
-    title: '金额',
+    title: '付款情况',
     dataIndex: 'updatedAt',
     sorter: true
   },
@@ -230,9 +230,7 @@ export default {
       tabList: [
         { key: '1', tab: '全部' },
         { key: '2', tab: '待审核' },
-        { key: '3', tab: '正常' },
-        { key: '4', tab: '延期' },
-        { key: '5', tab: '终止' },
+        { key: '3', tab: '已通过' },
         { key: '6', tab: '未通过' }
       ],
       tabActiveKey: '1',

@@ -1,26 +1,25 @@
 <template>
-  <page-header-wrapper title="订单号：234231029431">
+  <page-header-wrapper
+    :title="title"
+    :tab-list="tabList"
+    :tab-active-key="tabActiveKey"
+    @tabChange="handleTabChange"
+  >
     <template v-slot:content>
       <a-descriptions size="small" :column="isMobile ? 1 : 2">
-        <a-descriptions-item label="创建人">曲丽丽</a-descriptions-item>
-        <a-descriptions-item label="订购产品">XX 服务</a-descriptions-item>
-        <a-descriptions-item label="创建时间">2017-07-07</a-descriptions-item>
+        <a-descriptions-item label="所属项目">项目名称</a-descriptions-item>
+        <a-descriptions-item label="供应商">XX 服务</a-descriptions-item>
+        <a-descriptions-item label="所属公司">2017-07-07</a-descriptions-item>
         <a-descriptions-item label="关联单据">
           <a href="">12421</a>
         </a-descriptions-item>
-        <a-descriptions-item label="生效日期"
+        <a-descriptions-item label="订单凭证"
           >2017-07-07 ~ 2017-08-08</a-descriptions-item
         >
-        <a-descriptions-item label="备注"
+        <a-descriptions-item label="创建人"
           >请于两个工作日内确认</a-descriptions-item
         >
       </a-descriptions>
-    </template>
-
-    <!-- actions -->
-    <template v-slot:extra>
-      <a-button>编辑</a-button>
-      <a-button type="primary">审核</a-button>
     </template>
 
     <template v-slot:extraContent>
@@ -79,138 +78,13 @@ export default {
   name: 'Advanced',
   data () {
     return {
-      isMobile: false,
-
-      operationTabList: [
-        {
-          key: '1',
-          tab: '操作日志一'
-        },
-        {
-          key: '2',
-          tab: '操作日志二'
-        },
-        {
-          key: '3',
-          tab: '操作日志三'
-        }
+      title: '',
+      tabList: [
+        { key: 'detail', tab: '资料' },
+        { key: 'dingdan', tab: '订单' },
+        { key: 'rule', tab: '审批' }
       ],
-      operationActiveTabKey: '1',
-
-      operationColumns: [
-        {
-          title: '操作类型',
-          dataIndex: 'type',
-          key: 'type'
-        },
-        {
-          title: '操作人',
-          dataIndex: 'name',
-          key: 'name'
-        },
-        {
-          title: '执行结果',
-          dataIndex: 'status',
-          key: 'status',
-          scopedSlots: { customRender: 'status' }
-        },
-        {
-          title: '操作时间',
-          dataIndex: 'updatedAt',
-          key: 'updatedAt'
-        },
-        {
-          title: '备注',
-          dataIndex: 'remark',
-          key: 'remark'
-        }
-      ],
-      operation1: [
-        {
-          key: 'op1',
-          type: '订购关系生效',
-          name: '曲丽丽',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '-'
-        },
-        {
-          key: 'op2',
-          type: '财务复审',
-          name: '付小小',
-          status: 'reject',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '不通过原因'
-        },
-        {
-          key: 'op3',
-          type: '部门初审',
-          name: '周毛毛',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '-'
-        },
-        {
-          key: 'op4',
-          type: '提交订单',
-          name: '林东东',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '很棒'
-        },
-        {
-          key: 'op5',
-          type: '创建订单',
-          name: '汗牙牙',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '-'
-        }
-      ],
-      operation2: [
-        {
-          key: 'op2',
-          type: '财务复审',
-          name: '付小小',
-          status: 'reject',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '不通过原因'
-        },
-        {
-          key: 'op3',
-          type: '部门初审',
-          name: '周毛毛',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '-'
-        },
-        {
-          key: 'op4',
-          type: '提交订单',
-          name: '林东东',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '很棒'
-        }
-      ],
-      operation3: [
-        {
-          key: 'op2',
-          type: '财务复审',
-          name: '付小小',
-          status: 'reject',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '不通过原因'
-        },
-        {
-          key: 'op3',
-          type: '部门初审',
-          name: '周毛毛',
-          status: 'agree',
-          updatedAt: '2017-10-03  19:23:12',
-          remark: '-'
-        }
-      ]
+      tabActiveKey: 'detail'
     }
   },
   filters: {
@@ -229,7 +103,12 @@ export default {
       return statusTypeMap[type]
     }
   },
-  methods: {}
+  methods: {
+    handleTabChange (key) {
+      console.log('')
+      this.tabActiveKey = key
+    }
+  }
 }
 </script>
 

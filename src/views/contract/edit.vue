@@ -1,56 +1,10 @@
 <template>
-  <page-header-wrapper content="高级表单常见于一次性输入和提交大批量数据的场景">
-    <a-card class="card" title="仓库管理" :bordered="false">
-      <repository-form ref="repository" :showSubmit="false" />
+  <page-header-wrapper :title="title">
+    <a-card class="card" title="基本信息" :bordered="false">
+      <basic-form ref="repository" :showSubmit="false" />
     </a-card>
-    <a-card class="card" title="任务管理" :bordered="false">
-      <task-form ref="task" :showSubmit="false" />
-    </a-card>
-
-    <!-- table -->
-    <a-card>
-      <a-table
-        :columns="columns"
-        :dataSource="data"
-        :pagination="false"
-        :loading="memberLoading"
-      >
-        <template v-for="(col, i) in ['name', 'workId', 'department']" :slot="col" slot-scope="text, record">
-          <a-input
-            :key="col"
-            v-if="record.editable"
-            style="margin: -5px 0"
-            :value="text"
-            :placeholder="columns[i].title"
-            @change="e => handleChange(e.target.value, record.key, col)"
-          />
-          <template v-else>{{ text }}</template>
-        </template>
-        <template slot="operation" slot-scope="text, record">
-          <template v-if="record.editable">
-            <span v-if="record.isNew">
-              <a @click="saveRow(record)">添加</a>
-              <a-divider type="vertical" />
-              <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key)">
-                <a>删除</a>
-              </a-popconfirm>
-            </span>
-            <span v-else>
-              <a @click="saveRow(record)">保存</a>
-              <a-divider type="vertical" />
-              <a @click="cancel(record.key)">取消</a>
-            </span>
-          </template>
-          <span v-else>
-            <a @click="toggle(record.key)">编辑</a>
-            <a-divider type="vertical" />
-            <a-popconfirm title="是否要删除此行？" @confirm="remove(record.key)">
-              <a>删除</a>
-            </a-popconfirm>
-          </span>
-        </template>
-      </a-table>
-      <a-button style="width: 100%; margin-top: 16px; margin-bottom: 8px" type="dashed" icon="plus" @click="newMember">新增成员</a-button>
+    <a-card class="card" title="供应商信息" :bordered="false">
+      <supplier-form ref="task" :showSubmit="false" />
     </a-card>
 
     <!-- fixed footer toolbar -->
@@ -75,8 +29,8 @@
 </template>
 
 <script>
-import RepositoryForm from './components/RepositoryForm'
-import TaskForm from './components/TaskForm'
+import BasicForm from './components/BasicForm'
+import SupplierForm from './components/SupplierForm'
 import FooterToolBar from '@/components/FooterToolbar'
 import { appMixin } from '@/store/mixin'
 
@@ -100,66 +54,14 @@ export default {
   mixins: [appMixin],
   components: {
     FooterToolBar,
-    RepositoryForm,
-    TaskForm
+    BasicForm,
+    SupplierForm
   },
   data () {
     return {
+      title: '新增合同',
       loading: false,
       memberLoading: false,
-
-      // table
-      columns: [
-        {
-          title: '成员姓名',
-          dataIndex: 'name',
-          key: 'name',
-          width: '20%',
-          scopedSlots: { customRender: 'name' }
-        },
-        {
-          title: '工号',
-          dataIndex: 'workId',
-          key: 'workId',
-          width: '20%',
-          scopedSlots: { customRender: 'workId' }
-        },
-        {
-          title: '所属部门',
-          dataIndex: 'department',
-          key: 'department',
-          width: '40%',
-          scopedSlots: { customRender: 'department' }
-        },
-        {
-          title: '操作',
-          key: 'action',
-          scopedSlots: { customRender: 'operation' }
-        }
-      ],
-      data: [
-        {
-          key: '1',
-          name: '小明',
-          workId: '001',
-          editable: false,
-          department: '行政部'
-        },
-        {
-          key: '2',
-          name: '李莉',
-          workId: '002',
-          editable: false,
-          department: 'IT部'
-        },
-        {
-          key: '3',
-          name: '王小帅',
-          workId: '003',
-          editable: false,
-          department: '财务部'
-        }
-      ],
 
       errors: []
     }

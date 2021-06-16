@@ -25,6 +25,9 @@ import TagSelect from '@/components/TagSelect'
 import StandardFormRow from '@/components/StandardFormRow'
 import ArticleListContent from '@/components/ArticleListContent'
 
+// 业务组件
+import CheckForm from '@/components/Business/CheckForm'
+
 import Dialog from '@/components/Dialog'
 
 export {
@@ -51,6 +54,6 @@ export {
   TagSelect,
   StandardFormRow,
   ArticleListContent,
-
-  Dialog
+  Dialog,
+  CheckForm
 }

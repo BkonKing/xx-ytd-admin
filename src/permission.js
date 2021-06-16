@@ -6,7 +6,7 @@ import {
   domTitle
 } from '@/utils/domUtil'
 import storage from 'store'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
+// import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 NProgress.configure({
   showSpinner: false
@@ -20,7 +20,7 @@ router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
   to.meta && (typeof to.meta.title !== 'undefined' && setDocumentTitle(`${to.meta.title} - ${domTitle}`))
   /* has token */
-  if (storage.get(ACCESS_TOKEN)) {
+  if (storage.get('access_token')) {
     if (to.path === loginRoutePath) {
       next({
         path: defaultRoutePath

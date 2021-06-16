@@ -1,15 +1,15 @@
 <template>
   <page-header-wrapper>
     <a-card :bordered="false" class="ant-pro-components-tag-select">
-      <a-form :form="form" layout="inline">
+      <a-form layout="inline">
         <standard-form-row title="参与公司" block style="padding-bottom: 11px;">
           <a-form-item>
-            <tag-select v-model="tagActive">
+            <tag-select v-model="companyIds" @change="getProjectList">
               <tag-select-option
-                v-for="tag in tagList"
-                :key="tag.value"
-                :value="tag.value"
-                >{{ tag.text }}</tag-select-option
+                v-for="tag in companyList"
+                :key="tag.companyId"
+                :value="tag.companyId"
+                >{{ tag.companyName }}</tag-select-option
               >
             </tag-select>
           </a-form-item>
@@ -22,14 +22,12 @@
                 :wrapper-col="{ sm: { span: 16 }, xs: { span: 24 } }"
                 label="项目"
               >
-                <a-select
-                  style="max-width: 200px; width: 100%;"
-                  mode="multiple"
+                <a-input
+                  v-model="serachText"
                   placeholder="ID、名称"
-                  @change="handleChange"
-                >
-                  <a-select-option value="lisa">王昭君</a-select-option>
-                </a-select>
+                  @change="getProjectList"
+                  style="max-width: 200px; width: 100%;"
+                ></a-input>
               </a-form-item>
             </a-col>
             <a-col :lg="8" :md="10" :sm="10" :xs="24">
@@ -38,11 +36,17 @@
                 label="项目阶段"
               >
                 <a-select
+                  v-model="stage"
+                  @change="getProjectList"
                   style="max-width: 200px; width: 100%;"
                   placeholder="请选择"
                 >
-                  <a-select-option value="good">优秀</a-select-option>
-                  <a-select-option value="normal">普通</a-select-option>
+                  <a-select-option
+                    v-for="option in projectStageList"
+                    :key="option.stageId"
+                    :value="option.stageId"
+                    >{{ option.stageText }}</a-select-option
+                  >
                 </a-select>
               </a-form-item>
             </a-col>
@@ -63,22 +67,32 @@
             class="add-project-card"
             v-if="index === 0"
             :body-style="{ paddingBottom: 20 }"
-            @click="addProject"
+            @click="openAddProject"
           >
             <a-icon type="plus"></a-icon>新增项目
           </a-card>
           <a-card v-else :body-style="{ paddingBottom: 20 }" hoverable>
-            <a-card-meta :title="item.title">
+            <a-card-meta>
+              <template slot="title">
+                <div>
+                  <span>{{ item.projectName }}</span>
+                  <span>{{ item.stage }}</span>
+                </div>
+              </template>
               <template slot="avatar">
                 <a-avatar size="large" :src="item.avatar" />
               </template>
             </a-card-meta>
             <template slot="actions">
-              <span>编辑</span>
-              <span>删除</span>
+              <span @click="openEditProject(item)">编辑</span>
+              <span @click="removeProject(item)">删除</span>
             </template>
             <div class="">
-              <card-info active-user="100" new-user="999"></card-info>
+              <card-info
+                :company-num="item.relationCompanyNum"
+                :contract-num="item.relationContractNum"
+                :order-num="item.relationOrderNum"
+              ></card-info>
             </div>
           </a-card>
         </a-list-item>
@@ -89,23 +103,40 @@
       :title="title"
       :visible="visible"
       :confirm-loading="confirmLoading"
-      @ok="handleOk"
-      @cancel="handleCancel"
+      :width="640"
+      :maskClosable="false"
+      :keyboard="false"
+      @ok="addProject"
+      @cancel="closeModal"
     >
-      <project-form></project-form>
+      <project-form
+        ref="projectForm"
+        :company-list="companyList"
+        :stage-list="projectStageList"
+      ></project-form>
     </a-modal>
   </page-header-wrapper>
 </template>
 
 <script>
 import moment from 'moment'
+import clonedeep from 'lodash.clonedeep'
+// import _pick from 'lodash.pick'
 import {
   TagSelect,
   StandardFormRow
   /* Ellipsis, AvatarList */
 } from '@/components'
 import CardInfo from './components/CardInfo'
-import projectForm from './components/ProjectForm.vue'
+import projectForm from './components/ProjectForm'
+import {
+  getAllCompany,
+  getProjectStage,
+  getProjectList,
+  addProject,
+  updateProject,
+  removeProject
+} from '@/api/project'
 const TagSelectOption = TagSelect.Option
 // const AvatarListItem = AvatarList.AvatarItem
 
@@ -123,34 +154,11 @@ export default {
   data () {
     return {
       data: [],
-      form: this.$form.createForm(this),
-      tagActive: [],
-      tagList: [
-        {
-          value: 'Category1',
-          text: '类目1'
-        },
-        {
-          value: 'Category2',
-          text: '类目2'
-        },
-        {
-          value: 'Category3',
-          text: '类目3'
-        },
-        {
-          value: 'Category4',
-          text: '类目4'
-        },
-        {
-          value: 'Category5',
-          text: '类目5'
-        },
-        {
-          value: 'Category6',
-          text: '类目6'
-        }
-      ],
+      companyIds: [],
+      serachText: '',
+      stage: '',
+      companyList: [],
+      projectStageList: [],
       loading: true,
       title: '',
       visible: false,
@@ -163,35 +171,139 @@ export default {
     }
   },
   created () {
-    this.getList()
+    this.getAllCompany()
+    this.getProjectStage()
+    this.getProjectList()
   },
   methods: {
-    handleChange (value) {
-      console.log(`selected ${value}`)
+    // 获取所有公司
+    getAllCompany () {
+      getAllCompany().then(({ data }) => {
+        this.companyList = data
+      })
     },
-    getList () {
-      const data = [{}, {}, {}, {}, {}, {}]
-      this.data = [{}, ...data]
-      this.loading = false
+    // 获取项目阶段接口
+    getProjectStage () {
+      getProjectStage().then(({ data }) => {
+        this.projectStageList = data
+      })
     },
-    addProject () {
+    // 获取项目列表
+    getProjectList () {
+      getProjectList({
+        companyIds: this.companyIds,
+        serachText: this.serachText,
+        stage: this.stage
+      }).then(({ data }) => {
+        this.data = [{}, ...data]
+        this.loading = false
+      })
+    },
+    // 打开新增项目弹窗
+    openAddProject () {
       this.title = '新增项目'
       this.showModal()
+      this.$refs.projectForm && this.$refs.projectForm.form.resetFields()
+    },
+    // 打开编辑项目弹窗
+    openEditProject (obj) {
+      this.title = '编辑项目'
+      this.showModal()
+      this.$nextTick(() => {
+        const {
+          licenceNum,
+          relationCompanyNum,
+          relationContractMoneys,
+          relationContractNum,
+          relationMaterialNum,
+          relationMaterialTotal,
+          relationOrderMoneys,
+          relationOrderNum,
+          relationSupplierNum,
+          startDate,
+          endDate,
+          provinceId,
+          cityId,
+          areaId,
+          ctime,
+          companyIds,
+          ...data
+        } = obj
+        if (obj.startDate) {
+          data.buildTime = [moment(obj.startDate), moment(obj.endDate)]
+        }
+        if (data.licence) {
+          this.$refs.projectForm.form.fileList = data.licence
+          this.$refs.projectForm.form.uploadList = data.licence
+        }
+        if (obj.provinceId) {
+          data.area = [obj.provinceId, obj.cityId, obj.areaId]
+        }
+        console.log(data)
+        this.$refs.projectForm.form.setFieldsValue(data)
+      })
     },
     showModal () {
       this.visible = true
     },
-    handleOk (e) {
-      this.ModalText = 'The modal will be closed after two seconds'
-      this.confirmLoading = true
-      setTimeout(() => {
-        this.visible = false
-        this.confirmLoading = false
-      }, 2000)
+    addProject (e) {
+      // this.$refs.projectForm.form.handleSubmit()
+      const projectForm = new Promise((resolve, reject) => {
+        this.$refs.projectForm.form.validateFields((err, values) => {
+          if (err) {
+            reject(err)
+            return
+          }
+          resolve(values)
+        })
+      })
+      projectForm.then(res => {
+        this.confirmLoading = true
+        console.log(res)
+        const data = clonedeep(res)
+        if (data.buildTime) {
+          data.startDate = moment(data.buildTime[0]).format('YYYY-MM-DD')
+          data.endDate = moment(data.buildTime[1]).format('YYYY-MM-DD')
+        }
+        if (data.licence) {
+          data.licence = data.licence.fileList.map(obj => {
+            return obj.response.data
+          })
+        }
+        if (data.area) {
+          data.provinceId = data.area[0]
+          data.cityId = data.area[1]
+          data.areaId = data.area[2]
+        }
+        addProject(data)
+          .then(({ success }) => {
+            if (success) {
+              this.$message.success('添加项目成功')
+              this.getProjectList()
+              this.visible = false
+            }
+          })
+          .finally(() => {
+            this.confirmLoading = false
+          })
+      })
     },
-    handleCancel (e) {
-      console.log('Clicked cancel button')
+    closeModal () {
       this.visible = false
+    },
+    removeProject ({ id }) {
+      const that = this
+      this.$confirm({
+        content: '是否删除该项目？',
+        onOk () {
+          removeProject({
+            id
+          }).then(({ data }) => {
+            that.$message.success('删除项目成功')
+            that.getProjectList()
+          })
+        }
+      })
     }
   }
 }
@@ -208,40 +320,20 @@ export default {
 }
 .ant-pro-components-tag-select {
   /deep/ .ant-pro-tag-select .ant-tag {
+    margin-left: -8px;
     margin-right: 24px;
     padding: 0 8px;
     font-size: 14px;
   }
 }
-.ant-pro-pages-list-projects-cardList {
-  margin-top: 24px;
-
-  /deep/ .ant-card-meta-title {
-    margin-bottom: 4px;
-  }
-
-  /deep/ .ant-card-meta-description {
-    height: 44px;
-    overflow: hidden;
-    line-height: 22px;
-  }
-
-  .cardItemContent {
-    display: flex;
-    height: 20px;
-    margin-top: 16px;
-    margin-bottom: -4px;
-    line-height: 20px;
-
-    > span {
-      flex: 1 1;
-      color: rgba(0, 0, 0, 0.45);
-      font-size: 12px;
-    }
-
-    /deep/ .ant-pro-avatar-list {
-      flex: 0 1 auto;
-    }
-  }
+/deep/
+  .antd-pro-components-standard-form-row-index-standardFormRow
+  .antd-pro-components-standard-form-row-index-label {
+  margin-top: 4px;
+}
+/deep/
+  .antd-pro-components-standard-form-row-index-standardFormRow.antd-pro-components-standard-form-row-index-standardFormRowGrid
+  .ant-form-item-label {
+  margin-top: 4px;
 }
 </style>
