@@ -3,7 +3,10 @@ import store from '@/store'
 import storage from 'store'
 import Cookies from 'js-cookie'
 import notification from 'ant-design-vue/es/notification'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { Message } from 'ant-design-vue'
+import {
+  ACCESS_TOKEN
+} from '@/store/mutation-types'
 import qs from 'qs'
 import Vue from 'vue'
 
@@ -24,14 +27,14 @@ const errorHandler = (error) => {
   if (error.response) {
     const data = error.response.data
     // 从 localstorage 获取 token
-    const token = storage.get(ACCESS_TOKEN)
+    const token = storage.get('access_token')
     if (error.response.status === 403) {
       notification.error({
         message: 'Forbidden',
         description: data.message
       })
     }
-    if (error.response.status === 401 && !(data.result && data.result.isLogin)) {
+    if (error.response.status === 201 && !(data.result && data.result.isLogin)) {
       notification.error({
         message: 'Unauthorized',
         description: 'Authorization verification failed'
@@ -50,7 +53,7 @@ const errorHandler = (error) => {
 
 // request interceptor
 request.interceptors.request.use(config => {
-  console.log('config', config.headers.isLoading)
+  // console.log('config', config.headers.isLoading)
   if (config.headers.isLoading) {
     Vue.prototype.$loading.show()
   }
@@ -70,8 +73,28 @@ request.interceptors.request.use(config => {
 // response interceptor
 request.interceptors.response.use((response) => {
   Vue.prototype.$loading.hide()
-  if (response.data.code == '401') {
-    top.token_invalid()
+  const token = storage.get('access_token')
+  const {
+    data,
+    config
+  } = response
+  const {
+    code,
+    message
+  } = data
+  if (code == '201') {
+    if (token) {
+      store.dispatch('Logout').then(() => {
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500)
+      })
+    }
+  } else if (code != '200') {
+    if (!config.headers.noToast) {
+      Message.error(message)
+    }
+    return Promise.reject(data || 'Error')
   }
   return response.data
 }, errorHandler)

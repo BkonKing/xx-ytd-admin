@@ -3,7 +3,7 @@
     <a-card :bordered="false" class="ant-pro-components-tag-select">
       <a-form layout="inline">
         <standard-form-row title="参与公司" block style="padding-bottom: 11px;">
-          <a-form-item>
+          <a-form-item v-if="companyList && companyList.length">
             <tag-select v-model="companyIds" @change="getProjectList">
               <tag-select-option
                 v-for="tag in companyList"
@@ -71,12 +71,19 @@
           >
             <a-icon type="plus"></a-icon>新增项目
           </a-card>
-          <a-card v-else :body-style="{ paddingBottom: 20 }" hoverable>
+          <a-card
+            v-else
+            :body-style="{ paddingBottom: 20 }"
+            hoverable
+            @click="goProjectDetail(item)"
+          >
             <a-card-meta>
               <template slot="title">
-                <div>
-                  <span>{{ item.projectName }}</span>
-                  <span>{{ item.stage }}</span>
+                <div class="project-header">
+                  <span class="project-title">{{ item.projectName }}</span>
+                  <a-tag v-if="item.stage" color="blue" class="project-stage">
+                    {{ item.stage }}
+                  </a-tag>
                 </div>
               </template>
               <template slot="avatar">
@@ -84,16 +91,18 @@
               </template>
             </a-card-meta>
             <template slot="actions">
-              <span @click="openEditProject(item)">编辑</span>
-              <span @click="removeProject(item)">删除</span>
+              <div class="actions-span" @click.stop="openEditProject(item)">
+                编辑
+              </div>
+              <div class="actions-span" @click.stop="removeProject(item)">
+                删除
+              </div>
             </template>
-            <div class="">
-              <card-info
-                :company-num="item.relationCompanyNum"
-                :contract-num="item.relationContractNum"
-                :order-num="item.relationOrderNum"
-              ></card-info>
-            </div>
+            <card-info
+              :company-num="item.relationCompanyNum"
+              :contract-num="item.relationContractNum"
+              :order-num="item.relationOrderNum"
+            ></card-info>
           </a-card>
         </a-list-item>
       </a-list>
@@ -106,7 +115,7 @@
       :width="640"
       :maskClosable="false"
       :keyboard="false"
-      @ok="addProject"
+      @ok="handleOkProject"
       @cancel="closeModal"
     >
       <project-form
@@ -137,6 +146,7 @@ import {
   updateProject,
   removeProject
 } from '@/api/project'
+import cloneDeep from 'lodash.clonedeep'
 const TagSelectOption = TagSelect.Option
 // const AvatarListItem = AvatarList.AvatarItem
 
@@ -203,90 +213,72 @@ export default {
     openAddProject () {
       this.title = '新增项目'
       this.showModal()
-      this.$refs.projectForm && this.$refs.projectForm.form.resetFields()
+      this.$refs.projectForm && this.$refs.projectForm.resetFields()
     },
     // 打开编辑项目弹窗
     openEditProject (obj) {
       this.title = '编辑项目'
       this.showModal()
+      this.$refs.projectForm && this.$refs.projectForm.resetFields()
       this.$nextTick(() => {
-        const {
-          licenceNum,
-          relationCompanyNum,
-          relationContractMoneys,
-          relationContractNum,
-          relationMaterialNum,
-          relationMaterialTotal,
-          relationOrderMoneys,
-          relationOrderNum,
-          relationSupplierNum,
-          startDate,
-          endDate,
-          provinceId,
-          cityId,
-          areaId,
-          ctime,
-          companyIds,
-          ...data
-        } = obj
+        const data = cloneDeep(obj)
         if (obj.startDate) {
           data.buildTime = [moment(obj.startDate), moment(obj.endDate)]
-        }
-        if (data.licence) {
-          this.$refs.projectForm.form.fileList = data.licence
-          this.$refs.projectForm.form.uploadList = data.licence
         }
         if (obj.provinceId) {
           data.area = [obj.provinceId, obj.cityId, obj.areaId]
         }
-        console.log(data)
-        this.$refs.projectForm.form.setFieldsValue(data)
+        this.$refs.projectForm.setFieldsValue(data)
       })
     },
     showModal () {
       this.visible = true
     },
-    addProject (e) {
-      // this.$refs.projectForm.form.handleSubmit()
-      const projectForm = new Promise((resolve, reject) => {
-        this.$refs.projectForm.form.validateFields((err, values) => {
-          if (err) {
-            reject(err)
-            return
-          }
-          resolve(values)
-        })
-      })
-      projectForm.then(res => {
+    handleOkProject (e) {
+      this.$refs.projectForm.handleSubmit().then(res => {
         this.confirmLoading = true
-        console.log(res)
         const data = clonedeep(res)
-        if (data.buildTime) {
+        if (data.buildTime && data.buildTime.length) {
           data.startDate = moment(data.buildTime[0]).format('YYYY-MM-DD')
           data.endDate = moment(data.buildTime[1]).format('YYYY-MM-DD')
         }
-        if (data.licence) {
-          data.licence = data.licence.fileList.map(obj => {
-            return obj.response.data
-          })
-        }
-        if (data.area) {
+        if (data.area && data.area.length) {
           data.provinceId = data.area[0]
           data.cityId = data.area[1]
           data.areaId = data.area[2]
         }
-        addProject(data)
-          .then(({ success }) => {
-            if (success) {
-              this.$message.success('添加项目成功')
-              this.getProjectList()
-              this.visible = false
-            }
-          })
-          .finally(() => {
-            this.confirmLoading = false
-          })
+        if (data.id) {
+          this.updateProject(data)
+        } else {
+          this.addProject(data)
+        }
       })
+    },
+    addProject (data) {
+      addProject(data)
+        .then(({ success }) => {
+          if (success) {
+            this.$message.success('添加项目成功')
+            this.getProjectList()
+            this.visible = false
+          }
+        })
+        .finally(() => {
+          this.confirmLoading = false
+        })
+    },
+    updateProject (data) {
+      updateProject(data)
+        .then(({ success }) => {
+          if (success) {
+            this.$message.success('修改项目成功')
+            this.getProjectList()
+            this.visible = false
+          }
+        })
+        .finally(() => {
+          this.confirmLoading = false
+        })
     },
     closeModal () {
       this.visible = false
@@ -304,6 +296,14 @@ export default {
           })
         }
       })
+    },
+    goProjectDetail ({ id }) {
+      this.$router.push({
+        name: 'ProjectDetail',
+        query: {
+          id
+        }
+      })
     }
   }
 }
@@ -318,14 +318,6 @@ export default {
   background: none;
   border: 1px dashed #ccc;
 }
-.ant-pro-components-tag-select {
-  /deep/ .ant-pro-tag-select .ant-tag {
-    margin-left: -8px;
-    margin-right: 24px;
-    padding: 0 8px;
-    font-size: 14px;
-  }
-}
 /deep/
   .antd-pro-components-standard-form-row-index-standardFormRow
   .antd-pro-components-standard-form-row-index-label {
@@ -335,5 +327,37 @@ export default {
   .antd-pro-components-standard-form-row-index-standardFormRow.antd-pro-components-standard-form-row-index-standardFormRowGrid
   .ant-form-item-label {
   margin-top: 4px;
+}
+/deep/ .ant-card-actions {
+  li {
+    margin: 0;
+    div {
+      padding: 12px 0;
+    }
+  }
+  > li:not(:last-child) {
+    border-right: none;
+    position: relative;
+    &::after {
+      content: "";
+      position: absolute;
+      top: 12px;
+      right: 0;
+      width: 1px;
+      height: calc(100% - 24px);
+      background: #e8e8e8;
+    }
+  }
+}
+.project-header {
+  display: flex;
+  justify-content: space-between;
+}
+.project-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+.project-stage {
+  margin-right: 0;
 }
 </style>

@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export const userApi = {
   Login: '/system/slognin/login',
-  Logout: '/auth/logout',
+  Logout: '/system/slognin/logout',
   UserInfo: '/user/info',
   UserMenu: '/user/nav'
 }

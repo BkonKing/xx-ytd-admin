@@ -27,6 +27,10 @@ import ArticleListContent from '@/components/ArticleListContent'
 
 // 业务组件
 import CheckForm from '@/components/Business/CheckForm'
+import LogList from '@/components/Business/LogList'
+
+// 二次封装
+import UploadImage from '@/components/UploadImage'
 
 import Dialog from '@/components/Dialog'
 
@@ -55,5 +59,7 @@ export {
   StandardFormRow,
   ArticleListContent,
   Dialog,
-  CheckForm
+  CheckForm,
+  UploadImage,
+  LogList
 }

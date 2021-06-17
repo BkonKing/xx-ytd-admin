@@ -163,7 +163,7 @@ export default {
       bool && (this.localPagination = Object.assign({}, this.localPagination, {
         current: 1, pagesize: this.pagesize, defaultCurrent: 1, defaultPageSize: this.pagesize
       }))
-      console.log(this.localPagination)
+      // console.log(this.localPagination)
       this.loadData()
     },
     /**
@@ -190,20 +190,21 @@ export default {
       }
       )
       const result = this.data(parameter)
+      console.log(result)
       // 对接自己的通用数据接口需要修改下方代码中的 r.pageindex, r.total, r.data
       // eslint-disable-next-line
       if ((typeof result === 'object' || typeof result === 'function') && typeof result.then === 'function') {
         result.then(({ data: r }) => {
-          if (r.list && r.list.length > 0) {
+          if (r.records && r.records.length > 0) {
             this.localPagination = (this.showPagination === true || (this.showPagination && r.pageindex)) && Object.assign({}, this.localPagination, {
-              current: parseInt(r.pageindex), // 返回结果中的当前分页数
+              current: parseInt(r.current), // 返回结果中的当前分页数
               total: parseInt(r.total), // 返回结果中的总记录数
               showSizeChanger: this.showSizeChanger,
               pagesize: parseInt((pagination && pagination.pageSize) ||
               this.localPagination.pagesize)
             }) || false
             // 为防止删除数据后导致页面当前页面数据长度为 0 ,自动翻页到上一页
-            if (r.list.length === 0 && this.showPagination && this.localPagination.current > 1) {
+            if (r.records.length === 0 && this.showPagination && this.localPagination.current > 1) {
               this.localPagination.current--
               this.loadData()
               return
@@ -218,7 +219,7 @@ export default {
             } catch (e) {
               this.localPagination = false
             }
-            this.localDataSource = r.list // 返回结果中的数组数据
+            this.localDataSource = r.records // 返回结果中的数组数据
           } else {
             this.localPagination = Object.assign({}, {
               total: 0
@@ -284,7 +285,7 @@ export default {
       )
     },
     renderAlert () {
-      console.log(this.alert)
+      // console.log(this.alert)
       // 绘制统计列数据 totalTitle统计字段文字描述
       const needTotalItems = this.needTotalList.map((item) => {
         return (<span style="margin-right: 12px">

@@ -1,6 +1,7 @@
 import PropTypes from 'ant-design-vue/es/_util/vue-types'
 import Option from './TagSelectOption.jsx'
 import { filterEmpty } from '@/components/_util/util'
+import './index.less'
 
 export default {
   Option,
@@ -36,7 +37,8 @@ export default {
       expand: false,
       localCheckAll: false,
       items: this.getItemsKey(filterEmpty(this.$slots.default)),
-      val: this.value || this.defaultValue || []
+      val: this.value || this.defaultValue || [],
+      checkedList: []
     }
   },
   methods: {
@@ -63,6 +65,9 @@ export default {
       })
       return totalItem
     },
+    getCheckedTag () {
+      return Object.keys(this.items).filter(key => this.items[key])
+    },
     // CheckAll Button
     renderCheckAll () {
       const props = {
@@ -70,7 +75,7 @@ export default {
           change: (checked) => {
             this.onCheckAll(checked)
             checked.value = 'total'
-            this.$emit('change', checked)
+            this.$emit('change', this.getCheckedTag())
           }
         }
       }
@@ -86,7 +91,7 @@ export default {
       const listeners = {
         change: (checked) => {
           this.onChange(checked)
-          this.$emit('change', checked)
+          this.$emit('change', this.getCheckedTag())
         }
       }
 
@@ -100,7 +105,8 @@ export default {
   render () {
     const { $props: { prefixCls } } = this
     const classString = {
-      [`${prefixCls}`]: true
+      [`${prefixCls}`]: true,
+      'tag-select-container': true
     }
     const tagItems = filterEmpty(this.$slots.default)
     return (

@@ -2,15 +2,15 @@
   <div class="cardInfo">
     <div>
       <p>公司</p>
-      <p>{{ companyNum }}</p>
+      <p class="num-span">{{ companyNum }}</p>
     </div>
     <div>
       <p>合同</p>
-      <p>{{ contractNum }}</p>
+      <p class="num-span">{{ contractNum }}</p>
     </div>
     <div>
       <p>订单</p>
-      <p>{{ orderNum }}</p>
+      <p class="num-span">{{ orderNum }}</p>
     </div>
   </div>
 </template>
@@ -42,12 +42,13 @@ export default {
   .clearfix();
 
   margin-top: 16px;
-  margin-left: 40px;
+  margin-left: 32px;
   & > div {
     position: relative;
     float: left;
     width: 33.33%;
     text-align: left;
+    padding-left: 24px;
     p {
       margin: 0;
       font-size: 24px;
@@ -58,6 +59,10 @@ export default {
       color: @text-color-secondary;
       font-size: 12px;
       line-height: 20px;
+    }
+    .num-span {
+      font-size: 26px;
+      font-weight: bold;
     }
   }
 }

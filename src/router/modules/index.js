@@ -90,6 +90,35 @@ export default [
         }
       }
     ]
+  },
+  {
+    path: '/supplier',
+    name: 'Supplier',
+    component: RouteView,
+    meta: {
+      title: '供应商管理',
+      keepAlive: true
+    },
+    children: [
+      {
+        path: '/supplier/index',
+        name: 'SupplierIndex',
+        component: () => import('@/views/supplier/index'),
+        meta: {
+          title: '供应商',
+          keepAlive: true
+        }
+      },
+      {
+        path: '/supplier/edit',
+        name: 'SupplierEdit',
+        component: () => import('@/views/supplier/edit'),
+        meta: {
+          title: '新增供应商',
+          keepAlive: true
+        }
+      }
+    ]
   }
   // forms
   // {
