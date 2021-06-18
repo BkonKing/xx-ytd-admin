@@ -42,6 +42,26 @@ export default {
       default: true
     }
   },
+
+  // mounted () {
+  //   let beginTime = 0 // 开始时间
+  //   let differTime = 0 // 时间差
+  //   window.onunload = function () {
+  //     differTime = new Date().getTime() - beginTime
+  //     if (differTime <= 5) {
+  //       console.log('这是关闭')
+  //       window.localStorage.removeItem('access_token')
+  //       window.localStorage.setItem('toLogout', true)
+  //       // 退出登录跳到首页
+  //       this.$router.push({ name: 'login' })
+  //     } else {
+  //       console.log('这是刷新')
+  //     }
+  //   }
+  //   window.onbeforeunload = function () {
+  //     beginTime = new Date().getTime()
+  //   }
+  // },
   methods: {
     // handleToCenter () {
     //   this.$router.push({ path: '/account/center' })
@@ -59,6 +79,7 @@ export default {
           // }).catch(() => console.log('Oops errors!'))
           logout().then(() => {
             window.localStorage.removeItem('access_token')
+            window.localStorage.setItem('toLogout', true)
             this.$message.success('退出登录成功')
             this.$router.push({ name: 'login' })
           })
@@ -67,6 +88,7 @@ export default {
       })
     }
   }
+
 }
 </script>
 
