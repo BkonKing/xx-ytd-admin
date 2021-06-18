@@ -30,80 +30,60 @@
       </a-row>
     </template>
 
-    <a-card style="margin-top: 24px" :bordered="false">
-      <a-row>
-        <a-col :sm="5" :xs="24">
+    <a-card v-show="tabActiveKey !== '2'" style="margin-top: 24px" :bordered="false">
+      <a-row type="flex">
+        <a-col flex="1">
           <info title="订单（5个）" value="￥5000" :bordered="true" />
         </a-col>
-        <a-col :sm="5" :xs="24">
+        <a-col flex="1">
           <info title="已付款（2）" value="￥5000" :bordered="true" />
         </a-col>
-        <a-col :sm="5" :xs="24">
+        <a-col flex="1">
           <info title="未付款（2）" value="￥5000" :bordered="true" />
         </a-col>
-        <a-col :sm="5" :xs="24">
+        <a-col flex="1">
           <info title="已收票（2）" value="￥5000" :bordered="true" />
         </a-col>
-        <a-col :sm="4" :xs="24">
+        <a-col flex="1">
           <info title="未收票付款（2）" value="￥5000" />
         </a-col>
       </a-row>
     </a-card>
 
-    <a-card :bordered="false" style="margin-top: 24px;">
-      <a-descriptions title="退款申请">
-        <a-descriptions-item label="取货单号">1000000000</a-descriptions-item>
-        <a-descriptions-item label="状态">已取货</a-descriptions-item>
-        <a-descriptions-item label="销售单号">1234123421</a-descriptions-item>
-        <a-descriptions-item label="子订单">
-          <div>2342341234</div>
-          <div>
-            <img src="" alt="">
-          </div>
-        </a-descriptions-item>
-      </a-descriptions>
-    </a-card>
+    <info-tab v-show="tabActiveKey === '0'"></info-tab>
+    <order-tab  v-show="tabActiveKey === '1'" type="1"></order-tab>
+    <check-tab v-show="tabActiveKey === '2'"></check-tab>
   </page-header-wrapper>
 </template>
 
 <script>
 import Info from '../project/components/Info'
+import InfoTab from './components/InfoTab'
+import OrderTab from '@/views/project/components/OrderTab'
+import CheckTab from './components/CheckTab'
+
 export default {
   name: 'Advanced',
   components: {
-    Info
+    Info,
+    InfoTab,
+    OrderTab,
+    CheckTab
   },
   data () {
     return {
       title: '',
       isMobile: false,
       tabList: [
-        { key: 'detail', tab: '资料' },
-        { key: 'dingdan', tab: '订单' },
-        { key: 'rule', tab: '审批' }
+        { key: '0', tab: '资料' },
+        { key: '1', tab: '订单' },
+        { key: '2', tab: '审批' }
       ],
-      tabActiveKey: 'detail'
-    }
-  },
-  filters: {
-    statusFilter (status) {
-      const statusMap = {
-        agree: '成功',
-        reject: '驳回'
-      }
-      return statusMap[status]
-    },
-    statusTypeFilter (type) {
-      const statusTypeMap = {
-        agree: 'success',
-        reject: 'error'
-      }
-      return statusTypeMap[type]
+      tabActiveKey: '0'
     }
   },
   methods: {
     handleTabChange (key) {
-      console.log('')
       this.tabActiveKey = key
     }
   }

@@ -31,6 +31,7 @@ import LogList from '@/components/Business/LogList'
 
 // 二次封装
 import UploadImage from '@/components/UploadImage'
+import TImage from '@/components/Image'
 
 import Dialog from '@/components/Dialog'
 
@@ -61,5 +62,6 @@ export {
   Dialog,
   CheckForm,
   UploadImage,
-  LogList
+  LogList,
+  TImage
 }

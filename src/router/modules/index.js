@@ -32,7 +32,7 @@ export default [
       name: 'ContractIndex',
       component: () => import('@/views/contract/index'),
       meta: {
-        title: '合同列表',
+        title: '合同',
         keepAlive: true
       }
     }, {

@@ -3,11 +3,7 @@
     <a-row :gutter="48">
       <a-col :md="8" :sm="24">
         <a-form-item label="合同状态">
-          <a-select
-            mode="multiple"
-            v-model="queryParam.status"
-            placeholder="请选择"
-          >
+          <a-select v-model="queryParam.status" placeholder="请选择">
             <a-select-option value="0">全部</a-select-option>
             <a-select-option value="1">关闭</a-select-option>
             <a-select-option value="2">运行中</a-select-option>
@@ -84,14 +80,8 @@
           class="table-page-search-submitButtons"
           :style="(advanced && { float: 'right', overflow: 'hidden' }) || {}"
         >
-          <a-button type="primary" @click="search"
-            >查询</a-button
-          >
-          <a-button
-            style="margin-left: 8px"
-            @click="reset"
-            >重置</a-button
-          >
+          <a-button type="primary" @click="search">查询</a-button>
+          <a-button style="margin-left: 8px" @click="reset">重置</a-button>
           <a @click="toggleAdvanced" style="margin-left: 8px">
             {{ advanced ? "收起" : "展开" }}
             <a-icon :type="advanced ? 'up' : 'down'" />
@@ -128,6 +118,11 @@ export default {
     },
     toggleAdvanced () {
       this.advanced = !this.advanced
+    }
+  },
+  watch: {
+    value (val) {
+      this.queryParam = val
     }
   }
 }

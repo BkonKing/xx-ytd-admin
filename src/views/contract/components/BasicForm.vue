@@ -1,214 +1,110 @@
 <template>
-  <a-form @submit="handleSubmit" :form="form" class="form">
-    <a-form-item
-      label="名称"
-      :labelCol="{ lg: { span: 7 }, sm: { span: 7 } }"
-      :wrapperCol="{ lg: { span: 10 }, sm: { span: 17 } }"
-      required
-    >
-      <a-select
-        name="id"
-        v-decorator="[
-          'id',
-          {
-            rules: [{ required: true, message: '请选择项目' }]
-          }
-        ]"
-      >
+  <a-form-model
+    ref="form"
+    :model="form"
+    :rules="rules"
+    :label-col="labelCol"
+    :wrapper-col="wrapperCol"
+  >
+    <a-form-model-item label="项目" prop="id" required>
+      <a-select v-model="form.id" placeholder="请选择">
         <a-select-option value="4">施工前期准备</a-select-option>
       </a-select>
-    </a-form-item>
-    <a-form-item
-      label="合同编号"
-      :labelCol="{ lg: { span: 7 }, sm: { span: 7 } }"
-      :wrapperCol="{ lg: { span: 10 }, sm: { span: 17 } }"
-      required
-    >
-      <a-input
-        v-decorator="[
-          'code',
-          {
-            rules: [{ required: true, message: '请输入项目名称' }]
-          }
-        ]"
-        :maxLength="50"
-        name="code"
-        placeholder="请选择"
-      />
-    </a-form-item>
-    <a-form-item
-      label="合同类型"
-      :labelCol="{ lg: { span: 7 }, sm: { span: 7 } }"
-      :wrapperCol="{ lg: { span: 10 }, sm: { span: 17 } }"
-      required
-    >
-      <a-select
-        name="type"
-        v-decorator="[
-          'type',
-          {
-            rules: [{ required: true, message: '请选择类型' }]
-          }
-        ]"
-      >
+    </a-form-model-item>
+    <a-form-model-item label="合同编号" prop="code" required>
+      <a-input v-model="form.code" :maxLength="50" placeholder="请输入" />
+    </a-form-model-item>
+    <a-form-model-item label="合同类型" prop="type" required>
+      <a-select v-model="form.type">
         <a-select-option value="4">施工前期准备</a-select-option>
       </a-select>
-    </a-form-item>
-    <a-form-item
-      label="合同名称"
-      :labelCol="{ lg: { span: 7 }, sm: { span: 7 } }"
-      :wrapperCol="{ lg: { span: 10 }, sm: { span: 17 } }"
-      required
-    >
-      <a-input
-        v-decorator="[
-          'code',
-          {
-            rules: [{ required: true, message: '请输入合同名称' }]
-          }
-        ]"
-        :maxLength="50"
-        name="code"
-        placeholder="请输入"
-      />
-    </a-form-item>
-    <a-form-item
-      label="签订日期"
-      :labelCol="{ lg: { span: 7 }, sm: { span: 7 } }"
-      :wrapperCol="{ lg: { span: 10 }, sm: { span: 17 } }"
-      required
-    >
-      <a-date-picker
-        v-decorator="[
-          'time',
-          {
-            rules: [{ required: true, message: '请选择签订日期' }]
-          }
-        ]"
-        name="time"
-        placeholder="请选择"
-      ></a-date-picker>
-    </a-form-item>
-    <a-form-item
-      label="合同有效期"
-      :labelCol="{ lg: { span: 7 }, sm: { span: 7 } }"
-      :wrapperCol="{ lg: { span: 10 }, sm: { span: 17 } }"
-      required
-    >
-      <a-range-picker
-        v-decorator="[
-          'rtime',
-          {
-            rules: [{ required: true, message: '请选择合同有效期' }]
-          }
-        ]"
-        name="rtime"
-      ></a-range-picker>
-    </a-form-item>
-    <a-form-item
-      label="合同状态"
-      :labelCol="{ lg: { span: 7 }, sm: { span: 7 } }"
-      :wrapperCol="{ lg: { span: 10 }, sm: { span: 17 } }"
-      required
-    >
-      <a-select
-        name="status"
-        v-decorator="[
-          'status',
-          {
-            rules: [{ required: true, message: '请选择合同状态' }]
-          }
-        ]"
-      >
+    </a-form-model-item>
+    <a-form-model-item label="合同名称" prop="name" required>
+      <a-input v-model="form.name" :maxLength="50" placeholder="请输入" />
+    </a-form-model-item>
+    <a-form-model-item label="签订日期" prop="time" required>
+      <a-date-picker v-model="form.time" placeholder="请选择"></a-date-picker>
+    </a-form-model-item>
+    <a-form-model-item label="合同有效期" prop="rtime" required>
+      <a-range-picker v-model="form.rtime"></a-range-picker>
+    </a-form-model-item>
+    <a-form-model-item label="合同状态" prop="status" required>
+      <a-select v-model="form.status" name="status">
         <a-select-option value="4">施工前期准备</a-select-option>
       </a-select>
-    </a-form-item>
-    <a-form-item
-      label="上传合同"
-      :labelCol="{ lg: { span: 7 }, sm: { span: 7 } }"
-      :wrapperCol="{ lg: { span: 10 }, sm: { span: 17 } }"
-      required
-    >
-      <a-upload
-        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-        list-type="picture-card"
-        :file-list="fileList"
-        @preview="handlePreview"
-        @change="handleChange"
-      >
-        <div v-if="fileList.length < 8">
-          <a-icon type="plus" />
-          <div class="ant-upload-text">
-            上传
-          </div>
-        </div>
-      </a-upload>
-    </a-form-item>
-    <a-form-item
-      label="备注"
-      :labelCol="{ lg: { span: 7 }, sm: { span: 7 } }"
-      :wrapperCol="{ lg: { span: 10 }, sm: { span: 17 } }"
-      required
-    >
+    </a-form-model-item>
+    <a-form-model-item label="上传合同" prop="fileList">
+      <upload-image v-model="form.fileList" maxLength="50"></upload-image>
+      <div style="margin-top: -20px;">最多50张；支持扩展名：.png .jpg；</div>
+    </a-form-model-item>
+    <a-form-model-item label="备注" prop="desc">
       <a-textarea
-        v-decorator="[
-          'desc',
-          {
-            rules: [{ required: true, message: '请选择签订日期' }]
-          }
-        ]"
-        name="desc"
+        v-model="form.desc"
         placeholder="请输入"
         rows="4"
+        :maxLength="500"
       ></a-textarea>
-    </a-form-item>
-    <a-form-item v-if="showSubmit">
-      <a-button htmlType="submit">Submit</a-button>
-    </a-form-item>
-  </a-form>
+    </a-form-model-item>
+  </a-form-model>
 </template>
 
 <script>
+import clonedeep from 'lodash.clonedeep'
+import { UploadImage } from '@/components'
+const form = {
+  money: '',
+  total: '',
+  shuilv: 0,
+  gys: '',
+  cl: [],
+  js: '',
+  fk: ''
+}
 export default {
   name: 'BasicForm',
-  props: {
-    showSubmit: {
-      type: Boolean,
-      default: false
-    }
+  components: {
+    UploadImage
   },
   data () {
     return {
-      form: this.$form.createForm(this),
+      labelCol: { lg: { span: 7 }, sm: { span: 7 } },
+      wrapperCol: { lg: { span: 10 }, sm: { span: 17 } },
+      form: clonedeep(form),
+      rules: {
+        id: [{ required: true, message: '请选择项目' }],
+        code: [{ required: true, message: '请输入合同编号' }],
+        type: [{ required: true, message: '请选择合同类型' }],
+        name: [{ required: true, message: '请输入合同名称' }],
+        time: [{ required: true, message: '请选择签订日期' }],
+        rtime: [{ required: true, message: '请选择合同有效期' }],
+        status: [{ required: true, message: '请选择合同状态' }]
+      },
       options: [
         { label: 'Apple', value: 'Apple' },
         { label: 'Pear', value: 'Pear' },
         { label: 'Orange', value: 'Orange' }
-      ],
-      fileList: []
+      ]
     }
   },
   methods: {
     handleSubmit (e) {
-      e.preventDefault()
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          this.$notification.error({
-            message: 'Received values of form:',
-            description: values
-          })
-        }
+      return new Promise((resolve, reject) => {
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            resolve(this.form)
+          } else {
+            reject(new Error(false))
+            return false
+          }
+        })
       })
     },
-    async handlePreview (file) {
-      if (!file.url && !file.preview) {
-        // file.preview = await getBase64(file.originFileObj)
-      }
-      this.previewImage = file.url || file.preview
-      this.previewVisible = true
+    setFieldsValue (data) {
+      this.form = data
     },
-    handleChange ({ fileList }) {
-      this.fileList = fileList
+    resetFields () {
+      this.$refs.form.resetFields()
+      this.form = clonedeep(form)
     }
   }
 }
