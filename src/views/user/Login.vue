@@ -29,7 +29,7 @@
         </a-input-password>
       </a-form-model-item>
         <a-form-model-item>
-          {{autoLogin}}
+
         <a-checkbox v-model="autoLogin">自动登录</a-checkbox>
         <!-- <router-link
           :to="{ name: 'recover', params: { user: 'aaa'} }"
@@ -87,7 +87,24 @@ export default {
       }
     }
   },
-  created () {},
+
+  created () {
+    // console.log(this.$store.state.login.isAutoLogin)
+    this.autoLogin = this.$store.state.login.isAutoLogin
+    if (!window.localStorage.getItem('access_token')) {
+      if (this.autoLogin) {
+        const accountInfo = this.$store.state.login.accountInfo
+        this.form = JSON.parse(JSON.stringify(accountInfo))
+        if (!this.$store.state.login.isLogout) {
+          this.$nextTick(() => {
+            setTimeout(() => {
+              this.submit()
+            })
+          })
+        }
+      }
+    }
+  },
   methods: {
     submit () {
       this.$refs.formLogin.validate(async result => {
@@ -95,8 +112,15 @@ export default {
           await login(this.form)
             .then((res) => {
               if (this.autoLogin) {
-                window.localStorage.setItem('account', this.form.account)
-                window.localStorage.setItem('passowrd', this.form.password)
+                this.$store.commit('setAccountInfo', JSON.parse(JSON.stringify(this.form)))
+                this.$store.commit('setAutoLogin', this.autoLogin)
+                window.localStorage.setItem('autoLogin', this.autoLogin)
+                window.localStorage.setItem('accountInfo', JSON.stringify(this.form))
+              } else {
+                window.localStorage.removeItem('autoLogin')
+                window.localStorage.removeItem('accountInfo')
+                this.$store.commit('setAccountInfo', {})
+                this.$store.commit('setAutoLogin', this.autoLogin)
               }
               // console.log(res.oauthToken)
               window.localStorage.setItem('access_token', res.oauthToken)
