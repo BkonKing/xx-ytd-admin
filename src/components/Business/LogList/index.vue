@@ -28,7 +28,7 @@
           <template v-if="advanced">
             <a-col :md="8" :sm="24">
               <a-form-item label="操作时间">
-                <a-range-picker @change="onChange" />
+                <a-range-picker v-model="queryParam.time" />
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">

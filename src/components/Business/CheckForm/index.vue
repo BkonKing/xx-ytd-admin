@@ -48,46 +48,19 @@
         />
       </a-form-model-item>
       <a-form-model-item label="图片">
-        <a-upload
-          multiple
-          :data="uploadData"
-          :headers="headers"
-          :action="uploadUrl"
-          list-type="picture-card"
-          :file-list="fileList"
-          @preview="handlePreview"
-          @change="handleChange"
-        >
-          <div v-if="fileList.length < 10">
-            <a-icon type="plus" />
-            <div class="ant-upload-text">
-              上传
-            </div>
-          </div>
-        </a-upload>
-        <a-modal
-          :visible="previewVisible"
-          :footer="null"
-          @cancel="handleCancel"
-        >
-          <img alt="example" style="width: 100%" :src="previewImage" />
-        </a-modal>
+        <upload-image v-model="form.fileList" maxLength="10"></upload-image>
       </a-form-model-item>
     </a-form-model>
   </div>
 </template>
 
 <script>
-import Cookies from 'js-cookie'
-function getBase64 (file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result)
-    reader.onerror = error => reject(error)
-  })
-}
+import UploadImage from '../../UploadImage/index.vue'
 export default {
+  name: 'CheckForm',
+  components: {
+    UploadImage
+  },
   props: {
     selectedRowKeys: {
       type: Array,
@@ -100,6 +73,7 @@ export default {
       form: {
         is_check: 1,
         check_desc: '',
+        fileList: [],
         violation_type: undefined
       },
       rules: {
@@ -108,19 +82,7 @@ export default {
       },
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
-      previewVisible: false,
-      previewImage: '',
-      fileList: [],
-      uploadUrl: '', // 上传图片接口
-      uploadData: {
-        field_name: 'file'
-      },
-      fileList2: [], // 处理图片
-      reasonList: [], // 违规原因列表
-      headers: {
-        Authorization: Cookies.get('access_token')
-        // Authorization: '801ea07a89da8ee893176dbdd982627688960d80'
-      }
+      reasonList: [] // 违规原因列表
     }
   },
   watch: {
@@ -128,61 +90,36 @@ export default {
       this.form.check_desc = ''
       this.form.violation_type = undefined
       this.form.is_check = 1
-      this.fileList = []
-      this.fileList2 = []
+      this.form.fileList = []
     },
     'form.is_check' () {
       // console.log('改变了')
       this.form.check_desc = ''
-      this.fileList = []
-      this.fileList2 = []
+      this.form.fileList = []
       this.form.violation_type = undefined
     }
   },
   methods: {
     // 审核
-    submit () {
-      this.$refs.form.validate(async result => {
-        if (result) {
-          this.$emit('submit', this.form)
-        }
+    handleSubmit () {
+      return new Promise((resolve, reject) => {
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            resolve(this.form)
+          } else {
+            reject(new Error(false))
+            return false
+          }
+        })
       })
     },
-    handleCancel () {
-      this.previewVisible = false
-    },
-    async handlePreview (file) {
-      if (!file.url && !file.preview) {
-        file.preview = await getBase64(file.originFileObj)
-      }
-      this.previewImage = file.url || file.preview
-      this.previewVisible = true
-    },
-    // 上传和删除图片时触发
-    handleChange ({ fileList }) {
-      // console.log('上传和删除图片时触发')
-      this.fileList = fileList
-      console.log(fileList)
-      const arr1 = this.fileList.map(item => {
-        if (item.response) {
-          return item.response.data
-        }
-      })
-      const arr2 = arr1.filter(item => {
-        return item
-      })
-      this.fileList2 = arr2
-      console.log('上传和删除图片时触发', arr2)
+    resetFields () {
+      this.$refs.form.resetFields()
+      this.form.check_desc = ''
+      this.form.violation_type = undefined
+      this.form.is_check = 1
+      this.form.fileList = []
     }
-  },
-  async created () {
-    // const res = await toViolationReason({ type: 2 })
-    // this.reasonList = res.list
-    // console.log('获取违规原因', res)
-    this.uploadUrl =
-      process.env.NODE_ENV === 'production'
-        ? '/nsolid/spi/v1/upload/uploads/uImages'
-        : '/api/upload/uploads/uImages'
   }
 }
 </script>
