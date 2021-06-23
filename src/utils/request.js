@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import router from '@/router'
 import storage from 'store'
 import Cookies from 'js-cookie'
 import notification from 'ant-design-vue/es/notification'
@@ -25,6 +26,7 @@ const request = axios.create({
 // 异常拦截处理器
 const errorHandler = (error) => {
   if (error.response) {
+    console.log(error.response)
     const data = error.response.data
     // 从 localstorage 获取 token
     const token = storage.get('access_token')
@@ -84,10 +86,8 @@ request.interceptors.response.use((response) => {
   } = data
   if (code == '201') {
     if (token) {
-      store.dispatch('Logout').then(() => {
-        setTimeout(() => {
-          window.location.reload()
-        }, 1500)
+      router.push({
+        name: 'login'
       })
     }
   } else if (code != '200') {

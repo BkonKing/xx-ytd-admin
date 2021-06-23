@@ -26,7 +26,7 @@
         <a-descriptions-item label="供应商">1234123421 </a-descriptions-item>
         <a-descriptions-item label="结算方式">1234123421 </a-descriptions-item>
         <a-descriptions-item label="付款方式">1234123421 </a-descriptions-item>
-        <a-descriptions-item label="材料" :span="3"
+        <a-descriptions-item label="物料" :span="3"
           >1234123421
         </a-descriptions-item>
         <a-descriptions-item label="备注" :span="3"

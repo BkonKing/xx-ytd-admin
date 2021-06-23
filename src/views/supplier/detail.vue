@@ -7,21 +7,13 @@
   >
     <template v-slot:content>
       <a-descriptions size="small" :column="isMobile ? 1 : 2">
-        <a-descriptions-item label="所属项目">项目名称</a-descriptions-item>
-        <a-descriptions-item label="供应商">XX 服务</a-descriptions-item>
-        <a-descriptions-item label="所属公司">2017-07-07</a-descriptions-item>
-        <a-descriptions-item label="订单凭证">
-          12421<a-button
-            v-if="projectInfo.images && projectInfo.images.length"
-            type="link"
-            @click="previewLicence"
-          >
-            查看
-          </a-button>
+        <a-descriptions-item label="所属公司">公司名称</a-descriptions-item>
+        <a-descriptions-item label="关联项目">项目名称</a-descriptions-item>
+        <a-descriptions-item label="类型">XX 服务</a-descriptions-item>
+        <a-descriptions-item label="创建人">2017-07-07</a-descriptions-item>
+        <a-descriptions-item label="供应物料">
+          12421
         </a-descriptions-item>
-        <a-descriptions-item label="创建人"
-          >请于两个工作日内确认</a-descriptions-item
-        >
       </a-descriptions>
     </template>
 
@@ -38,12 +30,13 @@
           <div class="heading">待审批</div>
         </a-col>
         <a-col :xs="12" :sm="12">
-          <div class="text">订单金额</div>
+          <div class="text">合同金额</div>
           <div class="heading">¥ 568.08</div>
         </a-col>
       </a-row>
     </template>
     <statistics></statistics>
+    <basic-info></basic-info>
     <payment-table></payment-table>
     <order-steps></order-steps>
     <material-table></material-table>
@@ -54,11 +47,12 @@
 
 <script>
 import { appMixin } from '@/store/mixin'
-import OrderSteps from './components/Steps.vue'
-import OrderInfo from './components/Info.vue'
-import MaterialTable from './components/material.vue'
-import Statistics from './components/statistics'
-import PaymentTable from './components/PaymentTable'
+import OrderSteps from '../order/components/Steps.vue'
+import OrderInfo from '../order/components/Info.vue'
+import MaterialTable from '../order/components/material.vue'
+import Statistics from '../order/components/statistics'
+import PaymentTable from '../order/components/PaymentTable'
+import BasicInfo from './components/basicInfo.vue'
 import { LogList } from '@/components'
 import { getPermissions } from '@/api/manage'
 export default {
@@ -70,7 +64,8 @@ export default {
     MaterialTable,
     Statistics,
     PaymentTable,
-    LogList
+    LogList,
+    BasicInfo
   },
   data () {
     return {
@@ -122,17 +117,6 @@ export default {
     margin-right: 16px;
     position: relative;
     top: 3px;
-  }
-}
-
-.mobile {
-  .detail-layout {
-    margin-left: unset;
-  }
-  .text {
-  }
-  .status-list {
-    text-align: left;
   }
 }
 </style>

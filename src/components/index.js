@@ -28,6 +28,11 @@ import ArticleListContent from '@/components/ArticleListContent'
 // 业务组件
 import CheckForm from '@/components/Business/CheckForm'
 import LogList from '@/components/Business/LogList'
+import ProjectSelect from '@/components/Business/ProjectSelect'
+import CompanySelect from '@/components/Business/CompanySelect'
+import ContractTypeSelect from '@/components/Business/ContractTypeSelect'
+import SupplierSelect from '@/components/Business/SupplierSelect'
+import SupplierTypeSelect from '@/components/Business/SupplierTypeSelect'
 
 // 二次封装
 import UploadImage from '@/components/UploadImage'
@@ -63,5 +68,10 @@ export {
   CheckForm,
   UploadImage,
   LogList,
-  TImage
+  TImage,
+  ProjectSelect,
+  CompanySelect,
+  ContractTypeSelect,
+  SupplierSelect,
+  SupplierTypeSelect
 }

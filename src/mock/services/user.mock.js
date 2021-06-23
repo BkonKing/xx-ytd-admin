@@ -5,16 +5,6 @@ import {
   asyncRoutes
 } from '@/router'
 
-export const loginout = [
-  RegExp(userApi.Logout),
-  'post',
-  {
-    code: '200',
-    success: true,
-    message: 'OK'
-  }
-]
-
 const setMenu = (data) => {
   const home = {
     path: '/home',

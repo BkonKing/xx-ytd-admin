@@ -11,8 +11,8 @@
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
     >
-      <a-form-model-item label="是否通过" prop="is_check">
-        <a-radio-group v-model="form.is_check">
+      <a-form-model-item label="是否通过" prop="auidtStatus">
+        <a-radio-group v-model="form.auidtStatus">
           <a-radio :value="1">
             通过
           </a-radio>
@@ -21,34 +21,15 @@
           </a-radio>
         </a-radio-group>
       </a-form-model-item>
-      <a-form-model-item
-        v-if="form.is_check !== 1"
-        label="违规原因"
-        prop="violation_type"
-      >
-        <a-select
-          v-model="form.violation_type"
-          placeholder="请选择"
-          style="width: 274px"
-        >
-          <a-select-option
-            v-for="(item, index) in reasonList"
-            :key="index"
-            :value="item.id"
-          >
-            {{ item.violation }}
-          </a-select-option>
-        </a-select>
-      </a-form-model-item>
-      <a-form-model-item label="审核说明">
+      <a-form-model-item label="审核说明" prop="describe">
         <a-textarea
-          v-model="form.check_desc"
+          v-model="form.describe"
           placeholder="请输入"
           :auto-size="{ minRows: 3, maxRows: 5 }"
         />
       </a-form-model-item>
       <a-form-model-item label="图片">
-        <upload-image v-model="form.fileList" maxLength="10"></upload-image>
+        <upload-image v-model="form.annex" maxLength="10"></upload-image>
       </a-form-model-item>
     </a-form-model>
   </div>
@@ -56,6 +37,12 @@
 
 <script>
 import UploadImage from '../../UploadImage/index.vue'
+import clonedeep from 'lodash.clonedeep'
+const form = {
+  auidtStatus: 1,
+  describe: '',
+  annex: []
+}
 export default {
   name: 'CheckForm',
   components: {
@@ -69,34 +56,12 @@ export default {
   },
   data () {
     return {
-      isShow: false,
-      form: {
-        is_check: 1,
-        check_desc: '',
-        fileList: [],
-        violation_type: undefined
-      },
+      form: clonedeep(form),
       rules: {
-        is_check: [{ required: true, message: '必填', trigger: 'change' }],
-        violation_type: [{ required: true, message: '必填', trigger: 'change' }]
+        auidtStatus: [{ required: true, message: '必填', trigger: 'change' }]
       },
       labelCol: { span: 4 },
-      wrapperCol: { span: 14 },
-      reasonList: [] // 违规原因列表
-    }
-  },
-  watch: {
-    isShow () {
-      this.form.check_desc = ''
-      this.form.violation_type = undefined
-      this.form.is_check = 1
-      this.form.fileList = []
-    },
-    'form.is_check' () {
-      // console.log('改变了')
-      this.form.check_desc = ''
-      this.form.fileList = []
-      this.form.violation_type = undefined
+      wrapperCol: { span: 14 }
     }
   },
   methods: {
@@ -115,10 +80,7 @@ export default {
     },
     resetFields () {
       this.$refs.form.resetFields()
-      this.form.check_desc = ''
-      this.form.violation_type = undefined
-      this.form.is_check = 1
-      this.form.fileList = []
+      this.form = clonedeep(form)
     }
   }
 }
