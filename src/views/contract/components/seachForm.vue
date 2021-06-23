@@ -3,75 +3,75 @@
     <a-row :gutter="48">
       <a-col :md="8" :sm="24">
         <a-form-item label="合同状态">
-          <a-select v-model="queryParam.status" placeholder="请选择">
-            <a-select-option value="0">全部</a-select-option>
-            <a-select-option value="1">关闭</a-select-option>
-            <a-select-option value="2">运行中</a-select-option>
+          <a-select v-model="queryParam.contractStatus" placeholder="请选择">
+            <a-select-option
+              v-for="option in contractStatusOptions"
+              :value="option.value"
+              :key="option.value"
+            >
+              {{ option.text }}
+            </a-select-option>
           </a-select>
         </a-form-item>
       </a-col>
       <a-col :md="8" :sm="24">
         <a-form-item label="所属项目">
-          <a-select v-model="queryParam.projectId" placeholder="请选择">
-            <a-select-option value="0">全部</a-select-option>
-            <a-select-option value="1">关闭</a-select-option>
-            <a-select-option value="2">运行中</a-select-option>
-          </a-select>
+          <project-select v-model="queryParam.projectId"></project-select>
         </a-form-item>
       </a-col>
       <template v-if="advanced">
         <a-col :md="8" :sm="24">
           <a-form-item label="所属公司">
-            <a-select v-model="queryParam.system" placeholder="请选择">
-              <a-select-option value="0">全部</a-select-option>
-              <a-select-option value="1">关闭</a-select-option>
-              <a-select-option value="2">运行中</a-select-option>
-            </a-select>
+            <company-select v-model="queryParam.companyId"></company-select>
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="24">
           <a-form-item label="合同类型">
-            <a-select v-model="queryParam.type" placeholder="请选择">
-              <a-select-option value="0">全部</a-select-option>
-              <a-select-option value="1">关闭</a-select-option>
-              <a-select-option value="2">运行中</a-select-option>
-            </a-select>
+            <contract-type-select
+              v-model="queryParam.categoryId"
+            ></contract-type-select>
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="24">
           <a-form-item label="订单">
-            <a-input v-model="queryParam.contract" placeholder="ID"></a-input>
+            <a-input v-model="queryParam.orderId" placeholder="ID"></a-input>
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="24">
           <a-form-item label="合同">
             <a-input
-              v-model="queryParam.contract"
+              v-model="queryParam.serachText"
               placeholder="编号、名称"
             ></a-input>
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="24">
           <a-form-item label="供应商">
-            <a-input v-model="queryParam.gys" placeholder="ID、名称"></a-input>
+            <a-input
+              v-model="queryParam.serachSupplierText"
+              placeholder="ID、名称"
+            ></a-input>
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="24">
           <a-form-item label="付款情况">
-            <a-select
-              v-model="queryParam.fk"
-              placeholder="请选择"
-              default-value="0"
-            >
-              <a-select-option value="0">全部</a-select-option>
-              <a-select-option value="1">关闭</a-select-option>
-              <a-select-option value="2">运行中</a-select-option>
+            <a-select v-model="queryParam.payStatus" placeholder="请选择">
+              <a-select-option
+                v-for="option in payStatusOptions"
+                :value="option.value"
+                :key="option.value"
+              >
+                {{ option.text }}
+              </a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="24">
           <a-form-item label="创建时间">
-            <a-range-picker v-model="queryParam.time" />
+            <a-range-picker
+              v-model="queryParam.time"
+              valueFormat="YYYY-MM-DD"
+            />
           </a-form-item>
         </a-col>
       </template>
@@ -93,8 +93,14 @@
 </template>
 
 <script>
+import { ProjectSelect, CompanySelect, ContractTypeSelect } from '@/components'
 export default {
   name: 'contractSearchForm',
+  components: {
+    ProjectSelect,
+    CompanySelect,
+    ContractTypeSelect
+  },
   props: {
     value: {
       type: Object,
@@ -104,7 +110,45 @@ export default {
   data () {
     return {
       queryParam: this.value,
-      advanced: false
+      advanced: false,
+      // 合同状态：0=全部、1=正常、2=延期、3=终止
+      contractStatusOptions: [
+        {
+          value: 0,
+          text: '全部'
+        },
+        {
+          value: 1,
+          text: '正常'
+        },
+        {
+          value: 2,
+          text: '延期'
+        },
+        {
+          value: 3,
+          text: '终止'
+        }
+      ],
+      // 付款情况：0=全部、1=全部已付、2=全部未付、3=部分已付/未付
+      payStatusOptions: [
+        {
+          value: 0,
+          text: '全部'
+        },
+        {
+          value: 1,
+          text: '全部已付'
+        },
+        {
+          value: 2,
+          text: '全部未付'
+        },
+        {
+          value: 3,
+          text: '部分已付/未付'
+        }
+      ]
     }
   },
   methods: {

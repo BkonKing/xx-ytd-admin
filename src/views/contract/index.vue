@@ -15,7 +15,7 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button type="primary" @click="openCheck">审核</a-button>
+        <a-button type="primary" :disabled="!selectedRowKeys.length" @click="openCheck">审核</a-button>
         <a-button @click="goEdit">新增</a-button>
       </div>
 
@@ -29,10 +29,6 @@
         :rowSelection="rowSelection"
         showPagination="auto"
       >
-        <span slot="checkTime" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </span>
-
         <span slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
@@ -61,49 +57,44 @@
 <script>
 // import moment from 'moment'
 import { STable, CheckForm } from '@/components'
-import { getPermissions } from '@/api/manage'
+import { getContractList, removeCont, auditCont } from '@/api/contract'
 import SearchForm from './components/seachForm.vue'
 
 const columns = [
   {
     title: '审核时间',
-    dataIndex: 'no',
-    scopedSlots: { customRender: 'checkTime' }
+    dataIndex: 'auditTime',
+    scopedSlots: { customRender: 'auditTime' }
   },
   {
-    title: '审核状态',
-    dataIndex: 'no1'
+    title: '合同状态',
+    dataIndex: 'contractStatusv'
   },
   {
     title: '所属项目',
-    dataIndex: 'description'
+    dataIndex: 'projectName'
   },
   {
-    title: '订单ID',
-    dataIndex: 'callNo'
+    title: '合同编号',
+    dataIndex: 'contractNo'
   },
   {
-    title: '材料数量',
-    dataIndex: 'status'
-  },
-  {
-    title: '金额',
-    dataIndex: 'updatedAt',
+    title: '订单',
+    dataIndex: 'orderNum',
     sorter: true
   },
   {
-    title: '付款情况',
-    dataIndex: 'updatedAt1',
+    title: '金额',
+    dataIndex: 'orderMoney',
     sorter: true
   },
   {
     title: '创建时间',
-    dataIndex: 'updatedAt2',
-    sorter: true
+    dataIndex: 'ctime'
   },
   {
     title: '操作',
-    dataIndex: 'action',
+    dataIndex: 'id',
     width: '150px',
     scopedSlots: { customRender: 'action' }
   }
@@ -131,27 +122,28 @@ export default {
       // 审核弹窗
       visible: false,
       confirmLoading: false,
-      mdl: null,
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
       queryParam: {
-        status: '',
-        projectId: '0',
-        system: '',
-        type: '',
-        contract: '',
-        gys: '',
-        fk: '',
+        contractStatus: '',
+        projectId: '',
+        companyId: '',
+        categoryId: '',
+        orderId: '',
+        serachText: '',
+        serachSupplierText: '',
+        payStatus: '',
         time: []
       },
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        return getPermissions({
-          params: Object.assign(parameter, this.queryParam)
-        }).then(res => {
-          return res.result
-        })
+        const time = this.queryParam.time
+        if (time && time.length) {
+          this.queryParam.startDate = time[0]
+          this.queryParam.endDate = time[1]
+        }
+        return getContractList(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],
       selectedRows: []
@@ -178,12 +170,17 @@ export default {
     },
     handleCheckOk () {
       this.confirmLoading = true
-      this.$refs.CheckForm.handleSubmit().then((value) => {
-        console.log(value)
-        this.visible = false
-      }).finally(() => {
-        this.confirmLoading = false
-      })
+      this.$refs.CheckForm.handleSubmit()
+        .then(value => {
+          console.log(value)
+          auditCont(value).then(() => {
+            this.$refs.table.refresh()
+            this.visible = false
+          })
+        })
+        .finally(() => {
+          this.confirmLoading = false
+        })
     },
     handleCheckCancel () {
       this.visible = false
@@ -193,11 +190,11 @@ export default {
       this.$confirm({
         content: '是否删除该合同？',
         onOk () {
-          getPermissions({
+          removeCont({
             id
           }).then(({ data }) => {
             that.$message.success('删除合同成功')
-            that.getProjectList()
+            that.$refs.table.refresh()
           })
         }
       })

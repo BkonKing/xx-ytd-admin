@@ -15,34 +15,25 @@
                   v-model="queryParam.status"
                   placeholder="请选择"
                 >
-                  <a-select-option value="0">全部</a-select-option>
-                  <a-select-option value="1">关闭</a-select-option>
-                  <a-select-option value="2">运行中</a-select-option>
+                  <a-select-option
+                    v-for="option in statusOptions"
+                    :value="option.value"
+                    :key="option.value"
+                  >
+                    {{ option.text }}
+                  </a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item label="所属项目">
-                <a-select v-model="queryParam.projectId" placeholder="请选择">
-                  <a-select-option value="0">全部</a-select-option>
-                  <a-select-option value="1">关闭</a-select-option>
-                  <a-select-option value="2">运行中</a-select-option>
-                </a-select>
+                <project-select v-model="queryParam.projectId"></project-select>
               </a-form-item>
             </a-col>
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="所属公司">
-                  <a-select v-model="queryParam.system" placeholder="请选择">
-                    <a-select-option value="0">全部</a-select-option>
-                    <a-select-option value="1">关闭</a-select-option>
-                    <a-select-option value="2">运行中</a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="合同类型">
-                  <a-select v-model="queryParam.type" placeholder="请选择">
+                  <a-select v-model="queryParam.companyId" placeholder="请选择">
                     <a-select-option value="0">全部</a-select-option>
                     <a-select-option value="1">关闭</a-select-option>
                     <a-select-option value="2">运行中</a-select-option>
@@ -52,7 +43,7 @@
               <a-col :md="8" :sm="24">
                 <a-form-item label="订单">
                   <a-input
-                    v-model="queryParam.contract"
+                    v-model="queryParam.orderId"
                     placeholder="ID"
                   ></a-input>
                 </a-form-item>
@@ -60,15 +51,15 @@
               <a-col :md="8" :sm="24">
                 <a-form-item label="合同">
                   <a-input
-                    v-model="queryParam.contract"
+                    v-model="queryParam.serachContractText"
                     placeholder="编号、名称"
                   ></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="材料">
+                <a-form-item label="物料">
                   <a-input
-                    v-model="queryParam.contract"
+                    v-model="queryParam.serachMaterialText"
                     placeholder="ID、名称"
                   ></a-input>
                 </a-form-item>
@@ -76,7 +67,7 @@
               <a-col :md="8" :sm="24">
                 <a-form-item label="供应商">
                   <a-input
-                    v-model="queryParam.gys"
+                    v-model="queryParam.serachSupplierText"
                     placeholder="ID、名称"
                   ></a-input>
                 </a-form-item>
@@ -84,7 +75,7 @@
               <a-col :md="8" :sm="24">
                 <a-form-item label="付款情况">
                   <a-select
-                    v-model="queryParam.fk"
+                    v-model="queryParam.payStatus"
                     placeholder="请选择"
                     default-value="0"
                   >
@@ -98,7 +89,7 @@
                 <a-form-item label="开票情况">
                   <a-select
                     mode="multiple"
-                    v-model="queryParam.status"
+                    v-model="queryParam.kpStatus"
                     placeholder="请选择"
                   >
                     <a-select-option value="0">全部</a-select-option>
@@ -109,7 +100,10 @@
               </a-col>
               <a-col :md="8" :sm="24">
                 <a-form-item label="创建时间">
-                  <a-range-picker @change="onChange" />
+                  <a-range-picker
+                    v-model="queryParam.time"
+                    valueFormat="YYYY-MM-DD"
+                  />
                 </a-form-item>
               </a-col>
             </template>
@@ -140,8 +134,8 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button type="primary" @click="shenhe">审核</a-button>
-        <a-button @click="handleAdd">新增</a-button>
+        <a-button type="primary" @click="openCheck">审核</a-button>
+        <a-button @click="goEdit">新增</a-button>
       </div>
 
       <s-table
@@ -155,15 +149,15 @@
         showPagination="auto"
       >
         <span slot="checkTime" slot-scope="text, record, index">
-          {{ index + 1 }}
+          {{ text }}
         </span>
 
         <span slot="action" slot-scope="text, record">
           <template>
-            <a @click="handleEdit(record)">查看</a>
-            <a @click="handleSub(record)">编辑</a>
-            <a @click="handleSub(record)">删除</a>
-            <a @click="handleSub(record)">审核</a>
+            <a @click="goDetail(record)">查看</a>
+            <a @click="goEdit(record)">编辑</a>
+            <a @click="handleRemove(record)">删除</a>
+            <a @click="openCheck(record)">审核</a>
           </template>
         </span>
       </s-table>
@@ -173,55 +167,56 @@
       title="审核"
       :visible="visible"
       :confirm-loading="confirmLoading"
-      @ok="handleOk"
-      @cancel="handleCancel"
+      @ok="handleCheckOk"
+      @cancel="handleCheckCancel"
     >
-      <check-form></check-form>
+      <check-form
+        ref="CheckForm"
+        :selectedRowKeys="selectedRowKeys"
+      ></check-form>
     </a-modal>
   </page-header-wrapper>
 </template>
 
 <script>
-import moment from 'moment'
-import { STable, CheckForm } from '@/components'
-import { getRoleList, getServiceList } from '@/api/manage'
+import { STable, CheckForm, ProjectSelect } from '@/components'
+import { getOrderList, removeOrder, auditOrder } from '@/api/order'
 
 const columns = [
   {
     title: '审核时间',
-    dataIndex: 'no',
-    scopedSlots: { customRender: 'checkTime' }
+    dataIndex: 'auditTime',
+    scopedSlots: { customRender: 'auditTime' }
   },
   {
-    title: '合同状态',
-    dataIndex: 'no1'
+    title: '审核状态',
+    dataIndex: 'statusv'
   },
   {
     title: '所属项目',
-    dataIndex: 'description'
+    dataIndex: 'projectName'
   },
   {
-    title: '合同编号',
-    dataIndex: 'callNo'
+    title: '订单ID',
+    dataIndex: 'idv'
   },
   {
-    title: '合同名称',
-    dataIndex: 'status'
-  },
-  {
-    title: '订单',
-    dataIndex: 'updatedAt',
+    title: '物料数量',
+    dataIndex: 'materialNum',
     sorter: true
   },
   {
     title: '金额',
-    dataIndex: 'updatedAt1',
+    dataIndex: 'allPrice',
     sorter: true
   },
   {
+    title: '付款情况',
+    dataIndex: 'status'
+  },
+  {
     title: '创建时间',
-    dataIndex: 'updatedAt2',
-    sorter: true
+    dataIndex: 'ctime'
   },
   {
     title: '操作',
@@ -231,74 +226,60 @@ const columns = [
   }
 ]
 
-const statusMap = {
-  0: {
-    status: 'default',
-    text: '关闭'
-  },
-  1: {
-    status: 'processing',
-    text: '运行中'
-  },
-  2: {
-    status: 'success',
-    text: '已上线'
-  },
-  3: {
-    status: 'error',
-    text: '异常'
-  }
-}
-
 export default {
   name: 'TableList',
   components: {
     STable,
-    CheckForm
+    CheckForm,
+    ProjectSelect
   },
   data () {
     this.columns = columns
     return {
-      title: '',
       tabList: [
         { key: '1', tab: '全部' },
         { key: '2', tab: '待审核' },
-        { key: '3', tab: '正常' },
-        { key: '4', tab: '延期' },
-        { key: '5', tab: '终止' },
+        { key: '4', tab: '已通过' },
         { key: '6', tab: '未通过' }
       ],
       tabActiveKey: '1',
-      // create model
+      // 审核状态：0=全部、1=待审核、2=已通过、3=未通过
+      statusOptions: [
+        {
+          value: 0,
+          text: '全部'
+        },
+        {
+          value: 1,
+          text: '待审核'
+        },
+        {
+          value: 2,
+          text: '已通过'
+        },
+        {
+          value: 3,
+          text: '未通过'
+        }
+      ],
       visible: false,
       confirmLoading: false,
-      mdl: null,
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
       queryParam: {},
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        const requestParameters = Object.assign({}, parameter, this.queryParam)
-        console.log('loadData request parameters:', requestParameters)
-        return getServiceList(requestParameters).then(res => {
-          return res.result
-        })
+        const time = this.queryParam.time
+        if (time && time.length) {
+          this.queryParam.startDate = time[0]
+          this.queryParam.endDate = time[1]
+        }
+        return getOrderList(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],
       selectedRows: []
     }
-  },
-  filters: {
-    statusFilter (type) {
-      return statusMap[type].text
-    },
-    statusTypeFilter (type) {
-      return statusMap[type].status
-    }
-  },
-  created () {
-    getRoleList({ t: new Date() })
   },
   computed: {
     rowSelection () {
@@ -312,85 +293,53 @@ export default {
     handleTabChange (key) {
       this.tabActiveKey = key
     },
-    shenhe () {
-      this.visible = true
-    },
-    handleAdd () {
-      this.mdl = null
-      this.visible = true
-    },
-    handleEdit (record) {
-      this.visible = true
-      this.mdl = { ...record }
-    },
-    handleOk () {
-      const form = this.$refs.createModal.form
-      this.confirmLoading = true
-      form.validateFields((errors, values) => {
-        if (!errors) {
-          console.log('values', values)
-          if (values.id > 0) {
-            // 修改 e.g.
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                resolve()
-              }, 1000)
-            }).then(res => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-              this.$refs.table.refresh()
-
-              this.$message.info('修改成功')
-            })
-          } else {
-            // 新增
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                resolve()
-              }, 1000)
-            }).then(res => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-              this.$refs.table.refresh()
-
-              this.$message.info('新增成功')
-            })
-          }
-        } else {
-          this.confirmLoading = false
-        }
-      })
-    },
-    handleCancel () {
-      this.visible = false
-
-      const form = this.$refs.createModal.form
-      form.resetFields() // 清理表单数据（可不做）
-    },
-    handleSub (record) {
-      if (record.status !== 0) {
-        this.$message.info(`${record.no} 订阅成功`)
-      } else {
-        this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-      }
-    },
-    onSelectChange (selectedRowKeys, selectedRows) {
-      this.selectedRowKeys = selectedRowKeys
-      this.selectedRows = selectedRows
-    },
     toggleAdvanced () {
       this.advanced = !this.advanced
     },
-    resetSearchForm () {
-      this.queryParam = {
-        date: moment(new Date())
-      }
+    openCheck () {
+      this.visible = true
+      this.$refs.CheckForm && this.$refs.CheckForm.resetFields()
+    },
+    handleCheckOk () {
+      this.confirmLoading = true
+      this.$refs.CheckForm.handleSubmit()
+        .then(value => {
+          console.log(value)
+          auditOrder(value).then(() => {
+            this.$refs.table.refresh()
+            this.visible = false
+          })
+        })
+        .finally(() => {
+          this.confirmLoading = false
+        })
+    },
+    handleCheckCancel () {
+      this.visible = false
+    },
+    goEdit () {
+      this.$router.push({
+        name: 'OrderEdit'
+      })
+    },
+    handleRemove ({ id }) {
+      const that = this
+      this.$confirm({
+        content: '是否删除该订单？',
+        onOk () {
+          removeOrder({
+            id
+          }).then(({ data }) => {
+            that.$message.success('删除订单成功')
+            that.$refs.table.refresh()
+          })
+        }
+      })
+    },
+    goDetail () {
+      this.$router.push({
+        name: 'OrderDetail'
+      })
     }
   }
 }

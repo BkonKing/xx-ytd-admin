@@ -2,7 +2,9 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import ProLayout, { PageHeaderWrapper } from 'xx-ant-design-vue-pro-layout'
+import ProLayout, {
+  PageHeaderWrapper
+} from 'xx-ant-design-vue-pro-layout'
 import themePluginConfig from '../config/themePluginConfig'
 
 import 'normalize.css/normalize.css' // a modern alternative to CSS resets
@@ -36,6 +38,15 @@ window.umi_plugin_ant_themeVar = themePluginConfig.theme
 // 注册全局实用过滤器
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
+})
+
+// 注册全局指令
+const context = require.context('./directives', true, /index\.js$/)
+
+context.keys().forEach((key) => {
+  Object.keys(context(key)).forEach((paramKey) => {
+    Vue.use(context(key)[paramKey])
+  })
 })
 
 new Vue({

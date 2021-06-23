@@ -1,7 +1,7 @@
 <template>
   <div class="header-info">
     <span>{{ title }}</span>
-    <p>{{ value }}</p>
+    <p><slot>{{ value }}</slot></p>
     <em v-if="bordered" />
   </div>
 </template>

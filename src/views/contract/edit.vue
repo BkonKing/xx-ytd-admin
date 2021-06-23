@@ -1,61 +1,75 @@
 <template>
   <page-header-wrapper :title="title">
-    <a-card class="card" title="基本信息" :bordered="false">
-      <basic-form ref="BasicForm" :showSubmit="false" />
-    </a-card>
-    <a-card class="card" title="供应商信息" :bordered="false">
-      <supplier-form ref="SupplierForm" :showSubmit="false" />
-    </a-card>
+    <contract-form ref="form"></contract-form>
 
     <!-- fixed footer toolbar -->
     <footer-tool-bar :is-mobile="isMobile" :collapsed="sideCollapsed">
-      <a-button type="primary" @click="validate" :loading="loading"
-        >提交</a-button
-      >
+      <a-button type="primary" @click="validate" :loading="loading">
+        提交
+      </a-button>
     </footer-tool-bar>
   </page-header-wrapper>
 </template>
 
 <script>
-import BasicForm from './components/BasicForm'
-import SupplierForm from './components/SupplierForm'
+import ContractForm from './components/Form'
 import FooterToolBar from '@/components/FooterToolbar'
 import { appMixin } from '@/store/mixin'
+import { addCont, updateCont } from '@/api/contract'
 
 export default {
   name: 'AdvancedForm',
   mixins: [appMixin],
   components: {
     FooterToolBar,
-    BasicForm,
-    SupplierForm
+    ContractForm
   },
   data () {
     return {
+      id: '',
       title: '新增合同',
       loading: false,
       memberLoading: false
     }
   },
+  created () {
+    this.id = this.$route.query.id
+    if (this.id) {
+      this.title = '编辑合同'
+      this.getCont()
+    }
+  },
   methods: {
+    // 获取合同详情
+    getCont () {},
     // 最终全页面提交
     validate () {
-      const {
-        $refs: { BasicForm, SupplierForm }
-      } = this
-      const BasicFormValid = BasicForm.handleSubmit()
-      const SupplierFormValid = SupplierForm.handleSubmit()
-
-      // clean this.errors
-      Promise.all([BasicFormValid, SupplierFormValid])
+      this.$refs.form.handleSubmit()
         .then(values => {
-          console.log({
+          const params = {
             ...values[0],
             ...values[1]
-          })
+          }
+          console.log(params)
+          if (this.id) {
+            this.updateCont(params)
+          } else {
+            this.addCont(params)
+          }
         })
-        .catch(() => {
-        })
+        .catch(() => {})
+    },
+    addCont () {
+      addCont().then(() => {
+        this.$message.success('提交成功')
+        this.$router.go(-1)
+      })
+    },
+    updateCont () {
+      updateCont().then(() => {
+        this.$message.success('提交成功')
+        this.$router.go(-1)
+      })
     }
   }
 }

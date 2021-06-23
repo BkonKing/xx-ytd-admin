@@ -117,8 +117,6 @@ import { timeFix } from '@/utils/util'
 import { mapState } from 'vuex'
 import { PageHeaderWrapper } from 'xx-ant-design-vue-pro-layout'
 
-import { getRoleList, getServiceList } from '@/api/manage'
-
 export default {
   name: 'Workplace',
   components: {
@@ -194,18 +192,18 @@ export default {
     this.user = this.userInfo
     this.avatar = this.userInfo.avatar
 
-    getRoleList().then(res => {
-      // console.log('workplace -> call getRoleList()', res)
-    })
+    // getRoleList().then(res => {
+    //   // console.log('workplace -> call getRoleList()', res)
+    // })
 
-    getServiceList().then(res => {
-      // console.log('workplace -> call getServiceList()', res)
-    })
+    // getServiceList().then(res => {
+    //   // console.log('workplace -> call getServiceList()', res)
+    // })
   },
   mounted () {
-    this.getProjects()
-    this.getActivity()
-    this.getTeams()
+    // this.getProjects()
+    // this.getActivity()
+    // this.getTeams()
   },
   methods: {
     getProjects () {

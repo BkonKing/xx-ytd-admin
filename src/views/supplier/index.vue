@@ -10,10 +10,7 @@
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="审核状态">
-                <a-select
-                  v-model="queryParam.status"
-                  placeholder="请选择"
-                >
+                <a-select v-model="queryParam.status" placeholder="请选择">
                   <a-select-option
                     v-for="option in tabList"
                     :value="option.key"
@@ -25,42 +22,22 @@
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item label="关联项目">
-                <a-select v-model="queryParam.projectId" placeholder="请选择">
-                  <a-select-option
-                    v-for="option in projectOptions"
-                    :value="option.id"
-                    :key="option.id"
-                    >{{ option.projectName }}</a-select-option
-                  >
-                </a-select>
+                <project-select v-model="queryParam.projectId"></project-select>
               </a-form-item>
             </a-col>
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="所属公司">
-                  <a-select v-model="queryParam.companyId" placeholder="请选择">
-                    <a-select-option
-                      v-for="option in companyOptions"
-                      :value="option.id"
-                      :key="option.id"
-                      >{{ option.projectName }}</a-select-option
-                    >
-                  </a-select>
+                  <company-select
+                    v-model="queryParam.companyId"
+                  ></company-select>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
                 <a-form-item label="类型">
-                  <a-select
+                  <supplier-type-select
                     v-model="queryParam.supplierType"
-                    placeholder="请选择"
-                  >
-                    <a-select-option
-                      v-for="option in supplierTypeOptions"
-                      :value="option.id"
-                      :key="option.id"
-                      >{{ option.projectName }}</a-select-option
-                    >
-                  </a-select>
+                  ></supplier-type-select>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
@@ -72,7 +49,7 @@
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="供应材料">
+                <a-form-item label="供应物料">
                   <a-select v-model="queryParam.material" placeholder="请选择">
                     <a-select-option
                       v-for="option in materialOptions"
@@ -116,7 +93,7 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button type="primary" @click="shenhe">审核</a-button>
+        <a-button type="primary" :disabled="!selectedRowKeys.length" @click="openCheck">审核</a-button>
         <a-button @click="handleAdd">新增</a-button>
       </div>
 
@@ -130,16 +107,15 @@
         :rowSelection="rowSelection"
         showPagination="auto"
       >
-        <span slot="checkTime" slot-scope="text, record, index">
-          {{ index + 1 }}
+        <span slot="auditTime" slot-scope="text, record, index">
         </span>
 
         <span slot="action" slot-scope="text, record">
           <template>
-            <a @click="handleEdit(record)">查看</a>
-            <a @click="handleSub(record)">编辑</a>
-            <a @click="handleSub(record)">删除</a>
-            <a @click="handleSub(record)">审核</a>
+            <a @click="goDetail(record)">查看</a>
+            <a @click="goEdit(record)">编辑</a>
+            <a @click="handleRemove(record)">删除</a>
+            <a @click="openCheck(record)">审核</a>
           </template>
         </span>
       </s-table>
@@ -149,55 +125,63 @@
       title="审核"
       :visible="visible"
       :confirm-loading="confirmLoading"
-      @ok="handleOk"
-      @cancel="handleCancel"
+      @ok="handleCheckOk"
+      @cancel="handleCheckCancel"
     >
-      <check-form></check-form>
+      <check-form
+        ref="CheckForm"
+        :selectedRowKeys="selectedRowKeys"
+      ></check-form>
     </a-modal>
   </page-header-wrapper>
 </template>
 
 <script>
 import moment from 'moment'
-import { STable, CheckForm } from '@/components'
-import { getSupplierList, removeSupplier } from '@/api/supplier'
+import {
+  STable,
+  CheckForm,
+  ProjectSelect,
+  CompanySelect,
+  SupplierTypeSelect
+} from '@/components'
+import { getSupplierList, removeSupplier, auditSupp } from '@/api/supplier'
 
 const columns = [
   {
     title: '审核时间',
-    dataIndex: 'no',
-    scopedSlots: { customRender: 'checkTime' }
+    dataIndex: 'auditTime',
+    scopedSlots: { customRender: 'auditTime' }
   },
   {
-    title: '合同状态',
-    dataIndex: 'no1'
+    title: '审核状态',
+    dataIndex: 'statusv'
   },
   {
-    title: '所属项目',
-    dataIndex: 'description'
+    title: '供应商ID',
+    dataIndex: 'id'
   },
   {
-    title: '合同编号',
-    dataIndex: 'callNo'
+    title: '供应商',
+    dataIndex: 'supplierName'
   },
   {
-    title: '合同名称',
-    dataIndex: 'status'
+    title: '类型',
+    dataIndex: 'supplierTypeName'
   },
   {
-    title: '订单',
-    dataIndex: 'updatedAt',
+    title: '供应物料',
+    dataIndex: 'materialCount',
     sorter: true
   },
   {
-    title: '金额',
-    dataIndex: 'updatedAt1',
+    title: '合同',
+    dataIndex: 'contractCount',
     sorter: true
   },
   {
     title: '创建时间',
-    dataIndex: 'updatedAt2',
-    sorter: true
+    dataIndex: 'ctime'
   },
   {
     title: '操作',
@@ -207,30 +191,14 @@ const columns = [
   }
 ]
 
-const statusMap = {
-  0: {
-    status: 'default',
-    text: '关闭'
-  },
-  1: {
-    status: 'processing',
-    text: '运行中'
-  },
-  2: {
-    status: 'success',
-    text: '已上线'
-  },
-  3: {
-    status: 'error',
-    text: '异常'
-  }
-}
-
 export default {
   name: 'SupplierIndex',
   components: {
     STable,
-    CheckForm
+    CheckForm,
+    ProjectSelect,
+    CompanySelect,
+    SupplierTypeSelect
   },
   data () {
     this.columns = columns
@@ -262,23 +230,14 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
-        console.log('loadData request parameters:', requestParameters)
         return getSupplierList(requestParameters)
       },
       selectedRowKeys: [],
       selectedRows: []
     }
   },
-  filters: {
-    statusFilter (type) {
-      return statusMap[type].text
-    },
-    statusTypeFilter (type) {
-      return statusMap[type].status
-    }
-  },
   created () {
-    getSupplierList({ t: new Date() })
+    // getSupplierList({ t: new Date() })
   },
   computed: {
     rowSelection () {
@@ -292,90 +251,68 @@ export default {
     handleTabChange (key) {
       this.tabActiveKey = key
     },
+    toggleAdvanced () {
+      this.advanced = !this.advanced
+    },
     // 创建时间更改事件
     changeCreationTime (value) {
       this.queryParam.startDate = moment(value[0]).format('YYYY-MM-DD')
       this.queryParam.endDate = moment(value[1]).format('YYYY-MM-DD')
     },
-    shenhe () {
+    openCheck () {
       this.visible = true
+      this.$refs.CheckForm && this.$refs.CheckForm.resetFields()
+    },
+    handleCheckOk () {
+      this.confirmLoading = true
+      this.$refs.CheckForm.handleSubmit()
+        .then(value => {
+          auditSupp().then(({ data }) => {
+            this.visible = false
+          })
+        })
+        .finally(() => {
+          this.confirmLoading = false
+        })
+    },
+    handleCheckCancel () {
+      this.visible = false
     },
     handleAdd () {
       this.$router.push({
         name: 'SupplierEdit'
       })
     },
-    handleEdit (record) {
-      this.visible = true
-    },
-    handleOk () {
-      const form = this.$refs.createModal.form
-      this.confirmLoading = true
-      form.validateFields((errors, values) => {
-        if (!errors) {
-          console.log('values', values)
-          if (values.id > 0) {
-            // 修改 e.g.
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                resolve()
-              }, 1000)
-            }).then(res => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-              this.$refs.table.refresh()
-
-              this.$message.info('修改成功')
-            })
-          } else {
-            // 新增
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                resolve()
-              }, 1000)
-            }).then(res => {
-              this.visible = false
-              this.confirmLoading = false
-              // 重置表单数据
-              form.resetFields()
-              // 刷新表格
-              this.$refs.table.refresh()
-
-              this.$message.info('新增成功')
-            })
-          }
-        } else {
-          this.confirmLoading = false
+    handleRemove ({ id }) {
+      const that = this
+      this.$confirm({
+        content: '是否删除该供应商？',
+        onOk () {
+          removeSupplier({
+            id
+          }).then(({ data }) => {
+            that.$message.success('删除供应商成功')
+            that.$refs.table.refresh()
+          })
         }
       })
     },
-    handleCancel () {
-      this.visible = false
-
-      const form = this.$refs.createModal.form
-      form.resetFields() // 清理表单数据（可不做）
+    goEdit ({ id }) {
+      this.$router.push({
+        name: 'SupplierEdit',
+        query: {
+          id
+        }
+      })
     },
-    handleSub (record) {
-      if (record.status !== 0) {
-        this.$message.info(`${record.no} 订阅成功`)
-      } else {
-        this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-      }
+    goDetail () {
+      this.$router.push({
+        name: 'SupplierDetail'
+      })
     },
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
-    },
-    toggleAdvanced () {
-      this.advanced = !this.advanced
-    },
-    resetSearchForm () {
-      this.queryParam = {
-        date: moment(new Date())
-      }
     }
   }
 }

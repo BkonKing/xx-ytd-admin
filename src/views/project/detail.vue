@@ -58,7 +58,7 @@
           <info title="供应商" value="14个" :bordered="true" />
         </a-col>
         <a-col :sm="6" :xs="24">
-          <info title="材料（10种）" value="1,000个" />
+          <info title="物料（10种）" value="1,000个" />
         </a-col>
       </a-row>
     </a-card>

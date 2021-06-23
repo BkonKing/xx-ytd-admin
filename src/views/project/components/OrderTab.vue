@@ -65,7 +65,7 @@
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="材料">
+                <a-form-item label="物料">
                   <a-input
                     v-model="queryParam.contract"
                     placeholder="ID、名称"
@@ -209,7 +209,7 @@ export default {
           dataIndex: 'description'
         },
         {
-          title: '材料数量',
+          title: '物料数量',
           dataIndex: 'callNo',
           sorter: true
         },
