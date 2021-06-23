@@ -82,15 +82,16 @@ request.interceptors.response.use((response) => {
     code,
     message
   } = data
-  if (code == '201') {
-    if (token) {
-      store.dispatch('Logout').then(() => {
-        setTimeout(() => {
-          window.location.reload()
-        }, 1500)
-      })
-    }
-  } else if (code != '200') {
+  // if (code == '201') {
+  //   if (token) {
+  //     store.dispatch('Logout').then(() => {
+  //       setTimeout(() => {
+  //         window.location.reload()
+  //       }, 1500)
+  //     })
+  //   }
+  // } else
+  if (code != '200') {
     if (!config.headers.noToast) {
       Message.error(message)
     }

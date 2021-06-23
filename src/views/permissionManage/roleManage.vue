@@ -17,7 +17,9 @@
               <a-icon class="icon" type="tool" @click="showPermiasion" />
               <a-icon class="icon" type="edit" @click="edit(item,'edit')" />
               <a-icon class="icon" type="apartment" @click="selectItem(item,'create')" />
-
+                  <a-icon class="icon"
+                      type="delete"
+                      @click="del(item.id)" />
             </template>
           </a-tree>
         </div>
@@ -40,7 +42,7 @@
             <div class="right">
               <div
                 class="r1 inputItem"
-                v-for="(item, index) in inputArr2"
+                v-for="(item, index) in inputArr"
                 :key="index"
               >
                 <a-input
@@ -56,12 +58,12 @@
 
                 <a-icon
                   type="minus-circle"
-                  @click="remove2(index)"
+                  @click="remove(index)"
                   class="close"
                 />
               </div>
-              <div class="addArea" @click="add2">+ <span>添加</span></div>
-              <a-button type="primary" @click="save">保存</a-button>
+              <div class="addArea" >+ <span>添加</span></div>
+              <a-button type="primary" >保存</a-button>
             </div>
           </div>
         </a-card>
@@ -79,10 +81,9 @@
               </div>
             </div>
             <div class="right">
-              <div>
+              <div v-if="itemInfo.children.length>0">
                 <div
                   class="r2"
-                  v-show="itemInfo"
                   v-for="(item, index) in itemInfo.children"
                   :key="index"
                 >
@@ -109,7 +110,7 @@
                 :key="index"
               >
                 <a-input
-                  v-model="item.menuText"
+                  v-model="item.roleName"
                   style="width:216px"
                   placeholder="角色名称"
                 ></a-input>
@@ -126,7 +127,7 @@
                 />
               </div>
               <div class="addArea" @click="add">+ <span>添加</span></div>
-              <a-button type="primary" @click="save">保存</a-button>
+              <a-button type="primary" @click="Createsave">保存</a-button>
             </div>
           </div>
         </a-card>
@@ -136,22 +137,23 @@
             <div class="left">
               <div>
                 角色管理
-               <a-icon type="minus-circle" style="padding:0 15px" />
+               <a-icon type="right" style="padding:0 15px" />
               </div>
               <div class="t1" v-for="(item, index) in titleArr2" :key="index">
                 {{ item }}
-                <a-icon type="minus-circle" style="paddingLeft:15px" />
+                <a-icon type="right" style="paddingLeft:15px" />
               </div>
             </div>
             <div class="right">
               <div>
                 <div
                   class="r2"
-                  v-show="itemInfo"
+                  v-show="itemInfo2"
                   v-for="(item, index) in itemInfo2.children"
                   :key="index"
                 >
                   <a-input
+                  :maxLength='10'
                     v-model="item.roleName"
                     style="width:216px"
                     placeholder="角色名称"
@@ -164,17 +166,17 @@
                   <a-icon
                     type="minus-circle"
                     class="close"
-                    @click="removeMe(item.id, index)"
+                    @click="removeMe2(item.id, index)"
                   />
                 </div>
               </div>
               <div
                 class="r1 inputItem"
-                v-for="(item, index) in inputArr"
+                v-for="(item, index) in inputArr2"
                 :key="index"
               >
                 <a-input
-                  v-model="item.menuText"
+                  v-model="item.roleName"
                   style="width:216px"
                   placeholder="角色名称"
                 ></a-input>
@@ -186,12 +188,12 @@
 
                 <a-icon
                   type="minus-circle"
-                  @click="remove(index)"
+                  @click="remove2(index)"
                   class="close"
                 />
               </div>
-              <div class="addArea" @click="add">+ <span>添加</span></div>
-              <a-button type="primary" @click="save">保存</a-button>
+              <div class="addArea" @click="add2">+ <span>添加</span></div>
+              <a-button type="primary" @click="saveEditData">保存</a-button>
             </div>
           </div>
         </a-card>
@@ -220,7 +222,7 @@
 // import editModel from './editModel'
 // import delModel from './delModel'
 // import addModel from './addModel'
-import { toGetRoles } from '@/api/permissionManage.js'
+import { toGetRoles, toUpdateBatchRole, toRemoveBatchRole } from '@/api/permissionManage.js'
 
 let arr = []
 // 递归获取标题
@@ -253,8 +255,8 @@ export default {
       itemInfo: {}, // 右侧 创建分支的菜单数据
       titleArr: [], // 题目标题
       createShow: false, // 是否显示创建分支面板
-      idArr: [], // 权限id数组
-      parentId: 0,
+      idArr: [], // 编辑  权限id数组
+      parentId: 0, // 父id
       expandedKeys: ['0-0-0', '0-0-1'],
       autoExpandParent: true,
       checkedKeys: ['0-0-0'],
@@ -303,31 +305,144 @@ export default {
         }
       ], // 权限列表
       permissionShow: false, // 是否显示权限面板
-      inputArr2: [],
+      inputArr2: [], // 编辑新增输入框的数据
       editShow: false, // 是否显示编辑面板
       type: '', // 区分编辑 还是  创建分支
       titleArr2: [], // 题目标题
-      itemInfo2: {} // 编辑菜单的数据
+      itemInfo2: {}, // 编辑菜单的数据
+      secondParentId: '', // 记录创建分支父级id
+      idArr2: [] // 创建分支 权限id
     }
   },
   watch: {
     checkedKeys (val) {
       console.log('onCheck', val)
+    },
+    parentId () {
+      this.itemInfo = {}
+      this.inputArr2 = []
     }
   },
   methods: {
-    // 添加初始化输入框
-    add2 () {
-      this.inputArr2.push({
+    // 删除节点
+    del () {
+      // this.$refs.delModel.isShow = true
+      // this.$refs.delModel.id = id
+      // this.$refs.delModel.itemInfo = this.itemInfo
+      this.$confirm({
+        title: '删除模块',
+        icon: h => <a-icon theme="filled" type="exclamation-circle" />,
+        content: h => <div><span style="color:red;">该模块及其子模块都会被删除</span>，确定删除吗?</div>,
+        onOk () {
+          console.log('OK')
+        },
+        onCancel () {
+          console.log('Cancel')
+        },
+        class: 'test'
+      })
+    },
+    // 选择菜单
+    selectItem (item, type) {
+      this.type = type
+      console.log('选择菜单数据', item)
+      this.secondParentId = item.id
+      // 显示右边结构
+      this.createShow = true
+      this.permissionShow = false
+      this.editShow = false
+      // 清空右侧输入框数组
+      this.itemInfo = { children: [] }
+      this.inputArr = []
+      // for (let i = 0; i < 5; i++) {
+      //   this.inputArr.push({
+      //     id: '',
+      //     parentId: '',
+      //     roleName: '',
+      //     listOrder: ''
+      //   })
+      // }
+      if (item.children) {
+        if (item.children.length > 0) {
+          this.itemInfo = JSON.parse(JSON.stringify(item))
+          console.log('右侧数据1', item)
+        }
+      }
+      // else {
+      //   console.log('右侧数据2', item)
+      //   this.parentId = item.id
+      //   let obj = {}
+      //   obj = {
+      //     ...JSON.parse(JSON.stringify(item.dataRef))
+      //   }
+      //   const arr = []
+      //   arr.push(obj)
+      //   this.itemInfo = { children: arr }
+      // this.itemInfo.children.forEach(item => {
+      //   item.display = +item.display
+      // })
+      // }
+    },
+    // 创建分支的保存
+    async Createsave () {
+      if (this.itemInfo.children.length > 0) {
+        let menus = this.itemInfo.children.map(item => {
+          return {
+            id: item.id,
+            parentId: item.parentId,
+            roleName: item.roleName,
+            listOrder: item.listOrder
+          }
+        })
+        const arr = this.inputArr.filter(item => {
+          return item.roleName !== ''
+        })
+        arr.forEach(item => {
+          item.parentId = menus[0].parentId
+          item.id = 0
+        })
+        menus = [...menus, ...arr]
+        const res = await toUpdateBatchRole({
+          roles: menus
+        })
+        this.$message.success(res.message)
+        this.getData()
+      } else {
+        const arr = this.inputArr.filter(item => {
+          return item.roleName !== ''
+        })
+        arr.forEach(item => {
+          item.parentId = this.secondParentId
+          item.id = 0
+        })
+        const res = await toUpdateBatchRole({
+          roles: arr
+        })
+        this.$message.success(res.message)
+        this.getData()
+      }
+
+      if (this.idArr2.length > 0) {
+        await toRemoveBatchRole({ ids: this.idArr2 })
+        this.idArr2 = []
+        this.getData()
+      }
+    },
+    // 删除创建分支
+    removeMe (id, index) {
+      this.idArr2.push(id)
+      this.itemInfo.children.splice(index, 1)
+    },
+    // 创建分支 添加输入框
+    add () {
+      this.inputArr.push({
         id: Math.random() * 999,
-        parentId: '',
         roleName: '',
         listOrder: ''
       })
     },
-    // 删除初始化输入框
-    remove2 (index) {
-      this.inputArr2.splice(index, 1)
+    remove (index) {
+      this.inputArr.splice(index, 1)
     },
     onExpand (expandedKeys) {
       console.log('onExpand', expandedKeys)
@@ -355,49 +470,52 @@ export default {
       this.$refs.addModel.isShow = true
     },
     // 批量编辑权限菜单
-    async save () {
-      if (this.parentId === 0) {
-        let menus = this.itemInfo.children.map(item => {
-          return {
-            id: item.id,
-            parentId: item.parent_id,
-            menuText: item.menu_text,
-            limitsPath: item.limits_path,
-            icon: item.icon,
-            listOrder: item.list_order,
-            display: item.display
-          }
-        })
-        const arr = this.inputArr.filter(item => {
-          return item.menuText !== ''
-        })
-        arr.forEach(item => {
-          item.parentId = menus[0].parentId
-          item.id = 0
-        })
-        menus = [...menus, ...arr]
-        // await updateBatchMenu({
-        //   menus: menus
-        // })
-      } else {
-        const arr = this.inputArr.filter(item => {
-          return item.menuText !== ''
-        })
-        arr.forEach(item => {
-          item.parentId = this.parentId
-          item.id = 0
-        })
-        // await updateBatchMenu({
-        //   menus: arr
-        // })
-      }
-      if (this.idArr.length > 0) {
-        // await removeBatchMenu({ ids: this.idArr })
-      }
+    async saveEditData () {
+      // 顶级角色
+      // if (this.parentId === 0) {
+      let menus = this.itemInfo2.children.map(item => {
+        return {
+          id: item.id,
+          parentId: item.parentId,
+          roleName: item.roleName,
+          listOrder: item.listOrder
+        }
+      })
+      const arr = this.inputArr2.filter(item => {
+        return item.roleName !== ''
+      })
+      arr.forEach(item => {
+        item.parentId = menus[0].parentId
+        item.id = 0
+      })
+      menus = [...menus, ...arr]
+      const res = await toUpdateBatchRole({
+        roles: menus
+      })
+      this.$message.success(res.message)
       this.getData()
-      this.itemInfo = {}
+      // }
+      //  else {
+      //   const arr = this.inputArr2.filter(item => {
+      //     return item.roleName !== ''
+      //   })
+      //   arr.forEach(item => {
+      //     item.parentId = this.parentId
+      //     item.id = 0
+      //   })
+      //   // await toUpdateBatchRole({
+      //   //   menus: arr
+      //   // })
+      // }
+      if (this.idArr.length > 0) {
+        await toRemoveBatchRole({ ids: this.idArr })
+        this.idArr = []
+        this.getData()
+      }
+
+      // this.itemInfo2 = {}
       // 清空右侧输入框数组
-      this.inputArr = []
+      // this.inputArr2 = []
       // for (let i = 0; i < 5; i++) {
       //   this.inputArr.push({
       //     id: '',
@@ -406,7 +524,7 @@ export default {
       //     listOrder: ''
       //   })
       // }
-      this.createShow = false
+      // this.createShow = false
     },
     // 获取权限菜单数据
     async getData () {
@@ -429,6 +547,7 @@ export default {
         arr2 = []
         arr = []
       } else {
+        // 编辑权限
         this.titleArr2 = []
         // 顶级角色
         if (info.node.dataRef.parentId === '0') {
@@ -471,79 +590,36 @@ export default {
       }
       // console.log(this.titleArr)
     },
-    // 删除节点
-    del (id) {
-      this.$refs.delModel.isShow = true
-      this.$refs.delModel.id = id
-      this.$refs.delModel.itemInfo = this.itemInfo
-    },
-    // 编辑
-    edit (item, type) {
-      this.type = type
-      console.log('编辑', item)
-      this.editShow = true
-      this.createShow = false
-      this.permissionShow = false
-      if (item.dataRef.parentId === '0') {
 
-      } else {
-
-      }
-    },
-    // 添加输入框
-    add () {
-      this.inputArr.push({
-        id: '',
-        parentId: '',
+    // 添加 编辑初始化输入框
+    add2 () {
+      this.inputArr2.push({
+        id: Math.random() * 999,
         roleName: '',
         listOrder: ''
       })
     },
-    // 删除输入框
-    remove (index) {
-      this.inputArr.splice(index, 1)
+    // 删除初始化输入框
+    remove2 (index) {
+      this.inputArr2.splice(index, 1)
     },
-    // 批量删除菜单
-    removeMe (id, index) {
-      console.log(id)
-      this.idArr.push(id)
-      this.itemInfo.children.splice(index, 1)
-    },
-    // 选择菜单
-    selectItem (item, type) {
+    // 编辑
+    edit (item, type) {
       this.type = type
-      console.log('右侧数据', item)
-      // 显示右边结构
-      this.createShow = true
+      this.parentId = item.dataRef.parentId
+      // console.log('item.dataRef.parentId', item.dataRef.parentId)
+      // console.log('编辑', item)
+      this.editShow = true
+      this.createShow = false
       this.permissionShow = false
-      this.editShow = false
-      this.itemInfo = {}
-      // 清空右侧输入框数组
-      this.inputArr = []
-      // for (let i = 0; i < 5; i++) {
-      //   this.inputArr.push({
-      //     id: '',
-      //     parentId: '',
-      //     roleName: '',
-      //     listOrder: ''
-      //   })
-      // }
-      if (item.children) {
-        this.itemInfo = JSON.parse(JSON.stringify(item))
-      } else {
-        this.parentId = item.id
-        let obj = {}
-        obj = {
-          ...JSON.parse(JSON.stringify(item.dataRef))
-        }
-        const arr = []
-        arr.push(obj)
-        this.itemInfo = { children: arr }
-        // this.itemInfo.children.forEach(item => {
-        //   item.display = +item.display
-        // })
-      }
+    },
+    // 批量 编辑删除菜单
+    removeMe2 (id, index) {
+      // console.log('删除执行了', id)
+      this.idArr.push(id)
+      this.itemInfo2.children.splice(index, 1)
     }
+
   },
   created () {
     this.getData()
