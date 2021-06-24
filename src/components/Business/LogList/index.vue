@@ -5,36 +5,43 @@
         <a-row :gutter="48">
           <a-col :md="8" :sm="24">
             <a-form-item label="模块">
-              <a-select
-                mode="multiple"
-                v-model="queryParam.status"
-                placeholder="请选择"
-              >
-                <a-select-option value="0">全部</a-select-option>
-                <a-select-option value="1">关闭</a-select-option>
-                <a-select-option value="2">运行中</a-select-option>
+              <a-select v-model="queryParam.logType" placeholder="请选择">
+                <a-select-option
+                  v-for="option in typeOptions"
+                  :value="option.typeId"
+                  :key="option.typeId"
+                >
+                  {{ option.logType }}
+                </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="24">
             <a-form-item label="操作员">
-              <a-select v-model="queryParam.projectId" placeholder="请选择">
-                <a-select-option value="0">全部</a-select-option>
-                <a-select-option value="1">关闭</a-select-option>
-                <a-select-option value="2">运行中</a-select-option>
+              <a-select v-model="queryParam.adminId" placeholder="请选择">
+                <a-select-option
+                  v-for="option in adminOptions"
+                  :value="option.adminId"
+                  :key="option.adminId"
+                >
+                  {{ option.admin }}
+                </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
           <template v-if="advanced">
             <a-col :md="8" :sm="24">
               <a-form-item label="操作时间">
-                <a-range-picker v-model="queryParam.time" />
+                <a-range-picker
+                  v-model="queryParam.time"
+                  valueFormat="YYYY-MM-DD"
+                />
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item label="操作类型">
                 <a-input
-                  v-model="queryParam.contract"
+                  v-model="queryParam.operationType"
                   placeholder="关键字"
                 ></a-input>
               </a-form-item>
@@ -42,7 +49,7 @@
             <a-col :md="8" :sm="24">
               <a-form-item label="操作说明">
                 <a-input
-                  v-model="queryParam.gys"
+                  v-model="queryParam.serachText"
                   placeholder="关键字"
                 ></a-input>
               </a-form-item>
@@ -73,14 +80,20 @@
       </a-form>
     </div>
 
-    <s-table ref="table" size="default" :columns="columns" :data="load">
-      <span slot="contract" slot-scope="text">{{ text }}</span>
+    <s-table
+      ref="table"
+      row-key="id"
+      size="default"
+      :columns="columns"
+      :data="loadData"
+    >
     </s-table>
   </a-card>
 </template>
 
 <script>
 import { STable } from '@/components'
+import { getLogType, getLogAdmin, getLogsList } from '@/api/common'
 export default {
   name: 'logList',
   components: {
@@ -97,44 +110,69 @@ export default {
         },
         {
           title: '操作时间',
-          dataIndex: 'name'
+          dataIndex: 'ctime'
         },
         {
           title: '模块',
-          dataIndex: 'name1',
-          scopedSlots: { customRender: 'contract' }
+          dataIndex: 'logType'
         },
         {
           title: '操作员',
-          dataIndex: 'name2'
+          dataIndex: 'admin'
         },
         {
           title: '操作类型',
-          dataIndex: 'name3'
+          dataIndex: 'operationType'
         },
         {
           title: '操作说明',
-          dataIndex: 'name4'
+          dataIndex: 'content'
         }
       ]
+    },
+    typeId: {
+      type: [String, Number],
+      default: ''
     }
   },
   data () {
     return {
       queryParam: {},
       advanced: false,
+      typeOptions: [],
+      adminOptions: [],
       loadData: parameter => {
-        return this.load({
-          params: Object.assign(parameter, this.queryParam)
-        }).then(res => {
-          return res.result
-        })
+        const time = this.queryParam.time
+        if (time) {
+          this.queryParam.startDate = time[0]
+          this.queryParam.endDate = time[1]
+        }
+        return getLogsList(Object.assign(parameter, this.queryParam))
       }
     }
+  },
+  created () {
+    this.getLogType()
+    this.getLogAdmin()
+    this.queryParam.logType = parseInt(this.typeId)
   },
   methods: {
     toggleAdvanced () {
       this.advanced = !this.advanced
+    },
+    // 获取操作日志模块接口
+    getLogType () {
+      getLogType({
+        id: this.typeId
+      }).then(({ data }) => {
+        this.typeOptions = data
+      })
+    },
+    // 获取日志操作员接口
+    getLogAdmin () {
+      getLogAdmin().then(({ data }) => {
+        this.adminOptions = data
+      })
     }
   }
 }

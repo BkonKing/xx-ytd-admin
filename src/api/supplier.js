@@ -6,16 +6,17 @@ export const supplier = {
   updateSupp: '/operate/supplier/updateSupp',
   removeSupp: '/operate/supplier/removeSupp',
   suppInfo: '/operate/supplier/suppInfo',
-  auditSupp: '/operate/supplier/auditSupp'
-  // suppInfo: '/operate/supplier/suppInfo',
+  auditSupp: '/operate/supplier/auditSupp',
+  auditBatchSupp: '/operate/supplier/auditBatchSupp',
+  getSuppMaterialList: '/public/common/getSuppMaterialList'
 }
 
 // 获取所有公司接口
-export function getSupplierList (data) {
+export function getSupplierList (params) {
   return request({
     url: supplier.suppList,
-    method: 'post',
-    data
+    method: 'get',
+    params
   })
 }
 
@@ -61,5 +62,23 @@ export function auditSupp (data) {
     url: supplier.auditSupp,
     method: 'POST',
     data
+  })
+}
+
+// 审核供应商接口
+export function auditBatchSupp (data) {
+  return request({
+    url: supplier.auditBatchSupp,
+    method: 'POST',
+    data
+  })
+}
+
+// 审核供应商接口
+export function getSuppMaterialList (params) {
+  return request({
+    url: supplier.getSuppMaterialList,
+    method: 'get',
+    params
   })
 }

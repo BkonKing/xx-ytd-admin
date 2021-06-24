@@ -9,18 +9,10 @@
         :wrapper-col="{ lg: { span: 10 }, sm: { span: 17 } }"
       >
         <a-form-model-item required prop="contractId" label="关联合同">
-          <a-select
+          <contract-select
             v-model="form.contractId"
             @change="getSupplier"
-            placeholder="请选择"
-          >
-            <a-select-option value="shanghai">
-              Zone one
-            </a-select-option>
-            <a-select-option value="beijing">
-              Zone two
-            </a-select-option>
-          </a-select>
+          ></contract-select>
         </a-form-model-item>
         <a-form-model-item v-if="form.contractId" label="供应商">
           {{ form.supplier }}
@@ -53,15 +45,10 @@
           <a-row type="flex">
             <a-col flex="2">
               <a-form-model-item prop="materialId" required>
-                <a-select v-model="record.materialId">
-                  <a-select-option
-                    v-for="option in materialOptions"
-                    :value="option.value"
-                    :key="option.value"
-                  >
-                    {{ option.text }}
-                  </a-select-option>
-                </a-select>
+                <material-type-select
+                  v-model="record.materialId"
+                  :show-search="true"
+                ></material-type-select>
               </a-form-model-item>
             </a-col>
             <a-col flex="2">
@@ -140,7 +127,7 @@
               </a-row>
             </a-col>
             <a-col flex="1">
-              <span>{{NPTimes(record.unitPrice, record.total)}}</span>
+              <span style="word-break: break-all;">￥{{ NPTimes(record.unitPrice, record.total) }}</span>
             </a-col>
             <a-col flex="100px">
               <a-form-model-item prop="listOrder">
@@ -161,7 +148,13 @@
             </a-col>
           </a-row>
         </a-form-model>
-        <div>总计 100 ￥10,000.00</div>
+        <a-row v-if="tableData && tableData.length" class="table-total" type="flex">
+          <a-col flex="6">总计</a-col>
+          <a-col flex="180px"></a-col>
+          <a-col flex="180px">{{ totalNum }}</a-col>
+          <a-col flex="1" style="word-break: break-all;">￥{{ totalMoney }}</a-col>
+          <a-col flex="160px"></a-col>
+        </a-row>
         <a-button
           style="width: 100%; margin-top: 16px; margin-bottom: 8px"
           type="dashed"
@@ -182,15 +175,17 @@
 <script>
 import FooterToolBar from '@/components/FooterToolbar'
 import NP from 'number-precision'
-import { UploadImage } from '@/components'
+import { UploadImage, ContractSelect, MaterialTypeSelect } from '@/components'
 import { appMixin } from '@/store/mixin'
-import { addOrder, updateOrder } from '@/api/order'
+import { addOrder, updateOrder, getOrderInfo } from '@/api/order'
 export default {
   name: '',
   mixins: [appMixin],
   components: {
     FooterToolBar,
-    UploadImage
+    UploadImage,
+    ContractSelect,
+    MaterialTypeSelect
   },
   data () {
     return {
@@ -198,6 +193,7 @@ export default {
       title: '新增订单',
       loading: false,
       NPTimes: NP.times,
+      NPPlus: NP.plus,
       form: {
         contractId: '',
         supplier: '',
@@ -225,41 +221,53 @@ export default {
         unitPrice: [{ required: true, message: '必填' }],
         total: [{ required: true, message: '必填' }]
       },
-      tableData: [
-        {
-          materialId: '',
-          brand: '',
-          model: '',
-          taxRate: 1,
-          unitPrice: '',
-          unit: '',
-          total: '',
-          listOrder: ''
-        }
-      ]
+      tableData: []
     }
   },
-  created () {
+  computed: {
+    totalMoney () {
+      let num = 0
+      this.tableData.forEach(obj => {
+        num += this.NPTimes(obj.unitPrice, obj.total)
+      })
+      return num
+    },
+    totalNum () {
+      let num = 0
+      this.tableData.forEach(obj => {
+        num = this.NPPlus(num, obj.total)
+      })
+      return num
+    }
+  },
+  mounted () {
     this.id = this.$route.query.id
     if (this.id) {
       this.title = '编辑订单'
-      this.getCont()
+      this.getOrderInfo()
     }
   },
   methods: {
-    getData () {
-      this.form.id = ''
-      this.tableData = []
+    getOrderInfo () {
+      getOrderInfo({
+        id: this.id
+      }).then(({ data }) => {
+        this.form.id = this.id
+        this.form.contractId = data.contractId
+        this.form.orderPz = data.orderPz
+        this.form.supplier = data.supplierName
+        this.tableData = data.material
+      })
     },
-    getSupplier () {
-      this.form.supplier = '供应商名称'
+    getSupplier (value, option) {
+      this.form.supplier = option.supplierName
     },
     handleAdd () {
       this.tableData.push({
         materialId: '',
         brand: '',
         model: '',
-        taxRate: this.tableData[0].taxRate || 1,
+        taxRate: (this.tableData[0] && this.tableData[0].taxRate) || 1,
         unitPrice: '',
         unit: this.unitOptions[0].value,
         total: '',
@@ -348,13 +356,21 @@ export default {
     }
   }
   &-body {
-    > .ant-row-flex > .ant-col {
-      padding: 16px;
+    > .ant-row-flex {
+      border-bottom: 1px solid #e8e8e8;
+      > .ant-col {
+        padding: 6px 8px;
+      }
     }
   }
 
   .ant-form-item {
     margin-bottom: 0;
+  }
+}
+.table-total {
+  .ant-col {
+    padding: 6px 8px;
   }
 }
 </style>

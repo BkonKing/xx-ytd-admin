@@ -75,7 +75,7 @@ request.interceptors.request.use(config => {
 // response interceptor
 request.interceptors.response.use((response) => {
   Vue.prototype.$loading.hide()
-  const token = storage.get('access_token')
+  // const token = storage.get('access_token')
   const {
     data,
     config

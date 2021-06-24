@@ -1,92 +1,175 @@
 <template>
   <page-header-wrapper
-    :title="title"
+    :title="info.supplierName"
     :tab-list="tabList"
     :tab-active-key="tabActiveKey"
     @tabChange="handleTabChange"
   >
     <template v-slot:content>
       <a-descriptions size="small" :column="isMobile ? 1 : 2">
-        <a-descriptions-item label="所属公司">公司名称</a-descriptions-item>
-        <a-descriptions-item label="关联项目">项目名称</a-descriptions-item>
-        <a-descriptions-item label="类型">XX 服务</a-descriptions-item>
-        <a-descriptions-item label="创建人">2017-07-07</a-descriptions-item>
+        <a-descriptions-item label="所属公司">
+          {{ info.companyName }}
+        </a-descriptions-item>
+        <a-descriptions-item label="关联项目">
+          {{ info.projectName || "--" }}
+        </a-descriptions-item>
+        <a-descriptions-item label="类型">
+          {{ info.supplierTypeName }}
+        </a-descriptions-item>
+        <a-descriptions-item label="创建人">
+          {{ info.createAdmin }}
+        </a-descriptions-item>
         <a-descriptions-item label="供应物料">
-          12421
+          {{ info.materialName }}
         </a-descriptions-item>
       </a-descriptions>
     </template>
 
     <!-- actions -->
-    <template v-slot:extra>
-      <a-button>编辑</a-button>
-      <a-button type="primary">审核</a-button>
+    <template v-if="!isPass" v-slot:extra>
+      <a-button @click="goEdit">编辑</a-button>
+      <a-button type="primary" @click="openCheck">审核</a-button>
     </template>
 
     <template v-slot:extraContent>
-      <a-row class="status-list">
-        <a-col :xs="12" :sm="12">
+      <a-row class="status-list" type="flex">
+        <a-col flex="1">
           <div class="text">状态</div>
-          <div class="heading">待审批</div>
+          <div class="heading">{{ info.statusv }}</div>
         </a-col>
-        <a-col :xs="12" :sm="12">
+        <a-col v-if="isPass" flex="1">
           <div class="text">合同金额</div>
-          <div class="heading">¥ 568.08</div>
+          <div class="heading">¥ {{ info.contractMoney }}</div>
         </a-col>
       </a-row>
     </template>
-    <statistics></statistics>
-    <basic-info></basic-info>
-    <payment-table></payment-table>
-    <order-steps></order-steps>
-    <material-table></material-table>
-    <order-info></order-info>
-    <log-list :load="logLoadData"></log-list>
+
+    <order-steps
+      v-show="!isPass || tabActiveKey === '2'"
+      :data="info.auditLeveArr"
+    ></order-steps>
+    <basic-info
+      v-show="!isPass || tabActiveKey === '0'"
+      :data="info"
+    ></basic-info>
+    <order-steps-info
+      v-show="!isPass || tabActiveKey === '2'"
+      :data="info.auditLeveLog"
+    ></order-steps-info>
+    <log-list v-show="!isPass || tabActiveKey === '0'" typeId="40"></log-list>
+
+    <material-table
+      v-if="isPass"
+      v-show="tabActiveKey === '1'"
+    ></material-table>
+
+    <a-modal
+      title="审核"
+      :visible="visible"
+      :confirm-loading="confirmLoading"
+      @ok="handleCheckOk"
+      @cancel="handleCheckCancel"
+    >
+      <check-form
+        ref="CheckForm"
+        label="供应商"
+        :show-value="info.supplierName"
+      ></check-form>
+    </a-modal>
   </page-header-wrapper>
 </template>
 
 <script>
 import { appMixin } from '@/store/mixin'
 import OrderSteps from '../order/components/Steps.vue'
-import OrderInfo from '../order/components/Info.vue'
-import MaterialTable from '../order/components/material.vue'
-import Statistics from '../order/components/statistics'
-import PaymentTable from '../order/components/PaymentTable'
+import OrderStepsInfo from '../order/components/Info.vue'
+import MaterialTable from './components/material.vue'
 import BasicInfo from './components/basicInfo.vue'
-import { LogList } from '@/components'
-import { getPermissions } from '@/api/manage'
+import { CheckForm, LogList } from '@/components'
+import { getSuppInfo, auditSupp } from '@/api/supplier'
 export default {
   name: 'OrderDetail',
   mixins: [appMixin],
   components: {
     OrderSteps,
-    OrderInfo,
+    OrderStepsInfo,
     MaterialTable,
-    Statistics,
-    PaymentTable,
     LogList,
-    BasicInfo
+    BasicInfo,
+    CheckForm
   },
   data () {
     return {
-      title: '',
-      tabList: [
-        { key: '0', tab: '订单' },
-        { key: '1', tab: '审批' }
-      ],
+      id: '',
+      tabList: [],
       tabActiveKey: '0',
-      projectInfo: {},
-      logLoadData: getPermissions
+      info: {},
+      visible: false
     }
   },
+  computed: {
+    isPass () {
+      return this.info.status === '1'
+    }
+  },
+  created () {
+    this.id = this.$route.query.id
+    this.getSuppInfo()
+  },
   methods: {
+    getSuppInfo () {
+      getSuppInfo({
+        id: this.id
+      }).then(({ data }) => {
+        this.info = data
+        this.info.id = this.id
+        if (data.status === '0') {
+          this.tabList = []
+        } else {
+          this.tabList = [
+            { key: '0', tab: '资料' },
+            { key: '1', tab: '物料' },
+            { key: '2', tab: '审批' }
+          ]
+        }
+      })
+    },
     handleTabChange (key) {
       this.tabActiveKey = key
     },
-    // 查看订单凭证
-    previewLicence () {
-      this.$viewerApi({
-        images: this.projectInfo.images
+    openCheck () {
+      this.visible = true
+      this.$refs.CheckForm && this.$refs.CheckForm.resetFields()
+    },
+    handleCheckOk () {
+      this.confirmLoading = true
+      this.$refs.CheckForm.handleSubmit()
+        .then(value => {
+          this.auditSupp(value)
+        })
+        .finally(() => {
+          this.confirmLoading = false
+        })
+    },
+    auditSupp (value) {
+      auditSupp({
+        ...value,
+        id: this.id
+      }).then(({ message }) => {
+        this.$message.success(message)
+        this.visible = false
+        this.getSuppInfo()
+      })
+    },
+    handleCheckCancel () {
+      this.visible = false
+    },
+    goEdit () {
+      this.$router.push({
+        name: 'SupplierEdit',
+        query: {
+          id: this.id
+        }
       })
     }
   }

@@ -1,54 +1,85 @@
 <template>
   <page-header-wrapper
-    :title="title"
+    :title="`订单号：${info.idv}`"
     :tab-list="tabList"
     :tab-active-key="tabActiveKey"
     @tabChange="handleTabChange"
   >
     <template v-slot:content>
       <a-descriptions size="small" :column="isMobile ? 1 : 2">
-        <a-descriptions-item label="所属项目">项目名称</a-descriptions-item>
-        <a-descriptions-item label="供应商">XX 服务</a-descriptions-item>
-        <a-descriptions-item label="所属公司">2017-07-07</a-descriptions-item>
+        <a-descriptions-item label="所属项目">
+          {{ info.projectName || "--" }}
+        </a-descriptions-item>
+        <a-descriptions-item label="供应商">
+          {{ info.supplierName }}
+        </a-descriptions-item>
+        <a-descriptions-item label="所属公司">
+          {{ info.companyName }}
+        </a-descriptions-item>
         <a-descriptions-item label="订单凭证">
-          12421<a-button
-            v-if="projectInfo.images && projectInfo.images.length"
+          {{ info.orderPzNum }}张
+          <a-button
+            v-if="+info.orderPzNum"
             type="link"
-            @click="previewLicence"
+            @click="previewImage(info.orderPz)"
           >
             查看
           </a-button>
         </a-descriptions-item>
-        <a-descriptions-item label="创建人"
-          >请于两个工作日内确认</a-descriptions-item
-        >
+        <a-descriptions-item label="创建人">
+          {{ info.createAdmin }}
+        </a-descriptions-item>
       </a-descriptions>
     </template>
 
     <!-- actions -->
-    <template v-slot:extra>
-      <a-button>编辑</a-button>
-      <a-button type="primary">审核</a-button>
+    <template v-if="!isPass" v-slot:extra>
+      <a-button @click="goEdit">编辑</a-button>
+      <a-button type="primary" @click="openCheck">审核</a-button>
     </template>
 
     <template v-slot:extraContent>
-      <a-row class="status-list">
-        <a-col :xs="12" :sm="12">
+      <a-row class="status-list" type="flex">
+        <a-col flex="1">
           <div class="text">状态</div>
-          <div class="heading">待审批</div>
+          <div class="heading">{{ info.statusv }}</div>
         </a-col>
-        <a-col :xs="12" :sm="12">
+        <a-col flex="1">
           <div class="text">订单金额</div>
-          <div class="heading">¥ 568.08</div>
+          <div class="heading">¥ {{ info.orderPrice }}</div>
         </a-col>
       </a-row>
     </template>
-    <statistics></statistics>
-    <payment-table></payment-table>
-    <order-steps></order-steps>
-    <material-table></material-table>
-    <order-info></order-info>
-    <log-list :load="logLoadData"></log-list>
+    <statistics v-if="isPass" v-show="tabActiveKey === '0'"></statistics>
+    <order-steps
+      v-show="!isPass || tabActiveKey === '1'"
+      :data="info.auditLeveArr"
+    ></order-steps>
+    <material-table v-show="!isPass || tabActiveKey === '0'"></material-table>
+    <payment-table
+      v-if="isPass"
+      v-show="tabActiveKey === '0'"
+      :id="id"
+    ></payment-table>
+    <order-info
+      v-show="!isPass || tabActiveKey === '1'"
+      :data="info.auditLeveLog"
+    ></order-info>
+    <log-list v-show="!isPass || tabActiveKey === '0'" typeId="30"></log-list>
+
+    <a-modal
+      title="审核"
+      :visible="visible"
+      :confirm-loading="confirmLoading"
+      @ok="handleCheckOk"
+      @cancel="handleCheckCancel"
+    >
+      <check-form
+        ref="CheckForm"
+        label="订单"
+        :show-value="info.idv"
+      ></check-form>
+    </a-modal>
   </page-header-wrapper>
 </template>
 
@@ -59,8 +90,8 @@ import OrderInfo from './components/Info.vue'
 import MaterialTable from './components/material.vue'
 import Statistics from './components/statistics'
 import PaymentTable from './components/PaymentTable'
-import { LogList } from '@/components'
-import { getPermissions } from '@/api/manage'
+import { LogList, CheckForm } from '@/components'
+import { getOrderInfo, auditOrder } from '@/api/order'
 export default {
   name: 'OrderDetail',
   mixins: [appMixin],
@@ -70,28 +101,87 @@ export default {
     MaterialTable,
     Statistics,
     PaymentTable,
-    LogList
+    LogList,
+    CheckForm
   },
   data () {
     return {
-      title: '',
-      tabList: [
-        { key: '0', tab: '订单' },
-        { key: '1', tab: '审批' }
-      ],
+      id: '',
+      tabList: [],
       tabActiveKey: '0',
-      projectInfo: {},
-      logLoadData: getPermissions
+      info: {},
+      visible: false,
+      confirmLoading: false
     }
   },
+  computed: {
+    isPass () {
+      return this.info.status === '1'
+    }
+  },
+  created () {
+    this.id = this.$route.query.id
+    this.getOrderInfo()
+  },
   methods: {
+    getOrderInfo () {
+      getOrderInfo({
+        id: this.id
+      }).then(({ data }) => {
+        this.info = data
+        this.info.id = this.id
+        if (data.status === '0') {
+          this.tabList = []
+        } else {
+          this.tabList = [
+            { key: '0', tab: '详情' },
+            { key: '1', tab: '审批' }
+          ]
+        }
+      })
+    },
     handleTabChange (key) {
       this.tabActiveKey = key
     },
+    openCheck () {
+      this.visible = true
+      this.$refs.CheckForm && this.$refs.CheckForm.resetFields()
+    },
+    handleCheckOk () {
+      this.confirmLoading = true
+      this.$refs.CheckForm.handleSubmit()
+        .then(value => {
+          this.auditOrder(value)
+        })
+        .finally(() => {
+          this.confirmLoading = false
+        })
+    },
+    auditOrder (value) {
+      auditOrder({
+        ...value,
+        id: this.id
+      }).then(({ message }) => {
+        this.$message.success(message)
+        this.visible = false
+        this.getOrderInfo()
+      })
+    },
+    handleCheckCancel () {
+      this.visible = false
+    },
     // 查看订单凭证
-    previewLicence () {
+    previewImage (images) {
       this.$viewerApi({
-        images: this.projectInfo.images
+        images
+      })
+    },
+    goEdit () {
+      this.$router.push({
+        name: 'OrderEdit',
+        query: {
+          id: this.id
+        }
       })
     }
   }

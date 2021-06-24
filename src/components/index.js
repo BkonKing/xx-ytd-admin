@@ -33,6 +33,8 @@ import CompanySelect from '@/components/Business/CompanySelect'
 import ContractTypeSelect from '@/components/Business/ContractTypeSelect'
 import SupplierSelect from '@/components/Business/SupplierSelect'
 import SupplierTypeSelect from '@/components/Business/SupplierTypeSelect'
+import MaterialTypeSelect from '@/components/Business/MaterialTypeSelect'
+import ContractSelect from '@/components/Business/ContractSelect'
 
 // 二次封装
 import UploadImage from '@/components/UploadImage'
@@ -73,5 +75,7 @@ export {
   CompanySelect,
   ContractTypeSelect,
   SupplierSelect,
-  SupplierTypeSelect
+  SupplierTypeSelect,
+  MaterialTypeSelect,
+  ContractSelect
 }

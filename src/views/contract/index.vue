@@ -4,7 +4,7 @@
     :tab-active-key="tabActiveKey"
     :tab-change="handleTabChange"
   >
-    <a-card style="margin-top: 24px" :bordered="false">
+    <a-card class="search-card" style="margin-top: 24px" :bordered="false">
       <div class="table-page-search-wrapper">
         <search-form
           v-model="queryParam"
@@ -22,19 +22,19 @@
       <s-table
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="id"
         :columns="columns"
         :data="loadData"
-        :alert="true"
+        :alert="{clear: true}"
         :rowSelection="rowSelection"
         showPagination="auto"
       >
-        <span slot="action" slot-scope="text, record">
+        <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
             <a @click="goEdit(record)">编辑</a>
             <a @click="handleRemove(record)">删除</a>
-            <a @click="openCheck(record)">审核</a>
+            <a v-if="+record.status === 0" @click="openCheck(record)">审核</a>
           </template>
         </span>
       </s-table>
@@ -57,8 +57,16 @@
 <script>
 // import moment from 'moment'
 import { STable, CheckForm } from '@/components'
-import { getContractList, removeCont, auditCont } from '@/api/contract'
+import { getContractList, removeCont, auditCont, auditBatchCont } from '@/api/contract'
 import SearchForm from './components/seachForm.vue'
+
+const checkColumn = [
+  {
+    title: '审核时间',
+    dataIndex: 'auditTime',
+    scopedSlots: { customRender: 'auditTime' }
+  }
+]
 
 const columns = [
   {
@@ -95,7 +103,7 @@ const columns = [
   {
     title: '操作',
     dataIndex: 'id',
-    width: '150px',
+    width: '180px',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -146,7 +154,8 @@ export default {
         return getContractList(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
+      checkId: ''
     }
   },
   computed: {
@@ -160,11 +169,19 @@ export default {
   methods: {
     handleTabChange (key) {
       this.tabActiveKey = key
+      this.queryParam.status = key
+      if (+key < 2 && this.columns[0].dataIndex !== 'auditTime') {
+        this.columns.unshift(...checkColumn)
+      } else if (+key > 1 && this.columns[0].dataIndex !== 'id') {
+        this.columns.shift()
+      }
+      this.$refs.table.refresh()
     },
     toggleAdvanced () {
       this.advanced = !this.advanced
     },
-    openCheck () {
+    openCheck ({ id }) {
+      id && (this.checkId = id)
       this.visible = true
       this.$refs.CheckForm && this.$refs.CheckForm.resetFields()
     },
@@ -172,23 +189,48 @@ export default {
       this.confirmLoading = true
       this.$refs.CheckForm.handleSubmit()
         .then(value => {
-          console.log(value)
-          auditCont(value).then(() => {
-            this.$refs.table.refresh()
-            this.visible = false
-          })
+          if (this.checkId) {
+            this.auditCont(value)
+          } else if (this.selectedRowKeys) {
+            this.auditBatchCont(value)
+          }
         })
         .finally(() => {
           this.confirmLoading = false
         })
     },
+    auditCont (value) {
+      auditCont({
+        ...value,
+        id: this.checkId
+      }).then(({ data, message }) => {
+        this.checkId = ''
+        this.checkCall(message)
+      })
+    },
+    auditBatchCont (value) {
+      auditBatchCont({
+        ...value,
+        ids: this.selectedRowKeys
+      }).then(({ data, message }) => {
+        this.$refs.table.clearSelected()
+        this.checkCall(message)
+      })
+    },
+    checkCall (message) {
+      this.$message.success(message)
+      this.visible = false
+      this.$refs.table.refresh()
+    },
     handleCheckCancel () {
+      this.checkId = ''
       this.visible = false
     },
-    handleRemove ({ id }) {
+    handleRemove ({ id, contractName }) {
       const that = this
       this.$confirm({
-        content: '是否删除该合同？',
+        title: '删除人员', // 用户名
+        content: `确认删除 "${contractName}" 吗？`,
         onOk () {
           removeCont({
             id
@@ -199,15 +241,25 @@ export default {
         }
       })
     },
-    goEdit () {
+    goEdit ({ id }) {
       this.$router.push({
-        name: 'ContractEdit'
+        name: 'ContractEdit',
+        query: {
+          id
+        }
       })
     },
-    goDetail () {
+    goDetail ({ id }) {
       this.$router.push({
-        name: 'ContractDetail'
+        name: 'ContractDetail',
+        query: {
+          id
+        }
       })
+    },
+    onSelectChange (selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
     }
   }
 }

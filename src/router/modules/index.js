@@ -40,16 +40,14 @@ export default [
       name: 'ContractEdit',
       component: () => import('@/views/contract/edit'),
       meta: {
-        title: '合同编辑',
-        keepAlive: true
+        title: '合同编辑'
       }
     }, {
       path: '/contract/detail',
       name: 'ContractDetail',
       component: () => import('@/views/contract/detail'),
       meta: {
-        title: '合同详情',
-        keepAlive: true
+        title: '合同详情'
       }
     }]
   },
@@ -76,8 +74,7 @@ export default [
         name: 'OrderEdit',
         component: () => import('@/views/order/edit'),
         meta: {
-          title: '订单编辑',
-          keepAlive: true
+          title: '订单编辑'
         }
       },
       {
@@ -85,8 +82,7 @@ export default [
         name: 'OrderDetail',
         component: () => import('@/views/order/detail'),
         meta: {
-          title: '订单详情',
-          keepAlive: true
+          title: '订单详情'
         }
       }
     ]
@@ -114,8 +110,7 @@ export default [
         name: 'SupplierEdit',
         component: () => import('@/views/supplier/edit'),
         meta: {
-          title: '新增供应商',
-          keepAlive: true
+          title: '新增供应商'
         }
       },
       {
@@ -123,8 +118,7 @@ export default [
         name: 'SupplierDetail',
         component: () => import('@/views/supplier/detail'),
         meta: {
-          title: '供应商详情',
-          keepAlive: true
+          title: '供应商详情'
         }
       }
     ]
@@ -134,8 +128,7 @@ export default [
     name: 'Supplier',
     component: RouteView,
     meta: {
-      title: '库存管理',
-      keepAlive: true
+      title: '库存管理'
     },
     children: [
       {
@@ -170,8 +163,7 @@ export default [
         name: 'InventoryDetail',
         component: () => import('@/views/inventory/detail'),
         meta: {
-          title: '库存详情',
-          keepAlive: true
+          title: '库存详情'
         }
       }
     ]

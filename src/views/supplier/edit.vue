@@ -21,16 +21,11 @@
             mode="multiple"
           ></supplier-type-select>
         </a-form-model-item>
-        <a-form-model-item label="供应物料" prop="materia">
-          <a-select type="multiple" v-model="form.materia" placeholder="请选择">
-            <a-select-option
-              v-for="option in materialOptions"
-              :value="option.value"
-              :key="option.value"
-            >
-              {{ option.text }}
-            </a-select-option>
-          </a-select>
+        <a-form-model-item label="供应物料" prop="material">
+          <material-type-select
+            v-model="form.material"
+            tree-checkable
+          ></material-type-select>
         </a-form-model-item>
         <a-form-model-item label="联系人" required>
           <a-row type="flex">
@@ -80,15 +75,34 @@
           <a-date-picker
             v-model="form.createDate"
             placeholder="请选择"
-            style="width: 100%;"
-          />
-        </a-form-model-item>
-        <a-form-model-item label="营业期限" prop="businessTerm">
-          <a-range-picker
-            v-model="form.businessTerm"
             valueFormat="YYYY-MM-DD"
             style="width: 100%;"
-          ></a-range-picker>
+            @change="handleCreateDateChange"
+          />
+        </a-form-model-item>
+        <a-form-model-item label="营业期限" >
+          <a-row type="flex">
+            <a-col flex="1">
+              <a-form-model-item prop="businessTime">
+                <a-date-picker
+                  v-model="form.startDate"
+                  valueFormat="YYYY-MM-DD"
+                  style="width: 100%;"
+                ></a-date-picker>
+              </a-form-model-item>
+            </a-col>
+            <a-col flex="50px" style="text-align: center">~</a-col>
+            <a-col flex="1">
+              <a-form-model-item prop="businessTime">
+                <a-date-picker
+                  v-model="form.endDate"
+                  valueFormat="YYYY-MM-DD"
+                  style="width: 100%;"
+                  @change="handleEndDateChange"
+                ></a-date-picker>
+              </a-form-model-item>
+            </a-col>
+          </a-row>
         </a-form-model-item>
         <a-form-model-item label="营业执照" prop="licensePz" required>
           <upload-image v-model="form.licensePz" maxLength="5"></upload-image>
@@ -132,14 +146,19 @@
 </template>
 
 <script>
-import { UploadImage, SupplierTypeSelect } from '@/components'
+import {
+  UploadImage,
+  SupplierTypeSelect,
+  MaterialTypeSelect
+} from '@/components'
 import { addSupplier, updateSupplier, getSuppInfo } from '@/api/supplier'
 
 export default {
   name: 'SupplierEdit',
   components: {
     UploadImage,
-    SupplierTypeSelect
+    SupplierTypeSelect,
+    MaterialTypeSelect
   },
   data () {
     return {
@@ -148,45 +167,27 @@ export default {
       loading: false,
       memberLoading: false,
       labelCol: { span: 7 },
-      wrapperCol: { span: 14 },
-      materialOptions: [], // todo:缺接口
+      wrapperCol: { span: 10 },
       form: {
         supplierName: '',
         supplierType: [],
-        materia: [],
+        material: [],
         contactsMen: '',
         contactsMobile: '',
         socialCode: '',
         legalPerson: '',
         legalPersonPz: [],
         createDate: '',
-        businessTerm: [],
+        startDate: '',
+        endDate: '',
         licensePz: [],
         registeredCapital: '',
         registeredAddress: '',
         qualificationsPz: []
       },
       rules: {
-        supplierName: [
-          {
-            required: true,
-            message: '请输入供应商名称'
-            // trigger: 'blur'
-          }
-          // {
-          //   min: 3,
-          //   max: 5,
-          //   message: 'Length should be 3 to 5'
-          //   // trigger: 'blur'
-          // }
-        ],
-        supplierType: [
-          {
-            required: true,
-            message: '请选择类型'
-            // trigger: 'change'
-          }
-        ],
+        supplierName: [{ required: true, message: '请输入供应商名称' }],
+        supplierType: [{ required: true, message: '请选择类型' }],
         contactsMen: [{ required: true, message: '请输入联系人姓名' }],
         contactsMobile: [{ required: true, message: '请输入联系人联系电话' }],
         socialCode: [{ required: true, message: '请输入统一社会信用代码' }],
@@ -207,6 +208,12 @@ export default {
   methods: {
     getSuppInfo () {
       getSuppInfo({ id: this.id }).then(({ data }) => {
+        let time = []
+        if (data.businessTerm) {
+          time = data.businessTerm.split('~')
+        }
+        data.startDate = time[0] || ''
+        data.endDate = time[1] || ''
         this.form = data
       })
     },
@@ -215,6 +222,10 @@ export default {
       this.$refs.supplierForm.validate(valid => {
         if (valid) {
           const api = this.id ? updateSupplier : addSupplier
+          if (this.form.startDate) {
+            this.form.businessTerm = `${this.form.startDate}~${this.form.endDate}`
+          }
+          this.id && (this.form.id = this.id)
           api(this.form).then(({ success }) => {
             if (success) {
               this.$message.success('提交成功')
@@ -226,6 +237,19 @@ export default {
           return false
         }
       })
+    },
+    handleCreateDateChange (value) {
+      if (!this.form.startDate) {
+        this.form.startDate = value
+      }
+    },
+    handleEndDateChange (value) {
+      const startTime = new Date(this.form.startDate).getTime()
+      const endTime = new Date(value).getTime()
+      if (startTime > endTime) {
+        this.$message.error('结束时间要大于开始时间')
+        this.form.endDate = ''
+      }
     },
     resetForm () {
       this.$router.go(-1)
