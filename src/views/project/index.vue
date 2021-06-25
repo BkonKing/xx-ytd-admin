@@ -38,6 +38,7 @@
                 <a-select
                   v-model="stage"
                   @change="getProjectList"
+                  allowClear
                   style="max-width: 200px; width: 100%;"
                   placeholder="请选择"
                 >
@@ -200,8 +201,9 @@ export default {
     },
     // 获取项目列表
     getProjectList () {
+      console.log(this.companyIds)
       getProjectList({
-        companyIds: this.companyIds,
+        companyIds: this.companyIds.join(','),
         serachText: this.serachText,
         stage: this.stage
       }).then(({ data }) => {

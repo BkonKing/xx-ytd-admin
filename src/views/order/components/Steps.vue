@@ -1,15 +1,16 @@
 <template>
   <a-card :bordered="false" title="审批进度" style="margin-top: 24px;">
-    <a-steps class="check-tab-steps" :current="stepList.length - 1" progressDot>
-      <a-step v-for="(step, index) in stepList" :key="index">
+    <a-steps class="check-tab-steps" :current="current" progressDot>
+      <a-step v-for="(step, index) in data" :key="index">
         <template v-slot:title>
-          <span>{{ step.title }}</span>
+          <span>{{ step.leve }}</span>
         </template>
         <template v-slot:description>
-          <div v-if="step.status !== 1">
-            <div>{{ step.name }}</div>
-            <div>{{ step.company }}</div>
-            <div>{{ step.time }}</div>
+          <div>{{ step.realname }}</div>
+          <div>{{ step.company }}</div>
+          <div>{{ step.leveTime }}</div>
+          <div v-if="!step.status && (current + 1) === index">
+            <a>催一下</a>
           </div>
         </template>
       </a-step>
@@ -20,31 +21,42 @@
 <script>
 export default {
   name: 'OrderSteps',
-  data () {
-    return {
-      stepList: [
-        {
-          title: '创建',
-          name: '曲丽丽',
-          company: '公司名称',
-          time: '2016-12-12 12:32'
-        },
-        {
-          title: '一审',
-          name: '曲丽丽',
-          company: '公司名称',
-          time: '2016-12-12 12:32'
-        },
-        {
-          title: '完成',
-          name: '曲丽丽',
-          company: '公司名称',
-          time: '2016-12-12 12:32',
-          status: 1
-        }
-      ]
+  props: {
+    data: {
+      type: Array,
+      default: () => []
+    }
+  },
+  computed: {
+    current () {
+      return this.data.findIndex(obj => obj.status === 0) - 1
     }
   }
+  // data () {
+  //   return {
+  //     stepList: [
+  //       {
+  //         title: '创建',
+  //         name: '曲丽丽',
+  //         company: '公司名称',
+  //         time: '2016-12-12 12:32'
+  //       },
+  //       {
+  //         title: '一审',
+  //         name: '曲丽丽',
+  //         company: '公司名称',
+  //         time: '2016-12-12 12:32'
+  //       },
+  //       {
+  //         title: '完成',
+  //         name: '曲丽丽',
+  //         company: '公司名称',
+  //         time: '2016-12-12 12:32',
+  //         status: 1
+  //       }
+  //     ]
+  //   }
+  // }
 }
 </script>
 

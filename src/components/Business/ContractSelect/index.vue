@@ -5,21 +5,22 @@
     show-search
     :filter-option="filterOption"
     option-filter-prop="children"
+    @change="handleChange"
   >
     <a-select-option
       v-for="option in options"
-      :value="option.supplierId"
-      :key="option.supplierId"
+      :value="option.contractId"
+      :key="option.contractId"
     >
-      {{ option.supplierName }}
+      {{ option.contractName }}
     </a-select-option>
   </a-select>
 </template>
 
 <script>
-import { getAllSupplier } from '@/api/common'
+import { getAllContract } from '@/api/common'
 export default {
-  name: 'ProjectSelect',
+  name: 'ContractSelect',
   props: {
     value: {
       type: [String, Number],
@@ -33,7 +34,7 @@ export default {
     }
   },
   created () {
-    getAllSupplier().then(({ data }) => {
+    getAllContract().then(({ data }) => {
       this.options = data
     })
   },
@@ -44,11 +45,18 @@ export default {
           .toLowerCase()
           .indexOf(input.toLowerCase()) >= 0
       )
+    },
+    handleChange (value, option) {
+      this.$emit('change', value, option.context.options[0])
     }
   },
   watch: {
     value (val) {
       this.data = val
+      // this.$nextTick(() => {
+      //   const index = this.options.findIndex(obj => obj.contractId === val)
+      //   this.$emit('change', val, this.options[index])
+      // })
     },
     data (val) {
       this.$emit('input', val)

@@ -11,6 +11,9 @@
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
     >
+      <a-form-model-item v-if="label" :label="label">
+        {{showValue}}
+      </a-form-model-item>
       <a-form-model-item label="是否通过" prop="auidtStatus">
         <a-radio-group v-model="form.auidtStatus">
           <a-radio :value="1">
@@ -52,6 +55,14 @@ export default {
     selectedRowKeys: {
       type: Array,
       default: () => []
+    },
+    label: {
+      type: String,
+      default: ''
+    },
+    showValue: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -60,7 +71,7 @@ export default {
       rules: {
         auidtStatus: [{ required: true, message: '必填', trigger: 'change' }]
       },
-      labelCol: { span: 4 },
+      labelCol: { span: 7 },
       wrapperCol: { span: 14 }
     }
   },
@@ -119,5 +130,9 @@ export default {
 .ant-upload-select-picture-card .ant-upload-text {
   margin-top: 8px;
   color: #666;
+}
+
+/deep/ .ant-form-item {
+  margin-bottom: 16px;
 }
 </style>

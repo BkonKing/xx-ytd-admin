@@ -4,23 +4,19 @@
     :tab-active-key="tabActiveKey"
     :tab-change="handleTabChange"
   >
-    <a-card style="margin-top: 24px" :bordered="false">
+    <a-card class="search-card" style="margin-top: 24px" :bordered="false">
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="审核状态">
-                <a-select
-                  mode="multiple"
-                  v-model="queryParam.status"
-                  placeholder="请选择"
-                >
+                <a-select v-model="queryParam.status" placeholder="请选择">
                   <a-select-option
-                    v-for="option in statusOptions"
-                    :value="option.value"
-                    :key="option.value"
+                    v-for="option in tabList"
+                    :value="option.key"
+                    :key="option.key"
                   >
-                    {{ option.text }}
+                    {{ option.tab }}
                   </a-select-option>
                 </a-select>
               </a-form-item>
@@ -33,11 +29,9 @@
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="所属公司">
-                  <a-select v-model="queryParam.companyId" placeholder="请选择">
-                    <a-select-option value="0">全部</a-select-option>
-                    <a-select-option value="1">关闭</a-select-option>
-                    <a-select-option value="2">运行中</a-select-option>
-                  </a-select>
+                  <company-select
+                    v-model="queryParam.companyId"
+                  ></company-select>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
@@ -79,9 +73,13 @@
                     placeholder="请选择"
                     default-value="0"
                   >
-                    <a-select-option value="0">全部</a-select-option>
-                    <a-select-option value="1">关闭</a-select-option>
-                    <a-select-option value="2">运行中</a-select-option>
+                    <a-select-option
+                      v-for="option in payStatusOptions"
+                      :value="option.value"
+                      :key="option.value"
+                    >
+                      {{ option.text }}
+                    </a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -92,9 +90,13 @@
                     v-model="queryParam.kpStatus"
                     placeholder="请选择"
                   >
-                    <a-select-option value="0">全部</a-select-option>
-                    <a-select-option value="1">关闭</a-select-option>
-                    <a-select-option value="2">运行中</a-select-option>
+                    <a-select-option
+                      v-for="option in kpStatusOptions"
+                      :value="option.value"
+                      :key="option.value"
+                    >
+                      {{ option.text }}
+                    </a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -134,30 +136,35 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button type="primary" @click="openCheck">审核</a-button>
+        <a-button
+          type="primary"
+          :disabled="!selectedRowKeys.length"
+          @click="openCheck"
+          >审核</a-button
+        >
         <a-button @click="goEdit">新增</a-button>
       </div>
 
       <s-table
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="id"
         :columns="columns"
         :data="loadData"
-        :alert="true"
+        :alert="{ clear: true }"
         :rowSelection="rowSelection"
         showPagination="auto"
       >
-        <span slot="checkTime" slot-scope="text, record, index">
+        <!-- <span slot="checkTime" slot-scope="text, record, index">
           {{ text }}
-        </span>
+        </span> -->
 
-        <span slot="action" slot-scope="text, record">
+        <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
             <a @click="goEdit(record)">编辑</a>
             <a @click="handleRemove(record)">删除</a>
-            <a @click="openCheck(record)">审核</a>
+            <a v-if="+record.status === 0" @click="openCheck(record)">审核</a>
           </template>
         </span>
       </s-table>
@@ -172,6 +179,8 @@
     >
       <check-form
         ref="CheckForm"
+        label="订单"
+        :show-value="idv"
         :selectedRowKeys="selectedRowKeys"
       ></check-form>
     </a-modal>
@@ -179,8 +188,25 @@
 </template>
 
 <script>
-import { STable, CheckForm, ProjectSelect } from '@/components'
-import { getOrderList, removeOrder, auditOrder } from '@/api/order'
+import { STable, CheckForm, ProjectSelect, CompanySelect } from '@/components'
+import {
+  getOrderList,
+  removeOrder,
+  auditOrder,
+  auditBatchOrder
+} from '@/api/order'
+
+const checkColumn = [
+  {
+    title: '审核时间',
+    dataIndex: 'auditTime',
+    scopedSlots: { customRender: 'auditTime' }
+  },
+  {
+    title: '审核状态',
+    dataIndex: 'statusv'
+  }
+]
 
 const columns = [
   {
@@ -221,7 +247,7 @@ const columns = [
   {
     title: '操作',
     dataIndex: 'action',
-    width: '150px',
+    width: '180px',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -231,43 +257,64 @@ export default {
   components: {
     STable,
     CheckForm,
-    ProjectSelect
+    ProjectSelect,
+    CompanySelect
   },
   data () {
     this.columns = columns
     return {
-      tabList: [
-        { key: '1', tab: '全部' },
-        { key: '2', tab: '待审核' },
-        { key: '4', tab: '已通过' },
-        { key: '6', tab: '未通过' }
-      ],
-      tabActiveKey: '1',
       // 审核状态：0=全部、1=待审核、2=已通过、3=未通过
-      statusOptions: [
-        {
-          value: 0,
-          text: '全部'
-        },
-        {
-          value: 1,
-          text: '待审核'
-        },
-        {
-          value: 2,
-          text: '已通过'
-        },
-        {
-          value: 3,
-          text: '未通过'
-        }
+      tabList: [
+        { key: '0', tab: '全部' },
+        { key: '1', tab: '待审核' },
+        { key: '2', tab: '已通过' },
+        { key: '3', tab: '未通过' }
       ],
+      tabActiveKey: '0',
       visible: false,
       confirmLoading: false,
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
       queryParam: {},
+      // 付款情况：0=全部、1=全部已付、2=全部未付、3=部分已付/未付
+      payStatusOptions: [
+        {
+          text: '全部',
+          value: '0'
+        },
+        {
+          text: '全部已付',
+          value: '1'
+        },
+        {
+          text: '全部未付',
+          value: '2'
+        },
+        {
+          text: '部分已付/未付',
+          value: '3'
+        }
+      ],
+      // 开票情况：0=全部、1=全部已开、2=全部未开、3=部分已开/未开
+      kpStatusOptions: [
+        {
+          text: '全部',
+          value: '0'
+        },
+        {
+          text: '全部已开',
+          value: '1'
+        },
+        {
+          text: '全部未开',
+          value: '2'
+        },
+        {
+          text: '部分已开/未开',
+          value: '3'
+        }
+      ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
@@ -278,7 +325,9 @@ export default {
         return getOrderList(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
+      checkId: '',
+      idv: ''
     }
   },
   computed: {
@@ -292,11 +341,27 @@ export default {
   methods: {
     handleTabChange (key) {
       this.tabActiveKey = key
+      this.queryParam.status = key
+      if (+key < 2 && this.columns[0].dataIndex !== 'auditTime') {
+        this.columns.unshift(...checkColumn)
+      } else if (+key > 1 && this.columns[0].dataIndex !== 'id') {
+        this.columns.shift()
+        this.columns.shift()
+      }
+      this.$refs.table.refresh()
     },
     toggleAdvanced () {
       this.advanced = !this.advanced
     },
-    openCheck () {
+    openCheck ({ id, idv }) {
+      if (id) {
+        this.checkId = id
+        this.idv = idv
+      } else if (this.selectedRowKeys.length) {
+        this.idv = this.selectedRows
+          .map(data => data.idv)
+          .join('，')
+      }
       this.visible = true
       this.$refs.CheckForm && this.$refs.CheckForm.resetFields()
     },
@@ -304,28 +369,56 @@ export default {
       this.confirmLoading = true
       this.$refs.CheckForm.handleSubmit()
         .then(value => {
-          console.log(value)
-          auditOrder(value).then(() => {
-            this.$refs.table.refresh()
-            this.visible = false
-          })
+          if (this.checkId) {
+            this.auditOrder(value)
+          } else if (this.selectedRowKeys) {
+            this.auditBatchOrder(value)
+          }
         })
         .finally(() => {
           this.confirmLoading = false
         })
     },
-    handleCheckCancel () {
-      this.visible = false
-    },
-    goEdit () {
-      this.$router.push({
-        name: 'OrderEdit'
+    auditOrder (value) {
+      auditOrder({
+        ...value,
+        id: this.checkId
+      }).then(({ data, message }) => {
+        this.checkId = ''
+        this.checkCall(message)
       })
     },
-    handleRemove ({ id }) {
+    auditBatchOrder (value) {
+      auditBatchOrder({
+        ...value,
+        ids: this.selectedRowKeys
+      }).then(({ data, message }) => {
+        this.$refs.table.clearSelected()
+        this.checkCall(message)
+      })
+    },
+    checkCall (message) {
+      this.$message.success(message)
+      this.visible = false
+      this.$refs.table.refresh()
+    },
+    handleCheckCancel () {
+      this.checkId = ''
+      this.visible = false
+    },
+    goEdit ({ id }) {
+      this.$router.push({
+        name: 'OrderEdit',
+        query: {
+          id
+        }
+      })
+    },
+    handleRemove ({ id, idv }) {
       const that = this
       this.$confirm({
-        content: '是否删除该订单？',
+        title: '删除人员', // 用户名
+        content: `确认删除 "${idv}" 吗？`,
         onOk () {
           removeOrder({
             id
@@ -336,10 +429,17 @@ export default {
         }
       })
     },
-    goDetail () {
+    goDetail ({ id }) {
       this.$router.push({
-        name: 'OrderDetail'
+        name: 'OrderDetail',
+        query: {
+          id
+        }
       })
+    },
+    onSelectChange (selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
     }
   }
 }

@@ -4,16 +4,16 @@
       <span slot="actions" slot-scope="text">
         <a-button type="link" @click="goOrderDetail(text)">查看</a-button>
       </span>
-      <template slot="footer">
+      <!-- <template slot="footer">
         总计 100 ￥10,000.00
-      </template>
+      </template> -->
     </s-table>
   </a-card>
 </template>
 
 <script>
 import { STable } from '@/components'
-import { getPermissions } from '@/api/manage'
+import { getSuppMaterialList } from '@/api/supplier'
 export default {
   name: '',
   components: {
@@ -30,58 +30,47 @@ export default {
       columns: [
         {
           title: '物料',
-          dataIndex: 'name',
-          key: 'name',
+          dataIndex: 'materialName',
           width: '150px'
         },
         {
           title: '物料品牌',
           dataIndex: 'name11',
-          key: 'name',
           width: '150px'
         },
         {
           title: '规格型号',
           dataIndex: 'workId',
-          key: 'workId',
           width: '20%'
         },
         {
           title: '采购单价（元）',
           dataIndex: 'department',
-          key: 'department',
           width: '20%'
         },
         {
           title: '数量',
           dataIndex: 'number',
-          key: 'number',
           width: '20%'
         },
         {
           title: '金额',
           dataIndex: 'money',
-          key: 'money',
           width: '10%'
         }
       ],
       loadData: parameter => {
-        return getPermissions({
-          params: Object.assign(parameter, this.queryParam)
-        }).then(res => {
-          return res.result
-        })
+        return getSuppMaterialList(parameter)
       }
     }
   },
   created () {
     if (this.type === '1') {
-      this.md = 24
       this.columns.push({
         title: '操作',
-        dataIndex: 'no333',
+        dataIndex: 'id',
         width: '100px',
-        scopedSlots: { customRender: 'actins' }
+        scopedSlots: { customRender: 'action' }
       })
     }
   }

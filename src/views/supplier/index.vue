@@ -4,7 +4,7 @@
     :tab-active-key="tabActiveKey"
     :tab-change="handleTabChange"
   >
-    <a-card style="margin-top: 24px" :bordered="false">
+    <a-card class="search-card" style="margin-top: 24px" :bordered="false">
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
@@ -50,19 +50,17 @@
               </a-col>
               <a-col :md="8" :sm="24">
                 <a-form-item label="供应物料">
-                  <a-select v-model="queryParam.material" placeholder="请选择">
-                    <a-select-option
-                      v-for="option in materialOptions"
-                      :value="option.id"
-                      :key="option.id"
-                      >{{ option.projectName }}</a-select-option
-                    >
-                  </a-select>
+                  <material-type-select
+                    v-model="queryParam.material"
+                  ></material-type-select>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
                 <a-form-item label="创建时间">
-                  <a-range-picker @change="changeCreationTime" />
+                  <a-range-picker
+                    v-model="queryParam.ctime"
+                    @change="changeCreationTime"
+                  />
                 </a-form-item>
               </a-col>
             </template>
@@ -93,29 +91,33 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button type="primary" :disabled="!selectedRowKeys.length" @click="openCheck">审核</a-button>
+        <a-button
+          type="primary"
+          :disabled="!selectedRowKeys.length"
+          @click="openCheck"
+          >审核</a-button
+        >
         <a-button @click="handleAdd">新增</a-button>
       </div>
 
       <s-table
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="id"
         :columns="columns"
         :data="loadData"
-        :alert="true"
+        :alert="{ clear: true }"
         :rowSelection="rowSelection"
         showPagination="auto"
       >
-        <span slot="auditTime" slot-scope="text, record, index">
-        </span>
+        <!-- <span slot="auditTime" slot-scope="text, record, index"> </span> -->
 
-        <span slot="action" slot-scope="text, record">
+        <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
             <a @click="goEdit(record)">编辑</a>
             <a @click="handleRemove(record)">删除</a>
-            <a @click="openCheck(record)">审核</a>
+            <a v-if="+record.status === 0" @click="openCheck(record)">审核</a>
           </template>
         </span>
       </s-table>
@@ -130,6 +132,8 @@
     >
       <check-form
         ref="CheckForm"
+        label="供应商"
+        :show-value="supplierName"
         :selectedRowKeys="selectedRowKeys"
       ></check-form>
     </a-modal>
@@ -143,9 +147,27 @@ import {
   CheckForm,
   ProjectSelect,
   CompanySelect,
-  SupplierTypeSelect
+  SupplierTypeSelect,
+  MaterialTypeSelect
 } from '@/components'
-import { getSupplierList, removeSupplier, auditSupp } from '@/api/supplier'
+import {
+  getSupplierList,
+  removeSupplier,
+  auditSupp,
+  auditBatchSupp
+} from '@/api/supplier'
+
+const checkColumn = [
+  {
+    title: '审核时间',
+    dataIndex: 'auditTime',
+    scopedSlots: { customRender: 'auditTime' }
+  },
+  {
+    title: '审核状态',
+    dataIndex: 'statusv'
+  }
+]
 
 const columns = [
   {
@@ -186,7 +208,7 @@ const columns = [
   {
     title: '操作',
     dataIndex: 'action',
-    width: '150px',
+    width: '180px',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -198,7 +220,8 @@ export default {
     CheckForm,
     ProjectSelect,
     CompanySelect,
-    SupplierTypeSelect
+    SupplierTypeSelect,
+    MaterialTypeSelect
   },
   data () {
     this.columns = columns
@@ -215,17 +238,15 @@ export default {
       confirmLoading: false,
       // 高级搜索 展开/关闭
       advanced: false,
-      projectOptions: [],
-      companyOptions: [],
-      supplierTypeOptions: [], // todo：缺少接口
-      materialOptions: [], // todo：缺少接口
       // 查询参数
       queryParam: {
+        status: '',
         projectId: '',
         companyId: '',
         supplierType: '',
         searchText: '',
-        material: ''
+        material: '',
+        ctime: []
       },
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
@@ -233,11 +254,10 @@ export default {
         return getSupplierList(requestParameters)
       },
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
+      checkId: '',
+      supplierName: ''
     }
-  },
-  created () {
-    // getSupplierList({ t: new Date() })
   },
   computed: {
     rowSelection () {
@@ -250,6 +270,14 @@ export default {
   methods: {
     handleTabChange (key) {
       this.tabActiveKey = key
+      this.queryParam.status = key
+      if (+key < 2 && this.columns[0].dataIndex !== 'auditTime') {
+        this.columns.unshift(...checkColumn)
+      } else if (+key > 1 && this.columns[0].dataIndex !== 'id') {
+        this.columns.shift()
+        this.columns.shift()
+      }
+      this.$refs.table.refresh()
     },
     toggleAdvanced () {
       this.advanced = !this.advanced
@@ -259,7 +287,15 @@ export default {
       this.queryParam.startDate = moment(value[0]).format('YYYY-MM-DD')
       this.queryParam.endDate = moment(value[1]).format('YYYY-MM-DD')
     },
-    openCheck () {
+    openCheck ({ id, supplierName }) {
+      if (id) {
+        this.checkId = id
+        this.supplierName = supplierName
+      } else if (this.selectedRowKeys.length) {
+        this.supplierName = this.selectedRows
+          .map(data => data.supplierName)
+          .join('，')
+      }
       this.visible = true
       this.$refs.CheckForm && this.$refs.CheckForm.resetFields()
     },
@@ -267,15 +303,41 @@ export default {
       this.confirmLoading = true
       this.$refs.CheckForm.handleSubmit()
         .then(value => {
-          auditSupp().then(({ data }) => {
-            this.visible = false
-          })
+          if (this.checkId) {
+            this.auditSupp(value)
+          } else if (this.selectedRowKeys.length) {
+            this.auditBatchSupp(value)
+          }
         })
         .finally(() => {
           this.confirmLoading = false
         })
     },
+    auditSupp (value) {
+      auditSupp({
+        ...value,
+        id: this.checkId
+      }).then(({ message }) => {
+        this.checkId = ''
+        this.checkCall(message)
+      })
+    },
+    auditBatchSupp (value) {
+      auditBatchSupp({
+        ...value,
+        ids: this.selectedRowKeys
+      }).then(({ message }) => {
+        this.$refs.table.clearSelected()
+        this.checkCall(message)
+      })
+    },
+    checkCall (message) {
+      this.$message.success(message)
+      this.visible = false
+      this.$refs.table.refresh()
+    },
     handleCheckCancel () {
+      this.checkId = ''
       this.visible = false
     },
     handleAdd () {
@@ -283,10 +345,11 @@ export default {
         name: 'SupplierEdit'
       })
     },
-    handleRemove ({ id }) {
+    handleRemove ({ id, supplierName }) {
       const that = this
       this.$confirm({
-        content: '是否删除该供应商？',
+        title: '删除人员', // 用户名
+        content: `确认删除 "${supplierName}" 吗？`,
         onOk () {
           removeSupplier({
             id
@@ -305,9 +368,12 @@ export default {
         }
       })
     },
-    goDetail () {
+    goDetail ({ id }) {
       this.$router.push({
-        name: 'SupplierDetail'
+        name: 'SupplierDetail',
+        query: {
+          id
+        }
       })
     },
     onSelectChange (selectedRowKeys, selectedRows) {

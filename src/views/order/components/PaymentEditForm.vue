@@ -6,102 +6,71 @@
     :label-col="labelCol"
     :wrapper-col="wrapperCol"
   >
-    <a-form-model-item label="付款时间" prop="projectName" required>
+    <a-form-model-item label="付款时间" prop="payTime" required>
       <a-date-picker
-        v-model="form.projectName"
+        v-model="form.payTime"
         placeholder="请选择"
+        valueFormat="YYYY-MM-DD"
       ></a-date-picker>
     </a-form-model-item>
-    <a-form-model-item label="付款方式" prop="stage" required>
-      <a-select v-model="form.stage" placeholder="请选择">
+    <a-form-model-item label="付款方式" prop="payType" required>
+      <a-select v-model="form.payType" placeholder="请选择">
         <a-select-option
-          v-for="option in stageList"
-          :key="option.stageId"
-          :value="option.stageId"
-          >{{ option.stageText }}</a-select-option
+          v-for="option in payTypeOptions"
+          :value="option.typeId"
+          :key="option.typeId"
         >
+          {{ option.typeName }}
+        </a-select-option>
       </a-select>
     </a-form-model-item>
-    <a-form-model-item label="付款金额" prop="money" required>
-      <a-input v-model="form.money" placeholder="请输入" addon-before="￥">
+    <a-form-model-item label="付款金额" prop="paid" required>
+      <a-input v-model="form.paid" placeholder="请输入" addon-before="￥">
       </a-input>
     </a-form-model-item>
-    <a-form-model-item label="付款凭证" prop="licence">
-      <upload-image v-model="form.licence" maxLength="3"></upload-image>
+    <a-form-model-item label="付款凭证" prop="payPz">
+      <upload-image v-model="form.payPz" maxLength="3"></upload-image>
     </a-form-model-item>
-    <a-form-model-item label="是否开票" prop="ispiao" required>
-      <a-select v-model="form.ispiao" placeholder="请选择">
-        <a-select-option :value="1">是</a-select-option>
-        <a-select-option :value="0">否</a-select-option>
+    <a-form-model-item label="是否开票" prop="isKp" required>
+      <a-select v-model="form.isKp" placeholder="请选择">
+        <a-select-option value="1">是</a-select-option>
+        <a-select-option value="0">否</a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item label="票据凭证" prop="licence1">
-      <upload-image v-model="form.licence1" maxLength="3"></upload-image>
     </a-form-model-item>
   </a-form-model>
 </template>
 
 <script>
 import { UploadImage } from '@/components'
-import cloneDeep from 'lodash.clonedeep'
-const initialForm = {
-  projectName: '',
-  stage: '',
-  companyIds: [],
-  buildTime: [],
-  licence: [],
-  area: [],
-  address: '',
-  manage: '',
-  manageMobile: '',
-  buyer: '',
-  buyerMobile: '',
-  technician: '',
-  technicianMobile: ''
-}
+import { getPayType } from '@/api/contract'
 export default {
   name: 'PaymentEditForm',
   components: {
     UploadImage
   },
-  props: {
-    showSubmit: {
-      type: Boolean,
-      default: false
-    },
-    companyList: {
-      type: Array,
-      default: () => []
-    },
-    stageList: {
-      type: Array,
-      default: () => []
-    }
-  },
   data () {
     return {
       labelCol: { span: 7 },
       wrapperCol: { span: 14 },
-      form: cloneDeep(initialForm),
+      form: {},
       rules: {
-        projectName: [{ required: true, message: '请输入项目名称' }],
-        stage: [{ required: true, message: '请选择付款方式' }],
-        money: [{ required: true, message: '请输入付款金额' }],
-        ispiao: [{ required: true, message: '请选择是否开票' }]
-      }
+        payTime: [{ required: true, message: '请输入项目名称' }],
+        payType: [{ required: true, message: '请选择付款方式' }],
+        paid: [{ required: true, message: '请输入付款金额' }],
+        isKp: [{ required: true, message: '请选择是否开票' }]
+      },
+      payTypeOptions: []
     }
   },
-  computed: {
-    options () {
-      return this.companyList.map(option => {
-        return {
-          label: option.companyName,
-          value: option.companyId
-        }
-      })
-    }
+  created () {
+    this.getPayType()
   },
   methods: {
+    getPayType () {
+      getPayType().then(({ data }) => {
+        this.payTypeOptions = data
+      })
+    },
     handleSubmit () {
       return new Promise((resolve, reject) => {
         this.$refs.projectForm.validate(valid => {
@@ -119,7 +88,7 @@ export default {
     },
     resetFields () {
       this.$refs.projectForm.resetFields()
-      this.form = cloneDeep(initialForm)
+      this.form = {}
     }
   }
 }

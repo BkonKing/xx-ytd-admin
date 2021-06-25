@@ -28,11 +28,11 @@ export function getProjectStage (data) {
 }
 
 // 获取项目列表
-export function getProjectList (data) {
+export function getProjectList (params) {
   return request({
     url: project.getProjectList,
-    method: 'post',
-    data
+    method: 'get',
+    params
   })
 }
 

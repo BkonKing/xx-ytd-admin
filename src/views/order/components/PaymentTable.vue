@@ -1,12 +1,26 @@
 <template>
   <a-card :bordered="false" title="付款信息" style="margin-top: 24px;">
     <s-table ref="table" size="default" :columns="columns" :data="loadData">
-      <span slot="actions" slot-scope="text, recode">
-        <a-button type="link" @click="OpenEdit(recode)">编辑</a-button>
-        <a-button type="link" @click="handleRemove(recode)">删除</a-button>
+      <span slot="index" slot-scope="text, record, index">
+        {{ data.records.length - index }}
       </span>
-      <template slot="footer">
-        总计 100 ￥10,000.00
+      <span slot="payPz" slot-scope="text, record">
+        <a v-if="text" @click="previewImage(record.payPz)">{{text}}张</a>
+        <template v-else>--</template>
+      </span>
+      <span class="table-action" slot="action" slot-scope="text, recode">
+        <a @click="OpenEdit(recode)">编辑</a>
+        <a @click="handleRemove(recode)">删除</a>
+      </span>
+      <template v-if="data.allMoney" slot="footer">
+        <span> 总计({{ `${data.unKpNum + data.kpNum}` }}) </span>
+        <span>￥{{ data.allMoney }}</span>
+        <span>
+          已开{{ data.kpNum }} (￥{{ data.kpMoney }}) 未开{{
+            data.unKpNum
+          }}
+          (￥{{ data.unKpMoney }})
+        </span>
       </template>
     </s-table>
     <a-button
@@ -23,14 +37,10 @@
       :width="640"
       :maskClosable="false"
       :keyboard="false"
-      @ok="handleOkProject"
+      @ok="handleOk"
       @cancel="closeModal"
     >
-      <payment-edit-form
-        ref="PaymentForm"
-        :company-list="companyList"
-        :stage-list="projectStageList"
-      ></payment-edit-form>
+      <payment-edit-form ref="PaymentForm"></payment-edit-form>
     </a-modal>
   </a-card>
 </template>
@@ -38,14 +48,13 @@
 <script>
 import { STable } from '@/components'
 import PaymentEditForm from './PaymentEditForm'
-import cloneDeep from 'lodash.clonedeep'
-import moment from 'moment'
-import { getPermissions } from '@/api/manage'
+// import cloneDeep from 'lodash.clonedeep'
 import {
-  addProject,
-  updateProject,
-  removeProject
-} from '@/api/project'
+  getOrderPayByOrderId,
+  addOrderPay,
+  updateOrderPay,
+  removeOrderPay
+} from '@/api/order'
 export default {
   name: 'PaymentTable',
   components: {
@@ -53,9 +62,9 @@ export default {
     PaymentEditForm
   },
   props: {
-    type: {
-      type: Number,
-      default: 0
+    id: {
+      type: [String, Number],
+      default: ''
     }
   },
   data () {
@@ -63,64 +72,52 @@ export default {
       columns: [
         {
           title: '序号',
-          dataIndex: 'name',
-          key: 'name',
-          width: '150px'
+          scopedSlots: { customRender: 'index' }
         },
         {
           title: '付款时间',
-          dataIndex: 'name11',
-          key: 'name',
-          width: '150px'
+          dataIndex: 'payTime'
         },
         {
           title: '付款ID',
-          dataIndex: 'workId',
-          key: 'workId',
-          width: '20%'
+          dataIndex: 'id'
         },
         {
           title: '付款方式',
-          dataIndex: 'department',
-          key: 'department',
-          width: '20%'
+          dataIndex: 'payTypeName'
         },
         {
           title: '付款金额',
-          dataIndex: 'number',
-          key: 'number',
-          width: '20%'
+          dataIndex: 'paid',
+          key: 'paid'
         },
         {
           title: '付款凭证',
-          dataIndex: 'money',
-          key: 'money',
-          width: '10%'
+          dataIndex: 'payPzNum',
+          scopedSlots: { customRender: 'payPz' }
         },
         {
           title: '开票情况',
-          dataIndex: 'money1',
-          key: 'money',
-          width: '10%'
+          dataIndex: 'isKpName'
         },
         {
           title: '创建时间',
-          dataIndex: 'money2',
-          key: 'money',
-          width: '10%'
+          dataIndex: 'ctime'
         },
         {
           title: '操作',
-          dataIndex: 'no333',
-          width: '100px',
-          scopedSlots: { customRender: 'actins' }
+          scopedSlots: { customRender: 'action' }
         }
       ],
+      data: {},
       loadData: parameter => {
-        return getPermissions({
-          params: Object.assign(parameter, this.queryParam)
-        }).then(res => {
-          return res.result
+        return getOrderPayByOrderId(
+          Object.assign(parameter, {
+            orderId: this.id
+          })
+        ).then(res => {
+          this.data = res.data
+          return res
         })
       },
       title: '',
@@ -141,30 +138,28 @@ export default {
       this.showModal()
       this.$refs.PaymentForm && this.$refs.PaymentForm.resetFields()
       this.$nextTick(() => {
-        // const data = cloneDeep(obj)
         this.$refs.PaymentForm.setFieldsValue(obj)
       })
     },
     showModal () {
       this.visible = true
     },
-    handleOkProject (e) {
+    handleOk (e) {
       this.$refs.PaymentForm.handleSubmit().then(res => {
         this.confirmLoading = true
-        const data = cloneDeep(res)
-        if (data.id) {
-          this.updateProject(data)
+        if (res.id) {
+          this.updateOrderPay(res)
         } else {
-          this.addProject(data)
+          this.addOrderPay(res)
         }
       })
     },
-    addProject (data) {
-      addProject(data)
+    addOrderPay (data) {
+      addOrderPay({ ...data, orderId: this.id })
         .then(({ success }) => {
           if (success) {
             this.$message.success('添加项目成功')
-            this.getProjectList()
+            this.$refs.table.refresh()
             this.visible = false
           }
         })
@@ -172,12 +167,12 @@ export default {
           this.confirmLoading = false
         })
     },
-    updateProject (data) {
-      updateProject(data)
+    updateOrderPay (data) {
+      updateOrderPay({ ...data, orderId: this.id })
         .then(({ success }) => {
           if (success) {
             this.$message.success('修改项目成功')
-            this.getProjectList()
+            this.$refs.table.refresh()
             this.visible = false
           }
         })
@@ -191,15 +186,22 @@ export default {
     handleRemove ({ id }) {
       const that = this
       this.$confirm({
-        content: '是否删除该项目？',
+        title: '删除付款',
+        content: '确定删除吗？',
         onOk () {
-          removeProject({
+          removeOrderPay({
             id
           }).then(({ data }) => {
-            that.$message.success('删除项目成功')
-            that.getProjectList()
+            that.$message.success('删除成功')
+            that.$refs.table.refresh()
           })
         }
+      })
+    },
+    // 查看订单凭证
+    previewImage (images) {
+      this.$viewerApi({
+        images
       })
     }
   }
