@@ -10,6 +10,7 @@
     </a-form-model-item>
     <a-form-model-item label="登录密码" prop="password">
       <a-input
+      type="password"
         v-model="form.password"
         @blur="setPasswd"
         :maxLength="18"
@@ -17,36 +18,19 @@
       ></a-input>
     </a-form-model-item>
     <a-form-model-item label="选择角色" prop="roleId">
-      <a-tree-select
-      v-model="form.roleId"
-        show-search
-        style="width: 100%"
-        :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-        placeholder="请选择"
-        allow-clear
-        tree-default-expand-all
-      >
-        <a-tree-select-node key="0-1" value="parent 1" title="parent 1">
-          <a-tree-select-node key="0-1-1" value="parent 1-0" title="parent 1-0">
-            <a-tree-select-node
-              key="random"
-              :selectable="false"
-              value="leaf1"
-              title="my leaf"
-            />
-            <a-tree-select-node key="random1" value="leaf2" title="your leaf" />
-          </a-tree-select-node>
-          <a-tree-select-node
-            key="random2"
-            value="parent 1-1"
-            title="parent 1-1"
-          >
-            <a-tree-select-node key="random3" value="sss">
-              <b slot="title" style="color: #08c">sss</b>
-            </a-tree-select-node>
-          </a-tree-select-node>
-        </a-tree-select-node>
-      </a-tree-select>
+     <a-tree-select
+    v-model="form.roleId"
+    style="width: 100%"
+    :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+    :tree-data="treeData"
+    placeholder="请选择"
+     :replaceFields="{ key: 'id',value:'id',title:'roleName' }"
+    tree-default-expand-all
+  >
+    <span  slot="title" slot-scope="{title }" style="color: #08c">
+    {{ title }}
+    </span>
+  </a-tree-select>
     </a-form-model-item>
     <a-form-model-item label="真实姓名" prop="realName">
       <a-input v-model="form.realName" :maxLength="10"  @blur="setName" placeholder="请输入1~10个字符"></a-input>
@@ -58,6 +42,8 @@
 </template>
 
 <script>
+import { toGetRoles, toAddAdmin, toUpdateAdmin } from '@/api/permissionManage'
+import bus from '@/utils/bus'
 
 export default {
   name: 'addForm',
@@ -65,7 +51,10 @@ export default {
     record: {
       type: Object,
       default: null
-
+    },
+    mode: {
+      type: String,
+      default: 'add'
     }
   },
   data () {
@@ -73,6 +62,7 @@ export default {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
       treeExpandedKeys: [],
+      treeData: [],
       form: {
         account: '', // 是varchar人员登录账户
         password: '', // 否varchar登录密码
@@ -89,9 +79,20 @@ export default {
     }
   },
   mounted () {
-
+    if (this.record) {
+      this.form = this.record
+    }
   },
+
   methods: {
+
+    // 获取角色
+    async getRole () {
+      const res = await toGetRoles()
+      this.treeData = res.data
+      console.log('获取角色', res)
+    },
+    // 设置姓名
     setName () {
       if (this.form.realName !== '') {
         if (this.form.realName.length < 1) {
@@ -121,12 +122,26 @@ export default {
       e.target.value = e.target.value.replace(/[^\a-\z\A-\Z0-9]/g, '')
     },
     onOk () {
-      this.$refs.form.validate(result => {
-        if (result) {
-          this.$message.success('验证成功')
-        } else {
-          this.$message.error('验证失败')
-        }
+      // console.log('监听了 modal ok 事件')
+      return new Promise(resolve => {
+        this.$refs.form.validate(result => {
+          if (result) {
+            if (this.mode === 'add') {
+              toAddAdmin(this.form).then(() => {
+                this.$message.success('新增成功')
+                bus.$emit('refresh', 'add')
+              })
+            } else {
+              toUpdateAdmin(this.form).then(() => {
+                this.$message.success('编辑成功')
+                bus.$emit('refresh', 'mode')
+              })
+            }
+            resolve(true)
+          } else {
+            this.$message.error('验证失败')
+          }
+        })
       })
     },
     onCancel () {
@@ -146,6 +161,9 @@ export default {
     //     }
     //   })
     // }
+  },
+  created () {
+    this.getRole()
   }
 }
 </script>

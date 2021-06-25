@@ -6,25 +6,33 @@
           <a-row :gutter="36">
             <a-col :md="8" :sm="24">
               <a-form-model-item label="角色">
-                <a-select placeholder="请选择">
-                  <a-select-option value="1">
-                    提问
-                  </a-select-option>
-                  <a-select-option value="2">
-                    回复
-                  </a-select-option>
-                </a-select>
+                <a-tree-select
+                  v-model="roleId"
+                  style="width: 100%"
+                  :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                  :tree-data="treeData"
+                  placeholder="请选择"
+                  :replaceFields="{ key: 'id', value: 'id', title: 'roleName' }"
+                  tree-default-expand-all
+                >
+                  <span slot="title" slot-scope="{ title }" style="color: #08c">
+                    {{ title }}
+                  </span>
+                </a-tree-select>
               </a-form-model-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-model-item label="人员">
-                <a-input placeholder="姓名、手机号"></a-input>
+                <a-input
+                  v-model="searchText"
+                  placeholder="姓名、手机号"
+                ></a-input>
               </a-form-model-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <div class="btns">
-                <a-button type="primary">查询</a-button>
-                <a-button>重置</a-button>
+                <a-button type="primary" @click="search">查询</a-button>
+                <a-button @click="reset">重置</a-button>
               </div>
             </a-col>
           </a-row>
@@ -33,18 +41,25 @@
     </a-card>
     <a-card class="card2">
       <a-button type="primary" @click="add">新增人员</a-button>
-     <div class="table">
-        <a-table :columns="columns" rowKey="id" :data-source="tableData" :pagination='false'>
-          <template #opera>
+      <div class="table">
+        <a-table
+          :columns="columns"
+          rowKey="id"
+          :data-source="tableData"
+          :pagination="false"
+        >
+          <template slot="opera" slot-scope="text, record">
             <div class="opera">
-              <a-button type="link">权限</a-button>
-              <a-button type="link" >编辑</a-button>
-              <a-button type="link">删除</a-button>
+              <a-button type="link" @click="openEditPermiss(record)"
+                >权限</a-button
+              >
+              <a-button type="link" @click="edit(record)">编辑</a-button>
+              <a-button type="link" @click="delPerson(record)">删除</a-button>
             </div>
           </template>
-      </a-table>
-     </div>
-           <div class="pagination">
+        </a-table>
+      </div>
+      <div class="pagination">
         <!-- :default-current="pagination.currentPage" -->
         <a-pagination
           v-model="pagination.currentPage"
@@ -64,19 +79,24 @@
         />
       </div>
     </a-card>
+    <permissModal ref="permissModal"></permissModal>
   </div>
 </template>
 
 <script>
-import { toGetAdminList } from '@/api/permissionManage'
+import { toGetAdminList, toRemoveAdmin, toGetRoles } from '@/api/permissionManage'
 import addForm from './modules/addForm'
+import permissModal from './modules/permissModal.vue'
+import bus from '@/utils/bus'
 export default {
   components: {
-    addForm
+    addForm,
+    permissModal
   },
   data () {
     return {
       tableData: [],
+      treeData: [],
       columns: [
         {
           title: '人员姓名',
@@ -95,7 +115,6 @@ export default {
           dataIndex: 'roleName',
           key: 'roleName',
           width: '14.22222222%'
-
         },
         {
           title: '手机号',
@@ -129,17 +148,112 @@ export default {
         currentPage: 1, // 默认页
         total: 50, // 总数
         pageSize: 10 // 默认页容量
-      }
+      },
+      roleId: '', // 角色id
+      searchText: '', // 姓名、手机号关键字
+      allRole: []
     }
   },
+  mounted () {
+    bus.$on('refresh', value => {
+      if (value === 'add') {
+        this.pagination.currentPage = 1
+        this.getData()
+      } else {
+        this.getData()
+      }
+    })
+  },
   methods: {
-    add () {
-      this.$dialog(addForm,
+    // 获取角色
+    async getRole () {
+      const res = await toGetRoles()
+      this.treeData = res.data
+      console.log('获取角色', res)
+    },
+    // 编辑权限
+    openEditPermiss (record) {
+      console.log(record)
+      this.$refs.permissModal.isShow = true
+      // this.$refs.permissModal.roleId = record.roleId
+      this.$refs.permissModal.id = record.id
+    },
+    // 重置
+    reset () {
+      this.pagination.currentPage = 1
+      this.roleId = ''
+      this.searchText = ''
+      this.pagination.pageSize = 10
+      this.getData()
+    },
+    // 搜索
+    search () {
+      this.pagination.currentPage = 1
+      this.getData()
+    },
+    // 编辑
+    edit (item) {
+      const record = JSON.parse(JSON.stringify(item))
+
+      this.$dialog(
+        addForm,
         // component props
         {
+          mode: 'edit',
+          record,
           on: {
             ok () {
               console.log('ok 回调')
+            },
+            cancel () {
+              console.log('cancel 回调')
+            },
+            close () {
+              console.log('modal close 回调')
+            }
+          }
+        },
+        // modal props
+        {
+          title: '编辑人员',
+          width: 700,
+          centered: true,
+          maskClosable: false
+        }
+      )
+    },
+    // 删除人员
+    delPerson (item) {
+      const self = this
+      console.log('删除id', item.id)
+      this.$confirm({
+        title: '删除人员',
+        icon: h => <a-icon theme="filled" type="exclamation-circle" />,
+        content: () => `确定删除"${item.realName}"吗`,
+        onOk: () => {
+          toRemoveAdmin({ id: item.id }).then(() => {
+            self.$message.success('删除成功')
+
+            self.getData()
+          })
+        },
+        onCancel () {
+          console.log('Cancel')
+        },
+        class: 'test'
+      })
+    },
+    // 新增人员
+    add () {
+      this.$dialog(
+        addForm,
+        // component props
+        {
+          mode: 'add',
+          on: {
+            ok () {
+              // console.log('ok 回调')
+              console.log('执行了ok')
             },
             cancel () {
               console.log('cancel 回调')
@@ -155,13 +269,16 @@ export default {
           width: 700,
           centered: true,
           maskClosable: false
-        })
+        }
+      )
     },
     // 获取人员列表
-    async  getData () {
+    async getData () {
       const res = await toGetAdminList({
+        roleId: this.roleId,
         pageNum: this.pagination.currentPage,
-        pageSize: this.pagination.pageSize
+        pageSize: this.pagination.pageSize,
+        searchText: this.searchText
       })
       this.tableData = res.data.records
       this.pagination.total = +res.data.total
@@ -183,6 +300,7 @@ export default {
   },
   created () {
     this.getData()
+    this.getRole()
   }
 }
 </script>
@@ -197,12 +315,12 @@ export default {
       }
     }
   }
-  .card2{
+  .card2 {
     margin-top: 20px;
-    .table{
+    .table {
       margin-top: 16px;
     }
-     .pagination {
+    .pagination {
       margin-top: 10px;
       /deep/ .ant-pagination {
         padding-top: 10px;
