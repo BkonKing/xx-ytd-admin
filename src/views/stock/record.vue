@@ -10,26 +10,20 @@
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="所属项目">
-                <a-select v-model="queryParam.projectId" placeholder="请选择">
-                  <a-select-option value="0">全部</a-select-option>
-                  <a-select-option value="1">关闭</a-select-option>
-                  <a-select-option value="2">运行中</a-select-option>
-                </a-select>
+                <project-select v-model="queryParam.projectId"></project-select>
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item label="所属公司">
-                <a-select v-model="queryParam.system" placeholder="请选择">
-                  <a-select-option value="0">全部</a-select-option>
-                  <a-select-option value="1">关闭</a-select-option>
-                  <a-select-option value="2">运行中</a-select-option>
-                </a-select>
+                <company-select
+                    v-model="queryParam.companyId"
+                  ></company-select>
               </a-form-item>
             </a-col>
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="出入库时间">
-                  <a-range-picker v-model="queryParam.time1" />
+                  <a-range-picker v-model="queryParam.time" />
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">

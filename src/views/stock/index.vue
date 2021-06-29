@@ -153,7 +153,7 @@
 <script>
 // import moment from 'moment'
 import { STable, ProjectSelect, CompanySelect } from '@/components'
-import { getStockList, updateStock } from '@/api/stock'
+import { getStockList, updateStock, removeStock } from '@/api/stock'
 import AddModal from './components/AddModal'
 import cloneDeep from 'lodash.clonedeep'
 
@@ -250,17 +250,16 @@ export default {
     openAdd () {
       this.visible = true
     },
-    handleRemove ({ id, originalNum, remarks }) {
+    handleRemove ({ id }) {
       const that = this
       this.$confirm({
         content: '是否删除该库存？',
         onOk () {
-          updateStock({
-            id,
-            originalNum,
-            remarks
+          removeStock({
+            id
           }).then(({ data }) => {
             that.$message.success('删除库存成功')
+            that.$refs.table.refresh(true)
           })
         }
       })
@@ -288,9 +287,12 @@ export default {
     setEditable (index, value) {
       this.$set(this.tableData[index], 'editable', value)
     },
-    goDetail () {
+    goDetail ({ id }) {
       this.$router.push({
-        name: 'stockDetail'
+        name: 'stockDetail',
+        query: {
+          id
+        }
       })
     }
   }

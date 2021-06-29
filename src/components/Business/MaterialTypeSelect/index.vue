@@ -10,6 +10,7 @@
     tree-default-expand-all
     :show-checked-strategy="SHOW_PARENT"
     treeNodeFilterProp="title"
+    @change="$emit('change')"
   >
     <a-tree-select-node
       v-for="(option, index) in options"

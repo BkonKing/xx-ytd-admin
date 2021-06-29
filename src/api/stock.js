@@ -4,14 +4,14 @@ export const stock = {
   stockList: '/operate/stock/stockList',
   addStock: '/operate/stock/addStock',
   updateStock: '/operate/stock/updateStock',
-  removestock: '/operate/stock/removestock',
-  auditstock: '/operate/stock/auditstock',
+  removeStock: '/operate/stock/removeStock',
+  stockInfo: '/operate/stock/stockInfo',
   stockInfo: '/operate/stock/stockInfo',
   auditBatchstock: '/operate/stock/auditBatchstock',
   getstockPayBystockId: '/operate/stock/getstockPayBystockId',
   addStockPay: '/operate/stock/addStockPay',
   updateStockPay: '/operate/stock/updateStockPay',
-  removestockPay: '/operate/stock/removestockPay'
+  removeStockPay: '/operate/stock/removeStockPay'
 }
 
 // 获取库存列表接口
@@ -42,18 +42,18 @@ export function updateStock (data) {
 }
 
 // 删除订单接口
-export function removestock (data) {
+export function removeStock (data) {
   return request({
-    url: stock.removestock,
+    url: stock.removeStock,
     method: 'post',
     data
   })
 }
 
-// 审核订单接口
-export function auditstock (data) {
+// 库存详情接口
+export function getStockInfo (data) {
   return request({
-    url: stock.auditstock,
+    url: stock.stockInfo,
     method: 'post',
     data
   })

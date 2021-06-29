@@ -38,10 +38,26 @@
         <a-row type="flex">
           <a-col flex="1">
             <a-form-model-item prop="materialId" required>
-              <material-type-select
-                v-model="record.materialId"
-                :show-search="true"
-              ></material-type-select>
+              <a-row type="flex">
+                <a-col
+                  v-if="record.error"
+                  flex="14px"
+                  style="margin-right: 10px;"
+                >
+                  <a-icon
+                    type="close-circle"
+                    theme="filled"
+                    style="color: red;"
+                  />
+                </a-col>
+                <a-col flex="1">
+                  <material-type-select
+                    v-model="record.materialId"
+                    :show-search="true"
+                    @change="changeError(index)"
+                  ></material-type-select>
+                </a-col>
+              </a-row>
             </a-form-model-item>
           </a-col>
           <a-col flex="1">
@@ -50,6 +66,7 @@
                 v-model="record.brand"
                 placeholder="请输入"
                 :maxLength="50"
+                @change="changeError(index)"
               />
             </a-form-model-item>
           </a-col>
@@ -59,6 +76,7 @@
                 v-model="record.model"
                 placeholder="请输入"
                 :maxLength="50"
+                @change="changeError(index)"
               />
             </a-form-model-item>
           </a-col>
@@ -66,7 +84,11 @@
             <a-row type="flex">
               <a-col flex="50px">
                 <a-form-model-item prop="unit">
-                  <a-select v-model="record.unit" style="width: 100%;">
+                  <a-select
+                    v-model="record.unit"
+                    style="width: 100%;"
+                    @change="changeError(index)"
+                  >
                     <a-select-option
                       v-for="option in unitOptions"
                       :value="option.value"
@@ -84,6 +106,7 @@
                     placeholder="请输入"
                     :min="0"
                     :maxLength="15"
+                    @change="changeError(index)"
                   />
                 </a-form-model-item>
               </a-col>
@@ -91,7 +114,11 @@
           </a-col>
           <a-col flex="150px">
             <a-form-model-item prop="remarks">
-              <a-input v-model="record.remarks" placeholder="请输入" />
+              <a-input
+                v-model="record.remarks"
+                placeholder="请输入"
+                @change="changeError(index)"
+              />
             </a-form-model-item>
           </a-col>
           <a-col flex="60px">
@@ -191,6 +218,11 @@ export default {
     remove (index) {
       this.tableData.splice(index, 1)
     },
+    changeError (index) {
+      if (this.tableData[index].error) {
+        this.$set(this.tableData[index], 'error', false)
+      }
+    },
     handleSubmit (ref, data) {
       return new Promise((resolve, reject) => {
         ref.validate(valid => {
@@ -217,11 +249,17 @@ export default {
             ...this.form,
             material: this.tableData
           }
-          addStock(params).then(() => {
-            this.$message.success('提交成功')
-            this.$emit('submit')
-            this.visible = false
-          })
+          addStock(params)
+            .then(() => {
+              this.$message.success('提交成功')
+              this.$emit('submit')
+              this.visible = false
+            })
+            .catch(res => {
+              res.date.forEach(key => {
+                this.$set(this.tableData[key], 'error', true)
+              })
+            })
         })
         .catch(() => {})
         .finally(() => {
