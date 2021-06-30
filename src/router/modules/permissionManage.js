@@ -29,6 +29,33 @@ export default {
         title: '角色管理',
         icon: 'table'
       }
+    },
+    {
+      path: '/permissionManage/companManage',
+      name: 'companManage',
+      component: () => import('@/views/permissionManage/companManage'),
+      meta: {
+        title: '公司管理',
+        icon: 'table'
+      }
+    },
+    {
+      path: '/permissionManage/operaLog',
+      name: 'operaLog',
+      component: () => import('@/views/permissionManage/operaLog'),
+      meta: {
+        title: '操作日志',
+        icon: 'table'
+      }
+    },
+    {
+      path: '/permissionManage/permissMenu',
+      name: 'permissMenu',
+      component: () => import('@/views/permissionManage/permissMenu'),
+      meta: {
+        title: '权限菜单',
+        icon: 'table'
+      }
     }
   ]
 }

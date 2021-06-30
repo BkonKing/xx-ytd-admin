@@ -13,7 +13,21 @@ export const permissionApi = {
   updateAdmin: '/system/admin/updateAdmin',
   getAdminMenus: '/system/admin/getAllotsMenus',
   updateAdminMenus: '/system/admin/updateAllotsMenus',
-  getAllRoles: '/public/common/getAllRoles'
+  getAllRoles: '/public/common/getAllRoles',
+  getAllProject: '/public/common/getAllProject',
+  companyList: '/system/company/companyList',
+  addCompany: '/system/company/addCompany',
+  updateCompany: '/system/company/updateCompany',
+  removeCompany: '/system/company/removeCompany',
+  getAllCompanyMenus: '/system/company/getAllotsMenus',
+  updateAllCompanyMenus: '/system/company/updateAllotsMenus',
+  getLogsList: '/system/logs/getLogsList',
+  getLogType: '/public/common/getLogType',
+  getLogAdmin: '/public/common/getLogAdmin',
+  getMenus: '/system/menus/getMenus',
+  updateBatchMenu: '/system/menus/updateBatchMenu',
+  removeMenu: '/system/menus/removeMenu',
+  removeBatchMenu: '/system/menus/removeBatchMenu'
 }
 // 角色管理接口(已验证)
 export function toGetRoles () {
@@ -115,5 +129,113 @@ export function getAllRoles () {
   return request({
     url: permissionApi.getAllRoles,
     method: 'post'
+  })
+}
+// 所有项目接口(已验证)
+export function toGetAllProject () {
+  return request({
+    url: permissionApi.getAllProject,
+    method: 'post'
+
+  })
+}
+// 公司管理接口(已验证)
+export function toCompanyList (params) {
+  return request({
+    url: permissionApi.companyList,
+    method: 'post',
+    params
+  })
+}
+// 创建公司接口(已验证)
+export function toAddCompany (data) {
+  return request({
+    url: permissionApi.addCompany,
+    method: 'post',
+    data
+  })
+}
+// 编辑公司接口(已验证)
+export function toUpdateCompany (data) {
+  return request({
+    url: permissionApi.updateCompany,
+    method: 'post',
+    data
+  })
+}
+// 删除公司接口(已验证)
+export function toRemoveCompany (data) {
+  return request({
+    url: permissionApi.removeCompany,
+    method: 'post',
+    data
+  })
+}
+// 公司对应的菜单数据接口(已验证)
+export function toGetAllCompanyMenus (params) {
+  return request({
+    url: permissionApi.getAllCompanyMenus,
+    method: 'post',
+    params
+  })
+}
+// 配置公司对应的权限接口(已验证)
+export function toUpdateAllCompanyMenus (data) {
+  return request({
+    url: permissionApi.updateAllCompanyMenus,
+    method: 'post',
+    data
+  })
+}
+// 操作日志列表接口(已验证)
+export function toGetLogsList (params) {
+  return request({
+    url: permissionApi.getLogsList,
+    params
+  })
+}
+// 操作日志模块接口(已验证)
+export function toGetLogType (params) {
+  return request({
+    url: permissionApi.getLogType,
+    params
+  })
+}
+// 日志操作员接口(已验证)
+export function toGetLogAdmin () {
+  return request({
+    url: permissionApi.getLogAdmin
+
+  })
+}
+// 后台菜单管理对象接口(已验证)
+export function toGetMenus (params) {
+  return request({
+    url: permissionApi.getMenus,
+    params
+  })
+}
+// 批量添加/编辑菜单接口(已验证)
+export function toUpdateBatchMenu (data) {
+  return request({
+    url: permissionApi.updateBatchMenu,
+    method: 'post',
+    data
+  })
+}
+// 删除菜单接口(已验证)
+export function toRemoveMenu (data) {
+  return request({
+    url: permissionApi.removeMenu,
+    method: 'post',
+    data
+  })
+}
+// 批量删除菜单接口(已验证)
+export function toRemoveBatchMenu (data) {
+  return request({
+    url: permissionApi.removeBatchMenu,
+    method: 'post',
+    data
   })
 }
