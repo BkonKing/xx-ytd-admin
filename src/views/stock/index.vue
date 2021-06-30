@@ -11,33 +11,25 @@
         </a-col>
       </a-row>
     </template>
-    <a-card style="margin-top: 24px" :bordered="false">
+    <a-card class="search-card" style="margin-top: 24px" :bordered="false">
       <div class="table-page-search-wrapper">
         <a-form ref="form" layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="所属项目">
-                <a-select v-model="queryParam.projectId" placeholder="请选择">
-                  <a-select-option value="0">全部</a-select-option>
-                  <a-select-option value="1">关闭</a-select-option>
-                  <a-select-option value="2">运行中</a-select-option>
-                </a-select>
+                <project-select v-model="queryParam.projectId"></project-select>
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-item label="所属公司">
-                <a-select v-model="queryParam.system" placeholder="请选择">
-                  <a-select-option value="0">全部</a-select-option>
-                  <a-select-option value="1">关闭</a-select-option>
-                  <a-select-option value="2">运行中</a-select-option>
-                </a-select>
+                <company-select v-model="queryParam.companyId"></company-select>
               </a-form-item>
             </a-col>
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="物料">
                   <a-input
-                    v-model="queryParam.contract"
+                    v-model="queryParam.serachMaterialText"
                     placeholder="编码、名称"
                   ></a-input>
                 </a-form-item>
@@ -45,7 +37,7 @@
               <a-col :md="8" :sm="24">
                 <a-form-item label="规格型号">
                   <a-input
-                    v-model="queryParam.contract"
+                    v-model="queryParam.serachModelText"
                     placeholder="请输入"
                   ></a-input>
                 </a-form-item>
@@ -53,7 +45,7 @@
               <a-col :md="8" :sm="24">
                 <a-form-item label="物料品牌">
                   <a-input
-                    v-model="queryParam.gys"
+                    v-model="queryParam.serachBrandText"
                     placeholder="请输入"
                   ></a-input>
                 </a-form-item>
@@ -61,7 +53,7 @@
               <a-col :md="8" :sm="24">
                 <a-form-item label="备注">
                   <a-input
-                    v-model="queryParam.bz"
+                    v-model="queryParam.serachRemarksText"
                     placeholder="请输入"
                   ></a-input>
                 </a-form-item>
@@ -69,14 +61,17 @@
               <a-col :md="8" :sm="24">
                 <a-form-item label="供应商">
                   <a-input
-                    v-model="queryParam.gys"
+                    v-model="queryParam.serachSupplierText"
                     placeholder="ID、名称"
                   ></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
                 <a-form-item label="订单">
-                  <a-input v-model="queryParam.gys" placeholder="ID"></a-input>
+                  <a-input
+                    v-model="queryParam.orderId"
+                    placeholder="ID"
+                  ></a-input>
                 </a-form-item>
               </a-col>
             </template>
@@ -87,8 +82,12 @@
                   (advanced && { float: 'right', overflow: 'hidden' }) || {}
                 "
               >
-                <a-button type="primary" @click="search">查询</a-button>
-                <a-button style="margin-left: 8px" @click="reset"
+                <a-button type="primary" @click="$refs.table.refresh(true)"
+                  >查询</a-button
+                >
+                <a-button
+                  style="margin-left: 8px"
+                  @click="() => (this.queryParam = {})"
                   >重置</a-button
                 >
                 <a @click="toggleAdvanced" style="margin-left: 8px">
@@ -103,99 +102,107 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button @click="openAdd">新增规格型号</a-button>
+        <a-button @click="openAdd">新增入库</a-button>
       </div>
 
-      <a-table
+      <s-table
         ref="table"
         size="default"
-        rowKey="key"
+        rowKey="id"
         :columns="columns"
-        :data-source="tableData"
+        :data="loadData"
         showPagination="auto"
       >
-        <template slot="init" slot-scope="text, record">
-          <a-input-number v-if="record.editable" v-model="record.status2" />
+        <template slot="originalNum" slot-scope="text, record">
+          <a-input-number v-if="record.editable" v-model="record.originalNum" />
           <template v-else>
             {{ text }}
           </template>
         </template>
-        <template slot="desc" slot-scope="text, record">
-          <a-input v-if="record.editable" v-model="record.updatedAt13" />
+        <template slot="remarks" slot-scope="text, record">
+          <a-input v-if="record.editable" v-model="record.remarks" />
           <template v-else>
             {{ text }}
           </template>
         </template>
 
         <template slot="action" slot-scope="text, record, index">
-          <span v-if="record.editable">
-            <a @click="save(index)">保存</a>
+          <span class="table-action" v-if="record.editable">
+            <a @click="save(index, record)">保存</a>
             <a-popconfirm title="是否取消？" @confirm="cancel(index)">
               <a>取消</a>
             </a-popconfirm>
           </span>
-          <span v-else>
+          <span class="table-action" v-else>
             <a @click="goDetail(record)">查看</a>
             <a @click="handleEdit(index)">编辑</a>
             <a @click="handleRemove(record)">删除</a>
           </span>
         </template>
-      </a-table>
+      </s-table>
     </a-card>
+
+    <!-- 新增 -->
+    <add-modal
+      v-model="visible"
+      @submit="$refs.table.refresh(true)"
+    ></add-modal>
   </page-header-wrapper>
 </template>
 
 <script>
 // import moment from 'moment'
-import { getPermissions } from '@/api/manage'
+import { STable, ProjectSelect, CompanySelect } from '@/components'
+import { getStockList, updateStock, removeStock } from '@/api/stock'
+import AddModal from './components/AddModal'
 import cloneDeep from 'lodash.clonedeep'
 
 const columns = [
   {
     title: '库存ID',
-    dataIndex: 'no'
+    dataIndex: 'id'
   },
   {
     title: '所属项目',
-    dataIndex: 'no1'
+    dataIndex: 'projectName'
   },
   {
     title: '物料名称',
-    dataIndex: 'callNo'
+    dataIndex: 'materialName'
   },
   {
     title: '物料品牌',
-    dataIndex: 'callNo1'
+    dataIndex: 'brand'
   },
   {
     title: '规格型号',
-    dataIndex: 'callNo2'
+    dataIndex: 'model'
   },
   {
     title: '现有库存',
-    dataIndex: 'status',
+    dataIndex: 'currentNum',
     sort: true
   },
   {
     title: '期初库存',
-    dataIndex: 'status2',
+    dataIndex: 'originalNum',
     sort: true,
-    scopedSlots: { customRender: 'init' }
+    scopedSlots: { customRender: 'originalNum' }
   },
   {
     title: '总入库',
-    dataIndex: 'updatedAt',
+    dataIndex: 'totalLknum',
     sorter: true
   },
   {
     title: '总出库',
-    dataIndex: 'updatedAt1',
+    dataIndex: 'totalCknum',
     sorter: true
   },
   {
     title: '备注',
-    dataIndex: 'updatedAt13',
-    scopedSlots: { customRender: 'desc' }
+    dataIndex: 'remarks',
+    scopedSlots: { customRender: 'remarks' }
   },
   {
     title: '操作',
@@ -206,6 +213,12 @@ const columns = [
 
 export default {
   name: 'TableList',
+  components: {
+    STable,
+    ProjectSelect,
+    CompanySelect,
+    AddModal
+  },
   data () {
     this.columns = columns
     return {
@@ -216,46 +229,23 @@ export default {
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
-      queryParam: {
-        status: '',
-        projectId: '0',
-        system: '',
-        type: '',
-        contract: '',
-        gys: '',
-        fk: '',
-        time: []
-      },
-      tableData: [
-        {
-          key: 1,
-          no: 1,
-          no1: 1,
-          callNo: 1,
-          callNo1: 1,
-          callNo2: 1,
-          status: 1,
-          status2: 1,
-          updatedAt: 1,
-          updatedAt1: 1,
-          updatedAt13: 1,
-          editable: false
-        }
-      ],
-      cacheData: []
+      queryParam: {},
+      tableData: [],
+      cacheData: [],
+      // 加载数据方法 必须为 Promise 对象
+      loadData: parameter => {
+        const requestParameters = Object.assign({}, parameter, this.queryParam)
+        return getStockList(requestParameters).then(res => {
+          this.tableData = res.data.records
+          this.cacheData = cloneDeep(res.data.records)
+          return res
+        })
+      }
     }
-  },
-  created () {
-    this.cacheData = cloneDeep(this.tableData)
   },
   methods: {
     toggleAdvanced () {
       this.advanced = !this.advanced
-    },
-    search () {},
-    reset () {
-      this.$refs.form.resetFields()
-      // this.form = cloneDeep(initialForm)
     },
     openAdd () {
       this.visible = true
@@ -265,10 +255,11 @@ export default {
       this.$confirm({
         content: '是否删除该库存？',
         onOk () {
-          getPermissions({
+          removeStock({
             id
           }).then(({ data }) => {
             that.$message.success('删除库存成功')
+            that.$refs.table.refresh(true)
           })
         }
       })
@@ -276,20 +267,32 @@ export default {
     handleEdit (index) {
       const target = this.tableData[index]
       if (target) {
-        target.editable = true
+        this.setEditable(index, true)
       }
     },
-    save (index) {
-      this.tableData[index].editable = false
-      this.cacheData = cloneDeep(this.tableData)
+    save (index, { id, originalNum, remarks }) {
+      updateStock({
+        id,
+        originalNum,
+        remarks
+      }).then(({ data }) => {
+        this.setEditable(index, false)
+        this.cacheData = cloneDeep(this.tableData)
+      })
     },
     cancel (index) {
-      this.$set(this.tableData, index, this.cacheData[index])
-      this.tableData[index].editable = false
+      this.$set(this.tableData, index, cloneDeep(this.cacheData[index]))
+      this.setEditable(index, false)
     },
-    goDetail () {
+    setEditable (index, value) {
+      this.$set(this.tableData[index], 'editable', value)
+    },
+    goDetail ({ id }) {
       this.$router.push({
-        name: 'InventoryDetail'
+        name: 'stockDetail',
+        query: {
+          id
+        }
       })
     }
   }

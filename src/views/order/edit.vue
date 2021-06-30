@@ -199,12 +199,6 @@ export default {
         supplier: '',
         orderPz: []
       },
-      materialOptions: [
-        {
-          text: '111',
-          value: '1'
-        }
-      ],
       unitOptions: [
         {
           text: '件',

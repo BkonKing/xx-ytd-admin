@@ -124,7 +124,7 @@ export default [
     ]
   },
   {
-    path: '/inventory',
+    path: '/stock',
     name: 'Supplier',
     component: RouteView,
     meta: {
@@ -132,36 +132,36 @@ export default [
     },
     children: [
       {
-        path: '/inventory/index',
-        name: 'InventoryIndex',
-        component: () => import('@/views/inventory/index'),
+        path: '/stock/index',
+        name: 'stockIndex',
+        component: () => import('@/views/stock/index'),
         meta: {
           title: '库存列表',
           keepAlive: true
         }
       },
       {
-        path: '/inventory/record',
-        name: 'InventoryRecord',
-        component: () => import('@/views/inventory/record'),
+        path: '/stock/record',
+        name: 'stockRecord',
+        component: () => import('@/views/stock/record'),
         meta: {
           title: '出入库记录',
           keepAlive: true
         }
       },
       // {
-      //   path: '/inventory/edit',
-      //   name: 'InventoryEdit',
-      //   component: () => import('@/views/inventory/edit'),
+      //   path: '/stock/edit',
+      //   name: 'stockEdit',
+      //   component: () => import('@/views/stock/edit'),
       //   meta: {
       //     title: '新增库存',
       //     keepAlive: true
       //   }
       // },
       {
-        path: '/inventory/detail',
-        name: 'InventoryDetail',
-        component: () => import('@/views/inventory/detail'),
+        path: '/stock/detail',
+        name: 'stockDetail',
+        component: () => import('@/views/stock/detail'),
         meta: {
           title: '库存详情'
         }

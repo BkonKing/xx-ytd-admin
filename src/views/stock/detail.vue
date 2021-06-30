@@ -3,31 +3,42 @@
     <template v-slot:content>
       <a-descriptions size="small" :column="2">
         <a-descriptions-item label="所属项目">
-          <router-link to="">项目名称</router-link>
+          <router-link to="">{{ info.projectName || "--" }}</router-link>
         </a-descriptions-item>
         <a-descriptions-item label="所属公司">
-          XX 服务
+          {{ info.companyName }}
         </a-descriptions-item>
         <a-descriptions-item label="备注">
-          2017-07-07<a-button type="link" @click="openEditInfo">编辑</a-button>
+          {{ info.remarks
+          }}<a-button type="link" @click="openEditInfo">编辑</a-button>
         </a-descriptions-item>
       </a-descriptions>
     </template>
     <a-card style="margin-top: 24px" :bordered="false">
       <a-row>
         <a-col :sm="6" :xs="24">
-          <info title="现有库存" value="￥5,000.00" :bordered="true" />
+          <info
+            title="现有库存"
+            :value="`${info.currentNum}件`"
+            :bordered="true"
+          />
         </a-col>
         <a-col :sm="6" :xs="24">
           <info title="期初库存" :bordered="true">
-            ￥3,000.00<a-button type="link" @click="openEditInfo">调整</a-button>
+            {{ info.originalNum }}件<a-button type="link" @click="openEditInfo"
+              >调整</a-button
+            >
           </info>
         </a-col>
         <a-col :sm="6" :xs="24">
-          <info title="总入库" value="14个" :bordered="true" />
+          <info
+            title="总入库"
+            :value="`${info.totalLknum}件`"
+            :bordered="true"
+          />
         </a-col>
         <a-col :sm="6" :xs="24">
-          <info title="总出库" value="1,000个" />
+          <info title="总出库" :value="`${info.totalCknum}件`" />
         </a-col>
       </a-row>
     </a-card>
@@ -109,7 +120,7 @@
       </s-table>
     </a-card>
 
-    <log-list :load="logLoadData"></log-list>
+    <log-list typeId="30"></log-list>
 
     <record-detail-modal v-model="visible" :type="1"></record-detail-modal>
 
@@ -120,21 +131,25 @@
       :width="640"
       :maskClosable="false"
       :keyboard="false"
-      @ok="handleOkProject"
+      @ok="handleOk"
       @cancel="editVisible = false"
     >
       <a-form-model
-        ref="projectForm"
+        ref="editForm"
         :model="form"
         :label-col="{ span: 7 }"
         :wrapper-col="{ span: 14 }"
       >
-        <a-form-model-item label="期初库存" prop="projectName">
-          <a-input-number v-model="form.projectName" :min="0" style="margin-right: 10px;" />件
+        <a-form-model-item label="期初库存" prop="originalNum">
+          <a-input-number
+            v-model="form.originalNum"
+            :min="0"
+            style="margin-right: 10px;"
+          />件
         </a-form-model-item>
-        <a-form-model-item label="备注" prop="desc">
+        <a-form-model-item label="备注" prop="remarks">
           <a-textarea
-            v-model="form.desc"
+            v-model="form.remarks"
             placeholder="请输入"
             rows="4"
             :maxLength="100"
@@ -147,7 +162,7 @@
 
 <script>
 import { STable, LogList } from '@/components'
-import { getPermissions } from '@/api/manage'
+import { getStockInfo, updateStock } from '@/api/stock'
 import Info from '../project/components/Info.vue'
 import RecordDetailModal from './components/RecordDetail'
 export default {
@@ -160,10 +175,8 @@ export default {
   },
   data () {
     return {
-      title: '',
-      projectInfo: {
-        images: []
-      },
+      id: '',
+      info: {},
       advanced: false,
       queryParam: {},
       columns: [
@@ -203,25 +216,46 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        return getPermissions({
+        return getStockInfo({
           params: Object.assign(parameter, this.queryParam)
         }).then(res => {
           return res.result
         })
       },
-      logLoadData: getPermissions,
       visible: false,
       editVisible: false,
       confirmLoading: false,
       form: {}
     }
   },
+  computed: {
+    title () {
+      const { materialNo, materialName, brand, model } = this.info
+      return `${materialNo} ${materialName} - ${brand} - ${model}`
+    }
+  },
+  created () {
+    this.id = this.$route.query.id
+    this.getStockInfo()
+  },
   methods: {
+    getStockInfo () {
+      getStockInfo({
+        id: this.id
+      }).then(({ data }) => {
+        this.info = data
+      })
+    },
     toggleAdvanced () {
       this.advanced = !this.advanced
     },
     openEditInfo () {
       this.editVisible = true
+      this.form = {
+        id: this.info.id,
+        originalNum: this.info.originalNum,
+        remarks: this.info.remarks
+      }
     },
     search () {},
     reset () {
@@ -231,10 +265,19 @@ export default {
     openDetail () {
       this.visible = true
     },
-    handleOkProject (e) {
-      this.$refs.projectForm.handleSubmit().then(res => {
-        this.confirmLoading = true
-        this.updateProject(res)
+    handleOk (e) {
+      this.$refs.editForm.validate(valid => {
+        if (valid) {
+          this.confirmLoading = true
+          updateStock(this.form).then(({ data }) => {
+            this.editVisible = false
+            this.getStockInfo()
+          }).finally(() => {
+            this.confirmLoading = false
+          })
+        } else {
+          return false
+        }
       })
     }
   }
