@@ -41,22 +41,22 @@
               >
                 <a-input
                   v-model="item.menuText"
-                  style="width:150px"
+                  style="width:120px"
                   placeholder="菜单名称"
                 ></a-input>
                 <a-input
                   v-model="item.icon"
-                  style="width:150px"
+                  style="width:120px"
                   placeholder="菜单图标"
                 ></a-input>
                 <a-input
                   v-model="item.limitsPath"
-                  style="width:150px"
+                  style="width:120px"
                   placeholder="访问链接"
                 ></a-input>
                 <a-input
                   v-model="item.listOrder"
-                  style="width:150px"
+                  style="width:120px"
                   placeholder="排序"
                 ></a-input>
 
@@ -105,22 +105,22 @@
                 >
                   <a-input
                     v-model="item.menuText"
-                    style="width:150px"
+                    style="width:120px"
                     placeholder="菜单名称"
                   ></a-input>
                   <a-input
                     v-model="item.icon"
-                    style="width:150px"
+                    style="width:120px"
                     placeholder="菜单图标"
                   ></a-input>
                   <a-input
                     v-model="item.limitsPath"
-                    style="width:150px"
+                    style="width:120px"
                     placeholder="访问链接"
                   ></a-input>
                   <a-input
                     v-model="item.listOrder"
-                    style="width:150px"
+                    style="width:120px"
                     placeholder="排序"
                   ></a-input>
 
@@ -147,22 +147,22 @@
               >
                 <a-input
                   v-model="item.menuText"
-                  style="width:150px"
+                  style="width:120px"
                   placeholder="菜单名称"
                 ></a-input>
                 <a-input
                   v-model="item.icon"
-                  style="width:150px"
+                  style="width:120px"
                   placeholder="菜单图标"
                 ></a-input>
                 <a-input
                   v-model="item.limitsPath"
-                  style="width:150px"
+                  style="width:120px"
                   placeholder="访问链接"
                 ></a-input>
                 <a-input
                   v-model="item.listOrder"
-                  style="width:150px"
+                  style="width:120px"
                   placeholder="排序"
                 ></a-input>
 
@@ -209,22 +209,22 @@
                 >
                   <a-input
                     v-model="item.menuText"
-                    style="width:150px"
+                    style="width:120px"
                     placeholder="菜单名称"
                   ></a-input>
                   <a-input
                     v-model="item.icon"
-                    style="width:150px"
+                    style="width:120px"
                     placeholder="菜单图标"
                   ></a-input>
                   <a-input
                     v-model="item.limitsPath"
-                    style="width:150px"
+                    style="width:120px"
                     placeholder="访问链接"
                   ></a-input>
                   <a-input
                     v-model="item.listOrder"
-                    style="width:150px"
+                    style="width:120px"
                     placeholder="排序"
                   ></a-input>
 
@@ -251,22 +251,22 @@
               >
                 <a-input
                   v-model="item.menuText"
-                  style="width:150px"
+                  style="width:120px"
                   placeholder="菜单名称"
                 ></a-input>
                 <a-input
                   v-model="item.icon"
-                  style="width:150px"
+                  style="width:120px"
                   placeholder="菜单图标"
                 ></a-input>
                 <a-input
                   v-model="item.limitsPath"
-                  style="width:150px"
+                  style="width:120px"
                   placeholder="访问链接"
                 ></a-input>
                 <a-input
                   v-model="item.listOrder"
-                  style="width:150px"
+                  style="width:120px"
                   placeholder="排序"
                 ></a-input>
 
@@ -719,7 +719,6 @@ export default {
       margin-bottom: 10px;
       .close {
         font-size: 18px;
-        margin-left: 37px;
       }
     }
     button {
@@ -727,7 +726,7 @@ export default {
     }
   }
   .addArea {
-    width: 440px;
+    width: 685px;
     height: 32px;
     border-radius: 4px;
     border: 2px dashed #eeeeee;
@@ -752,6 +751,12 @@ export default {
       font-size: 16px;
       color: rgba(0, 0, 0, 0.847058823529412);
     }
+    input{
+      margin-right: 10px;
+    }
+    button{
+      margin-top: 20px;
+    }
   }
   .card2{
      /deep/ .ant-card-body {
@@ -768,6 +773,12 @@ export default {
       font-style: normal;
       font-size: 16px;
       color: rgba(0, 0, 0, 0.847058823529412);
+    }
+     input{
+      margin-right: 10px;
+    }
+    button{
+      margin-top: 20px;
     }
   }
   .content {

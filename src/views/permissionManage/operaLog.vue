@@ -6,7 +6,9 @@
           <a-row :gutter="36">
             <a-col :md="8" :sm="24">
               <a-form-model-item label="模块">
+
                 <a-cascader
+                v-model="logType"
                 :field-names="{ label: 'logType', value: 'typeId', children: 'children' }"
                   :options="options"
                   change-on-select

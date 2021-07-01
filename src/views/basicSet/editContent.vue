@@ -1,0 +1,249 @@
+<template>
+  <div class="editContent">
+
+    <a-card>
+      <a-form-model :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-model-item label="消息类型">
+          {{ info.messageName }}
+        </a-form-model-item>
+        <a-form-model-item label="标签说明">
+          <div class="box">
+            <div class="item"><span>项目名称:</span><span>$project$</span></div>
+            <div class="item"><span>订单编号:</span><span>$project$</span></div>
+            <div class="item"><span>合同编号:</span><span>$project$</span></div>
+            <div class="item"><span>合同金额:</span><span>$project$</span></div>
+            <div class="item">
+              <span>供应商编号:</span><span>$project$</span>
+            </div>
+            <div class="item">
+              <span>供应商名称:</span><span>$project$</span>
+            </div>
+          </div>
+        </a-form-model-item>
+        <div class="title">站内消息</div>
+        <a-form-model-item label="消息标题">
+          <a-input
+            v-model="webTitle"
+            :maxLength="20"
+            style="width:440px"
+          ></a-input>
+          <div style="color: rgba(0, 0, 0, 0.447);">限2~20个字符</div>
+        </a-form-model-item>
+        <a-form-model-item label="内容模板">
+          <a-textarea
+            v-model="webMessageTemp"
+            class="textarea"
+            :maxLength='200'
+            placeholder="请输入"
+            auto-size
+          />
+          <div style="textAlign: right;width:440px">
+            {{webMessageTemp.length}} / 200
+          </div>
+        </a-form-model-item>
+        <a-form-model-item label="通知用户">
+
+          <a-select
+
+          v-model="webIds"
+            mode="multiple"
+            style="width:440px"
+            placeholder="select one country"
+            option-label-prop="label"
+          >
+            <a-select-option
+              v-for="(item, index) in webTagArr"
+              :key="index"
+              :value="item.adminId"
+              :label="item.account"
+            >
+              {{ item.account }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+        <div class="title">微信公众号</div>
+        <a-form-model-item label="模板标题">流程代办提醒</a-form-model-item>
+        <a-form-model-item label="内容模板">
+          <div class="inputBox">
+            <div class="item">
+              <span>流程编号：</span
+              ><a-textarea v-model="lcbh" :maxLength="25" placeholder="请输入" auto-size />
+            </div>
+            <div class="item">
+              <span>流程名称：</span
+              ><a-textarea v-model="lcmc" :maxLength="25" placeholder="请输入" auto-size />
+            </div>
+            <!-- <div class="item">
+              <span>发起时间：</span
+              ><a-textarea v-model="fqsj" :maxLength="25" placeholder="请输入" auto-size />
+            </div> -->
+            <div class="item">
+              <span>流程摘要：</span
+              ><a-textarea v-model="lczy" :maxLength="25" placeholder="请输入" auto-size />
+            </div>
+            <div class="item">
+              <span>备注：</span
+              ><a-textarea v-model="lcbz" :maxLength="25" placeholder="请输入" auto-size />
+            </div>
+          </div>
+          <div style="color: rgba(0, 0, 0, 0.447);">每行限1~25个字</div>
+        </a-form-model-item>
+        <a-form-model-item label="通知用户">
+        <a-select
+
+          v-model="wxIds"
+            mode="multiple"
+            style="width:440px"
+            placeholder="select one country"
+            option-label-prop="label"
+          >
+            <a-select-option
+              v-for="(item, index) in wxTagArr"
+              :key="index"
+              :value="item.adminId"
+              :label="item.account"
+            >
+              {{ item.account }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+      </a-form-model>
+      <div class="btn">
+        <a-button type="primary" @click="save">保存</a-button>
+      </div>
+    </a-card>
+  </div>
+</template>
+
+<script>
+import { toSetInfo, toTemplateSet } from '@/api/basicSet'
+export default {
+  data () {
+    return {
+
+      info: {},
+      labelCol: { span: 4 },
+      wrapperCol: { span: 14 },
+      webTagArr: [], // 站内消息通知用户
+      wxTagArr: [], // 微信消息通知用户
+      id: '', // 是intID
+      webTitle: '', // 是varchar站内消息标题
+      webMessageTemp: '', // 是varchar站内消息模版
+      webIds: undefined, // 否varchar站内消息通知用户：1,3,5
+      wxMessageTemp: '', // 是varchar微信公众号消息模版
+      wxIds: undefined, // 否varchar微信公众号通知用户：1,3,5
+      lcbh: '',
+      lcmc: '',
+      fqsj: '',
+      lczy: '',
+      lcbz: ''
+    }
+  },
+  methods: {
+    save () {
+      const obj = {}
+      obj.lcbh = this.lcbz
+      obj.lcmc = this.lcmc
+      obj.fqsj = this.fqsj
+      obj.lczy = this.lczy
+      obj.lcbz = this.lcbz
+
+      toTemplateSet({
+        id: this.id,
+        webTitle: this.webTitle,
+        webMessageTemp: this.webMessageTemp,
+        webIds: this.webIds.join(','),
+        wxMessageTemp: obj,
+        wxIds: this.wxIds.join(',')
+      }).then(res => {
+        this.$message.success(res.message)
+      })
+    },
+    // 获取详情
+    getDetail () {
+      toSetInfo({ id: this.id }).then(res => {
+        this.info = res.data
+        this.webTagArr = res.data.webIds
+        this.wxTagArr = res.data.wxIds
+        this.webTitle = res.data.webTitle
+        this.webMessageTemp = res.data.webMessageTemp
+        this.fqsj = res.data.wxMessageTemp.fqsj
+        this.lcbh = res.data.wxMessageTemp.lcbh
+        this.lcbz = res.data.wxMessageTemp.lcbz
+        this.lcmc = res.data.wxMessageTemp.lcmc
+        this.lczy = res.data.wxMessageTemp.lczy
+        this.webIds = res.data.webIds.map(item => {
+          return item.adminId
+        })
+
+        this.wxIds = res.data.wxIds.map(item => {
+          return item.adminId
+        })
+        console.log('this.wxIds', this.wxIds)
+      })
+    }
+  },
+  created () {
+    this.id = this.$route.query.id
+    if (this.id) {
+      this.getDetail()
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.editContent {
+  .box {
+    display: flex;
+    width: 300px;
+    flex-wrap: wrap;
+    .item {
+      width: 50%;
+
+    }
+  }
+  .title {
+    margin-left: 150px;
+    font-family: "PingFang SC Bold", "PingFang SC";
+    font-weight: 650;
+    font-style: normal;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.847);
+    line-height: 24px;
+    margin-bottom: 24px;
+  }
+  .textarea {
+    overflow-y: visible;
+    min-height: 100px;
+    width: 440px;
+  }
+  .btn {
+    margin-left: 268px;
+  }
+  .inputBox {
+    border: 1px solid rgba(217, 217, 217, 1);
+    width: 440px;
+    padding-left: 10px;
+    .item {
+      display: flex;
+      span {
+        width: 86px;
+        text-align: left;
+      }
+      textarea {
+        width: 366px;
+        border: none;
+        outline: none;
+        box-shadow: none;
+        resize: none;
+      }
+      /deep/.textarea:focus {
+        outline: none;
+        border: none;
+        box-shadow: none;
+      }
+    }
+  }
+}
+</style>
