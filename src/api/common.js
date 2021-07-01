@@ -10,8 +10,8 @@ export const common = {
   getLogType: '/public/common/getLogType',
   getLogAdmin: '/public/common/getLogAdmin',
   getLogsList: '/public/common/getLogsList',
-  getAllContract: '/public/common/getAllContract'
-
+  getAllContract: '/public/common/getAllContract',
+  getAllUnit: '/public/common/getAllUnit'
 }
 
 // 获取所有项目接口
@@ -99,6 +99,15 @@ export function getLogsList (params) {
 export function getAllContract (data) {
   return request({
     url: common.getAllContract,
+    method: 'post',
+    data
+  })
+}
+
+// 获取所有单位接口
+export function getAllUnit (data) {
+  return request({
+    url: common.getAllUnit,
     method: 'post',
     data
   })

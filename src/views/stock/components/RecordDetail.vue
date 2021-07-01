@@ -3,57 +3,108 @@
     :title="`查看-${typeText}单`"
     :visible="visible"
     :footer="null"
+    width="80%"
     @cancel="visible = false"
   >
-    <a-form-model :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-model-item label="物料">
-        A01 混凝土 - 规格型号
-      </a-form-model-item>
-      <a-form-model-item :label="`${typeText}数量`">
-        1000
-      </a-form-model-item>
-      <a-form-model-item :label="`${typeText}日期`">
-        123123
-      </a-form-model-item>
-      <a-form-model-item :label="`${typeText}人`">
-        sdfa
-      </a-form-model-item>
-      <a-form-model-item v-if="typeText === '入库'" label="物料用途">
-        阿斯顿发
-      </a-form-model-item>
-      <a-form-model-item v-else label="入库订单号">
-        000000
-      </a-form-model-item>
-      <a-form-model-item label="上传凭证">
-        A01 混凝土 - 规格型号
-      </a-form-model-item>
-    </a-form-model>
+    <a-descriptions size="small" :column="2">
+      <a-descriptions-item label="项目名称">
+        {{ data.projectName || "--" }}
+      </a-descriptions-item>
+      <a-descriptions-item :label="`${typeText}日期`">
+        {{ data.cktime }}
+      </a-descriptions-item>
+      <a-descriptions-item label="领料部门">
+        {{ data.department }}
+      </a-descriptions-item>
+      <a-descriptions-item label="领料人">
+        {{ data.stockMen }}
+      </a-descriptions-item>
+      <a-descriptions-item :label="`${typeText}人`">
+        {{ data.clkAdmin }}
+      </a-descriptions-item>
+      <a-descriptions-item :label="`系统${typeText}`">
+        {{ data.ctime }}
+      </a-descriptions-item>
+      <a-descriptions-item label="物料" :span="2">
+        种类{{ data.materiaCount }} 数量{{ data.materiaNum }}
+      </a-descriptions-item>
+      <a-descriptions-item label="上传凭证" :span="2">
+        <t-image :images="data.stockPz"></t-image>
+      </a-descriptions-item>
+    </a-descriptions>
+    <a-table
+      ref="table"
+      size="default"
+      rowKey="id"
+      :columns="columns"
+      :data-source="data.materia"
+    >
+      <span slot="index" slot-scope="text, record, index">
+        {{ index + 1 }}
+      </span>
+      <span slot="materialName" slot-scope="text, record">
+        <router-link
+          :to="{ name: 'stockDetail', query: { id: record.stockId } }"
+        >
+          {{ record.materialNo }} {{ text }} </router-link
+        >/{{ record.brand }}/{{ record.model }}
+      </span>
+      <span slot="stockNum" slot-scope="text, record">
+        {{ text }} {{ record.unitv }}
+      </span>
+      <template slot="footer">
+        总计 {{data.materiaCount}}
+      </template>
+    </a-table>
   </a-modal>
 </template>
 
 <script>
+import { TImage } from '@/components'
 export default {
   name: '',
+  components: {
+    TImage
+  },
   props: {
     value: {
       type: Boolean,
       default: false
     },
-    type: {
-      type: Number,
-      default: 1
+    data: {
+      type: Object,
+      default: () => ({})
     }
   },
   data () {
     return {
       visible: this.value,
-      labelCol: { span: 7 },
-      wrapperCol: { span: 14 }
+      columns: [
+        {
+          title: '序号',
+          dataIndex: 'id',
+          scopedSlots: { customRender: 'index' }
+        },
+        {
+          title: '物料',
+          dataIndex: 'materialName',
+          scopedSlots: { customRender: 'materialName' }
+        },
+        {
+          title: '数量',
+          dataIndex: 'stockNum',
+          scopedSlots: { customRender: 'stockNum' }
+        },
+        {
+          title: '物料用途',
+          dataIndex: 'remarks'
+        }
+      ]
     }
   },
   computed: {
     typeText () {
-      return this.type === 1 ? '入库' : '出库'
+      return this.data.stockType === '1' ? '入库' : '出库'
     }
   },
   watch: {

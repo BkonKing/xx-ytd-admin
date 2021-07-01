@@ -6,12 +6,16 @@ export const stock = {
   updateStock: '/operate/stock/updateStock',
   removeStock: '/operate/stock/removeStock',
   stockInfo: '/operate/stock/stockInfo',
-  stockInfo: '/operate/stock/stockInfo',
-  auditBatchstock: '/operate/stock/auditBatchstock',
-  getstockPayBystockId: '/operate/stock/getstockPayBystockId',
-  addStockPay: '/operate/stock/addStockPay',
-  updateStockPay: '/operate/stock/updateStockPay',
-  removeStockPay: '/operate/stock/removeStockPay'
+  stockClkList: '/operate/stock/stockClkList',
+  stockClkInfo: '/operate/stock/stockClkInfo',
+  addStockCk: '/operate/stock/addStockCk',
+  updateStockCk: '/operate/stock/updateStockCk',
+  removeStockCk: '/operate/stock/removeStockCk',
+  getAllProMaterial: '/public/common/getAllProMaterial',
+  getAllProMaterialBand: '/public/common/getAllProMaterialBand',
+  getAllProMatBanModel: '/public/common/getAllProMatBanModel',
+  getAllProMatBanModelUnit: '/public/common/getAllProMatBanModelUnit',
+  getAllStockClkList: '/public/common/getAllStockClkList'
 }
 
 // 获取库存列表接口
@@ -51,16 +55,7 @@ export function removeStock (data) {
 }
 
 // 库存详情接口
-export function getStockInfo (data) {
-  return request({
-    url: stock.stockInfo,
-    method: 'post',
-    data
-  })
-}
-
-// 获取订单详情接口
-export function getstockInfo (params) {
+export function getStockInfo (params) {
   return request({
     url: stock.stockInfo,
     method: 'get',
@@ -68,47 +63,92 @@ export function getstockInfo (params) {
   })
 }
 
-// 批量审核订单接口
-export function auditBatchstock (data) {
+// 出入库存列表接口
+export function getStockClkList (params) {
   return request({
-    url: stock.auditBatchstock,
-    method: 'post',
-    data
-  })
-}
-
-// 订单详情付款列表接口
-export function getstockPayBystockId (params) {
-  return request({
-    url: stock.getstockPayBystockId,
+    url: stock.stockClkList,
     method: 'get',
     params
   })
 }
 
-// 创建订单付款接口
-export function addstockPay (data) {
+// 库存出入库详情接口
+export function getStockClkInfo (params) {
   return request({
-    url: stock.addstockPay,
+    url: stock.stockClkInfo,
+    method: 'get',
+    params
+  })
+}
+
+// 创建出库单接口
+export function addStockCk (data) {
+  return request({
+    url: stock.addStockCk,
     method: 'post',
     data
   })
 }
 
-// 修改订单付款接口(
-export function updateStockPay (data) {
+// 修改出库单接口(
+export function updateStockCk (data) {
   return request({
-    url: stock.updateStockPay,
+    url: stock.updateStockCk,
     method: 'post',
     data
   })
 }
 
-// 删除订单付款接口
-export function removestockPay (data) {
+// 删除出库单接口接口
+export function removeStockCk (data) {
   return request({
-    url: stock.removestockPay,
+    url: stock.removeStockCk,
     method: 'post',
     data
+  })
+}
+
+// 编辑出库单物料数据加载接口
+export function getAllProMaterial (params) {
+  return request({
+    url: stock.getAllProMaterial,
+    method: 'get',
+    params
+  })
+}
+
+// 编辑出库单物料品牌加载接口
+export function getAllProMaterialBand (params) {
+  return request({
+    url: stock.getAllProMaterialBand,
+    method: 'get',
+    params
+  })
+}
+
+// 编辑出库单规格型号加载接口
+export function getAllProMatBanModel (params) {
+  return request({
+    url: stock.getAllProMatBanModel,
+    method: 'get',
+    params
+  })
+}
+
+// 编辑出库单单位加载接口
+export function getAllProMatBanModelUnit (params) {
+  return request({
+    url: stock.getAllProMatBanModelUnit,
+    method: 'get',
+    params
+  })
+}
+
+// 库存详情出入库列表接口
+export function getAllStockClkList (params) {
+  return request({
+    url: stock.getAllStockClkList,
+    method: 'get',
+    params
   })
 }

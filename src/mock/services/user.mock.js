@@ -6,20 +6,10 @@ import {
 } from '@/router'
 
 const setMenu = (data) => {
-  const home = {
-    path: '/home',
-    name: 'index',
-    hideChildrenInMenu: true,
-    meta: {
-      title: '工作台',
-      icon: 'table'
-    }
-  }
-  data.unshift(home)
   return data.map(obj => {
     delete obj.component
-    if (data.children && data.children.length) {
-      data.children = setMenu(data.children)
+    if (obj.children && obj.children.length) {
+      obj.children = setMenu(obj.children)
     }
     return obj
   })

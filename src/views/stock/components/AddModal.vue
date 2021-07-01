@@ -84,19 +84,12 @@
             <a-row type="flex">
               <a-col flex="50px">
                 <a-form-model-item prop="unit">
-                  <a-select
+                  <unit-select
                     v-model="record.unit"
+                    :options="unitOptions"
                     style="width: 100%;"
                     @change="changeError(index)"
-                  >
-                    <a-select-option
-                      v-for="option in unitOptions"
-                      :value="option.value"
-                      :key="option.value"
-                    >
-                      {{ option.text }}
-                    </a-select-option>
-                  </a-select>
+                  ></unit-select>
                 </a-form-model-item>
               </a-col>
               <a-col flex="1">
@@ -151,8 +144,9 @@
 </template>
 
 <script>
-import { ProjectSelect, MaterialTypeSelect } from '@/components'
+import { ProjectSelect, MaterialTypeSelect, UnitSelect } from '@/components'
 import { addStock } from '@/api/stock'
+import { getAllUnit } from '@/api/common'
 import NP from 'number-precision'
 // import cloneDeep from 'lodash.clonedeep'
 
@@ -160,7 +154,8 @@ export default {
   name: 'AddModal',
   components: {
     ProjectSelect,
-    MaterialTypeSelect
+    MaterialTypeSelect,
+    UnitSelect
   },
   props: {
     value: {
@@ -180,12 +175,7 @@ export default {
       rules: {
         projectId: [{ required: true, message: '请选择' }]
       },
-      unitOptions: [
-        {
-          text: '件',
-          value: '1'
-        }
-      ],
+      unitOptions: [],
       tableRules: {
         materialId: [{ required: true, message: '必填' }],
         brand: [{ required: true, message: '必填' }],
@@ -204,13 +194,21 @@ export default {
       return num
     }
   },
+  created () {
+    this.getAllUnit()
+  },
   methods: {
+    getAllUnit () {
+      getAllUnit().then(({ data }) => {
+        this.unitOptions = data
+      })
+    },
     handleAdd () {
       this.tableData.push({
         materialId: '',
         brand: '',
         model: '',
-        unit: this.unitOptions[0].value,
+        unit: this.unitOptions[0].unit,
         originalNum: '',
         remarks: ''
       })

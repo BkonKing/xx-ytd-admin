@@ -1,9 +1,5 @@
 <template>
-  <page-header-wrapper
-    :tab-list="tabList"
-    :tab-active-key="tabActiveKey"
-    :tab-change="handleTabChange"
-  >
+  <div>
     <a-card class="search-card" style="margin-top: 24px" :bordered="false">
       <div class="table-page-search-wrapper">
         <a-form ref="form" layout="inline">
@@ -26,19 +22,6 @@
                     valueFormat="YYYY-MM-DD"
                     style="width: 100%;"
                   />
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="类型">
-                  <a-select v-model="queryParam.stockType" placeholder="请选择">
-                    <a-select-option
-                      v-for="item in tabList"
-                      :value="item.key"
-                      :key="item.key"
-                    >
-                      {{ item.tab }}
-                    </a-select-option>
-                  </a-select>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
@@ -65,40 +48,8 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="订单">
-                  <a-input
-                    v-model="queryParam.orderId"
-                    placeholder="ID"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="供应商">
-                  <a-input
-                    v-model="queryParam.serachSupplierText"
-                    placeholder="ID、名称"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="物料用途">
-                  <a-input
-                    v-model="queryParam.serachRemarksText"
-                    placeholder="请输入"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="记录ID">
-                  <a-input
-                    v-model="queryParam.clkId"
-                    placeholder="请输入"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
             </template>
-            <a-col :md="8" :sm="24">
+            <a-col :md="(!advanced && 8) || 24" :sm="24">
               <span
                 class="table-page-search-submitButtons"
                 :style="
@@ -125,8 +76,7 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button type="primary" @click="goAdd">新增出库单</a-button>
-        <a-button @click="print">打印出库单</a-button>
+        <a-button @click="print">导出</a-button>
       </div>
 
       <s-table
@@ -138,15 +88,9 @@
         :rowSelection="rowSelection"
         showPagination="auto"
       >
-        <span slot="checkTime" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </span>
-
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
-            <a @click="goEdit(record)">编辑</a>
-            <a @click="handleRemove(record)">删除</a>
           </template>
         </span>
       </s-table>
@@ -155,14 +99,18 @@
       v-model="visible"
       :data="activeRecord"
     ></record-detail-modal>
-  </page-header-wrapper>
+    <export-type-modal
+      v-model="exportVisible"
+      @select="exportReport"
+    ></export-type-modal>
+  </div>
 </template>
 
 <script>
-// import moment from 'moment'
 import { STable, ProjectSelect, CompanySelect } from '@/components'
-import { getStockClkList, removeStockCk } from '@/api/stock'
-import RecordDetailModal from './components/RecordDetail'
+import { getStockLkReport, getStockCkReport } from '@/api/report'
+import RecordDetailModal from '../../stock/components/RecordDetail'
+import exportTypeModal from './exportTypeModal'
 
 const columns = [
   {
@@ -209,24 +157,26 @@ const columns = [
 ]
 
 export default {
-  name: 'TableList',
+  name: 'CLKTab',
   components: {
     STable,
     RecordDetailModal,
     ProjectSelect,
-    CompanySelect
+    CompanySelect,
+    exportTypeModal
+  },
+  props: {
+    type: {
+      type: String,
+      default: '1'
+    }
   },
   data () {
     this.columns = columns
     return {
-      tabList: [
-        { key: '0', tab: '全部' },
-        { key: '1', tab: '入库' },
-        { key: '2', tab: '出库' }
-      ],
-      tabActiveKey: '0',
       // 审核弹窗
       visible: false,
+      exportVisible: false,
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
@@ -238,7 +188,8 @@ export default {
           this.queryParam.startDate = time[0]
           this.queryParam.endDate = time[1]
         }
-        return getStockClkList(Object.assign(parameter, this.queryParam))
+        const api = this.type === '1' ? getStockLkReport : getStockCkReport
+        return api(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -249,63 +200,29 @@ export default {
     rowSelection () {
       return {
         selectedRowKeys: this.selectedRowKeys,
-        getCheckboxProps: record => ({
-          props: {
-            disabled: record.stockType === '1'
-          }
-        }),
         onChange: this.onSelectChange
       }
     }
   },
   methods: {
-    handleTabChange (key) {
-      this.tabActiveKey = key
-      this.queryParam.stockType = key
-      this.$refs.table.refresh()
-    },
     toggleAdvanced () {
       this.advanced = !this.advanced
     },
-    goAdd () {
-      this.$router.push({
-        name: 'stockEdit'
-      })
-    },
     print () {
       if (this.selectedRowKeys.length) {
-
+        this.exportVisible = true
       } else {
-        this.$message.warning('请选择出库单')
+        this.$message.warning('请选择')
       }
     },
-    handleRemove ({ id }) {
-      const that = this
-      this.$confirm({
-        content: '是否删除该记录？',
-        onOk () {
-          removeStockCk({
-            id
-          }).then(({ data }) => {
-            that.$message.success('删除记录成功')
-          })
-        }
-      })
-    },
-    goEdit ({ id }) {
-      this.$router.push({
-        name: 'stockEdit',
-        query: {
-          id
-        }
-      })
+    exportReport () {
+
     },
     goDetail (record) {
       this.activeRecord = record
       this.visible = true
     },
     onSelectChange (selectedRowKeys, selectedRows) {
-      console.log(selectedRowKeys, selectedRows)
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     }

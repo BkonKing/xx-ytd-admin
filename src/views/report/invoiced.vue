@@ -1,0 +1,254 @@
+<template>
+  <page-header-wrapper>
+    <a-card class="search-card" style="margin-top: 24px" :bordered="false">
+      <div class="table-page-search-wrapper">
+        <a-form ref="form" layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="8" :sm="24">
+              <a-form-item label="所属项目">
+                <project-select v-model="queryParam.projectId"></project-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="所属公司">
+                <company-select v-model="queryParam.companyId"></company-select>
+              </a-form-item>
+            </a-col>
+            <template v-if="advanced">
+              <a-col :md="8" :sm="24">
+                <a-form-item label="合同">
+                  <a-input
+                    v-model="queryParam.serachMaterialText"
+                    placeholder="编号、名称"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="开票情况">
+                  <kp-status-select
+                    v-model="queryParam.kpStatus"
+                  ></kp-status-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="供应商">
+                  <a-input
+                    v-model="queryParam.serachSupplierText"
+                    placeholder="ID、名称"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+            </template>
+            <a-col :md="8" :sm="24">
+              <span
+                class="table-page-search-submitButtons"
+                :style="
+                  (advanced && { float: 'right', overflow: 'hidden' }) || {}
+                "
+              >
+                <a-button type="primary" @click="$refs.table.refresh(true)"
+                  >查询</a-button
+                >
+                <a-button
+                  style="margin-left: 8px"
+                  @click="() => (this.queryParam = {})"
+                  >重置</a-button
+                >
+                <a @click="toggleAdvanced" style="margin-left: 8px">
+                  {{ advanced ? "收起" : "展开" }}
+                  <a-icon :type="advanced ? 'up' : 'down'" />
+                </a>
+              </span>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
+    </a-card>
+    <a-card style="margin-top: 24px" :bordered="false">
+      <div class="table-operator">
+        <a-button @click="openExport">导出</a-button>
+      </div>
+
+      <s-table
+        ref="table"
+        size="default"
+        rowKey="id"
+        :columns="columns"
+        :data="loadData"
+        showPagination="auto"
+      >
+        <template slot="supplierName" slot-scope="text, record">
+          <router-link
+            :to="{ name: 'SupplierDetail', query: { id: record.supplierId } }"
+            >{{ text }}</router-link
+          >
+        </template>
+        <template slot="contractMoney" slot-scope="text, record">
+          <router-link
+            :to="{ name: 'ContractDetail', query: { id: record.id } }"
+            >￥{{ text }}</router-link
+          >
+        </template>
+        <template slot="remarks" slot-scope="text, record">
+          <a-input v-if="record.editable" v-model="record.bbBz" />
+          <template v-else>
+            {{ text }}
+          </template>
+        </template>
+
+        <template slot="action" slot-scope="text, record, index">
+          <span class="table-action" v-if="record.editable">
+            <a @click="save(index, record)">保存</a>
+            <a-popconfirm title="是否取消？" @confirm="cancel(index)">
+              <a>取消</a>
+            </a-popconfirm>
+          </span>
+          <span class="table-action" v-else>
+            <a @click="handleEdit(index)">备注</a>
+          </span>
+        </template>
+      </s-table>
+    </a-card>
+    <export-type-modal
+      v-model="visible"
+      @select="exportReport"
+    ></export-type-modal>
+  </page-header-wrapper>
+</template>
+
+<script>
+import {
+  STable,
+  ProjectSelect,
+  CompanySelect,
+  KpStatusSelect
+} from '@/components'
+import exportTypeModal from './components/exportTypeModal'
+import { getInvoicedReport, updateInvoicedRepBz } from '@/api/report'
+import cloneDeep from 'lodash.clonedeep'
+
+const columns = [
+  {
+    title: '所属项目',
+    dataIndex: 'projectName'
+  },
+  {
+    title: '订单ID',
+    dataIndex: 'idv'
+  },
+  {
+    title: '供应商ID',
+    dataIndex: 'supplierId'
+  },
+  {
+    title: '供应商',
+    dataIndex: 'supplierName',
+    scopedSlots: { customRender: 'supplierName' }
+  },
+  {
+    title: '合同金额',
+    dataIndex: 'contractMoney',
+    scopedSlots: { customRender: 'contractMoney' }
+  },
+  {
+    title: '已开票金额',
+    dataIndex: 'invoiced',
+    sort: true
+  },
+  {
+    title: '未开票金额',
+    dataIndex: 'notInvoiced',
+    sort: true
+  },
+  {
+    title: '备注',
+    dataIndex: 'bbBz',
+    scopedSlots: { customRender: 'remarks' }
+  },
+  {
+    title: '操作',
+    width: '120px',
+    scopedSlots: { customRender: 'action' }
+  }
+]
+
+export default {
+  name: 'reportInvoiced',
+  components: {
+    STable,
+    ProjectSelect,
+    CompanySelect,
+    KpStatusSelect,
+    exportTypeModal
+  },
+  data () {
+    this.columns = columns
+    return {
+      labelCol: { span: 7 },
+      wrapperCol: { span: 14 },
+      visible: false,
+      // 高级搜索 展开/关闭
+      advanced: false,
+      // 查询参数
+      queryParam: {},
+      tableData: [],
+      cacheData: [],
+      // 加载数据方法 必须为 Promise 对象
+      loadData: parameter => {
+        const requestParameters = Object.assign({}, parameter, this.queryParam)
+        return getInvoicedReport(requestParameters).then(res => {
+          this.tableData = res.data.records
+          this.cacheData = cloneDeep(res.data.records)
+          return res
+        })
+      }
+    }
+  },
+  methods: {
+    toggleAdvanced () {
+      this.advanced = !this.advanced
+    },
+    // 导出
+    openExport () {
+      if (!this.queryParam.projectId) {
+        this.$message.warning('请选择项目')
+      } else if (!this.tableData || !this.tableData.length) {
+        this.$message.warning('当前项目有没有数据')
+      } else {
+        this.visible = true
+      }
+    },
+    exportReport () {},
+    handleEdit (index) {
+      const target = this.tableData[index]
+      if (target) {
+        this.setEditable(index, true)
+      }
+    },
+    save (index, { id, bbBz }) {
+      updateInvoicedRepBz({
+        id,
+        bbBz
+      }).then(({ data }) => {
+        this.setEditable(index, false)
+        this.cacheData = cloneDeep(this.tableData)
+      })
+    },
+    cancel (index) {
+      this.$set(this.tableData, index, cloneDeep(this.cacheData[index]))
+      this.setEditable(index, false)
+    },
+    setEditable (index, value) {
+      this.$set(this.tableData[index], 'editable', value)
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.table-page-search-wrapper {
+  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
+    width: 80px;
+  }
+}
+</style>

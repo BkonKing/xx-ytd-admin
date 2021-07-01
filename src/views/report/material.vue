@@ -1,12 +1,8 @@
 <template>
-  <page-header-wrapper
-    :tab-list="tabList"
-    :tab-active-key="tabActiveKey"
-    :tab-change="handleTabChange"
-  >
+  <page-header-wrapper>
     <a-card class="search-card" style="margin-top: 24px" :bordered="false">
       <div class="table-page-search-wrapper">
-        <a-form ref="form" layout="inline">
+        <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="所属项目">
@@ -20,49 +16,11 @@
             </a-col>
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
-                <a-form-item label="出入库时间">
+                <a-form-item label="创建时间">
                   <a-range-picker
                     v-model="queryParam.time"
                     valueFormat="YYYY-MM-DD"
-                    style="width: 100%;"
                   />
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="类型">
-                  <a-select v-model="queryParam.stockType" placeholder="请选择">
-                    <a-select-option
-                      v-for="item in tabList"
-                      :value="item.key"
-                      :key="item.key"
-                    >
-                      {{ item.tab }}
-                    </a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="物料">
-                  <a-input
-                    v-model="queryParam.serachMaterialText"
-                    placeholder="编码、名称"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="规格型号">
-                  <a-input
-                    v-model="queryParam.serachModelText"
-                    placeholder="请输入"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="物料品牌">
-                  <a-input
-                    v-model="queryParam.serachBrandText"
-                    placeholder="请输入"
-                  ></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
@@ -70,6 +28,22 @@
                   <a-input
                     v-model="queryParam.orderId"
                     placeholder="ID"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="合同">
+                  <a-input
+                    v-model="queryParam.serachContractText"
+                    placeholder="编号、名称"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="物料">
+                  <a-input
+                    v-model="queryParam.serachMaterialText"
+                    placeholder="ID、名称"
                   ></a-input>
                 </a-form-item>
               </a-col>
@@ -82,23 +56,21 @@
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="物料用途">
-                  <a-input
-                    v-model="queryParam.serachRemarksText"
-                    placeholder="请输入"
-                  ></a-input>
+                <a-form-item label="付款情况">
+                  <pay-status-select
+                    v-model="queryParam.payStatus"
+                  ></pay-status-select>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="记录ID">
-                  <a-input
-                    v-model="queryParam.clkId"
-                    placeholder="请输入"
-                  ></a-input>
+                <a-form-item label="开票情况">
+                  <kp-status-select
+                    v-model="queryParam.kpStatus"
+                  ></kp-status-select>
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="8" :sm="24">
+            <a-col :md="(!advanced && 8) || 24" :sm="24">
               <span
                 class="table-page-search-submitButtons"
                 :style="
@@ -125,108 +97,104 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button type="primary" @click="goAdd">新增出库单</a-button>
-        <a-button @click="print">打印出库单</a-button>
+        <a-button :disabled="!selectedRowKeys.length" @click="openExport">
+          导出
+        </a-button>
       </div>
 
       <s-table
         ref="table"
         size="default"
-        rowKey="id"
+        :rowKey="rowKey"
         :columns="columns"
         :data="loadData"
+        :alert="{ clear: true }"
         :rowSelection="rowSelection"
         showPagination="auto"
       >
-        <span slot="checkTime" slot-scope="text, record, index">
-          {{ index + 1 }}
-        </span>
-
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
-            <a @click="goEdit(record)">编辑</a>
-            <a @click="handleRemove(record)">删除</a>
           </template>
         </span>
       </s-table>
     </a-card>
-    <record-detail-modal
+    <export-type-modal
       v-model="visible"
-      :data="activeRecord"
-    ></record-detail-modal>
+      @select="exportReport"
+    ></export-type-modal>
   </page-header-wrapper>
 </template>
 
 <script>
-// import moment from 'moment'
-import { STable, ProjectSelect, CompanySelect } from '@/components'
-import { getStockClkList, removeStockCk } from '@/api/stock'
-import RecordDetailModal from './components/RecordDetail'
+import {
+  STable,
+  ProjectSelect,
+  CompanySelect,
+  PayStatusSelect,
+  KpStatusSelect
+} from '@/components'
+import { getMaterialReport } from '@/api/report'
+import exportTypeModal from './components/exportTypeModal'
 
 const columns = [
-  {
-    title: '记录ID',
-    dataIndex: 'id'
-  },
-  {
-    title: '类型',
-    dataIndex: 'stockTypeV'
-  },
   {
     title: '所属项目',
     dataIndex: 'projectName'
   },
   {
-    title: '物料',
-    dataIndex: 'materiaCount',
+    title: '订单ID',
+    dataIndex: 'idv'
+  },
+  {
+    title: '供应商',
+    dataIndex: 'supplierName'
+  },
+  {
+    title: '物料名称',
+    dataIndex: 'materialName'
+  },
+  {
+    title: '物料品牌',
+    dataIndex: 'brand'
+  },
+  {
+    title: '规格型号',
+    dataIndex: 'model'
+  },
+  {
+    title: '单价',
+    dataIndex: 'unitPrice',
     sorter: true
   },
   {
-    title: '数量',
-    dataIndex: 'materiaNum',
+    title: '金额',
+    dataIndex: 'allPrice',
     sorter: true
-  },
-  {
-    title: '领料部门',
-    dataIndex: 'department'
-  },
-  {
-    title: '出入库人',
-    dataIndex: 'clkAdmin',
-    sort: true
-  },
-  {
-    title: '出入库时间',
-    dataIndex: 'ctime'
   },
   {
     title: '操作',
     dataIndex: 'action',
-    width: '150px',
+    width: '80px',
     scopedSlots: { customRender: 'action' }
   }
 ]
 
 export default {
-  name: 'TableList',
+  name: 'reportMaterial',
   components: {
     STable,
-    RecordDetailModal,
     ProjectSelect,
-    CompanySelect
+    CompanySelect,
+    PayStatusSelect,
+    KpStatusSelect,
+    exportTypeModal
   },
   data () {
     this.columns = columns
     return {
-      tabList: [
-        { key: '0', tab: '全部' },
-        { key: '1', tab: '入库' },
-        { key: '2', tab: '出库' }
-      ],
-      tabActiveKey: '0',
-      // 审核弹窗
       visible: false,
+      confirmLoading: false,
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
@@ -238,74 +206,40 @@ export default {
           this.queryParam.startDate = time[0]
           this.queryParam.endDate = time[1]
         }
-        return getStockClkList(Object.assign(parameter, this.queryParam))
+        return getMaterialReport(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],
       selectedRows: [],
-      activeRecord: {}
+      rowKey ({ orderId, materialName, brand, model }) {
+        return `${orderId}-${materialName}-${brand}-${model}`
+      }
     }
   },
   computed: {
     rowSelection () {
       return {
         selectedRowKeys: this.selectedRowKeys,
-        getCheckboxProps: record => ({
-          props: {
-            disabled: record.stockType === '1'
-          }
-        }),
         onChange: this.onSelectChange
       }
     }
   },
   methods: {
-    handleTabChange (key) {
-      this.tabActiveKey = key
-      this.queryParam.stockType = key
-      this.$refs.table.refresh()
-    },
     toggleAdvanced () {
       this.advanced = !this.advanced
     },
-    goAdd () {
+    openExport () {
+      this.visible = true
+    },
+    exportReport () {},
+    goDetail ({ orderId: id }) {
       this.$router.push({
-        name: 'stockEdit'
-      })
-    },
-    print () {
-      if (this.selectedRowKeys.length) {
-
-      } else {
-        this.$message.warning('请选择出库单')
-      }
-    },
-    handleRemove ({ id }) {
-      const that = this
-      this.$confirm({
-        content: '是否删除该记录？',
-        onOk () {
-          removeStockCk({
-            id
-          }).then(({ data }) => {
-            that.$message.success('删除记录成功')
-          })
-        }
-      })
-    },
-    goEdit ({ id }) {
-      this.$router.push({
-        name: 'stockEdit',
+        name: 'OrderDetail',
         query: {
           id
         }
       })
     },
-    goDetail (record) {
-      this.activeRecord = record
-      this.visible = true
-    },
     onSelectChange (selectedRowKeys, selectedRows) {
-      console.log(selectedRowKeys, selectedRows)
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     }

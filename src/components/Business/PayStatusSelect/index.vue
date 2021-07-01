@@ -1,0 +1,53 @@
+<template>
+  <a-select v-model="data" placeholder="请选择">
+    <a-select-option
+      v-for="option in options"
+      :value="option.value"
+      :key="option.value"
+    >
+      {{ option.text }}
+    </a-select-option>
+  </a-select>
+</template>
+
+<script>
+export default {
+  name: 'PayStatusSelect',
+  props: {
+    value: {
+      type: [String, Number],
+      default: ''
+    }
+  },
+  data () {
+    return {
+      data: this.value,
+      // 付款情况：0=全部、1=全部已付、2=全部未付、3=部分已付/未付
+      options: [
+        {
+          value: 1,
+          text: '全部已付'
+        },
+        {
+          value: 2,
+          text: '全部未付'
+        },
+        {
+          value: 3,
+          text: '部分已付/未付'
+        }
+      ]
+    }
+  },
+  watch: {
+    value (val) {
+      this.data = val
+    },
+    data (val) {
+      this.$emit('input', val)
+    }
+  }
+}
+</script>
+
+<style></style>

@@ -130,12 +130,9 @@
 
 <script>
 import moment from 'moment'
-import clonedeep from 'lodash.clonedeep'
-// import _pick from 'lodash.pick'
 import {
   TagSelect,
   StandardFormRow
-  /* Ellipsis, AvatarList */
 } from '@/components'
 import CardInfo from './components/CardInfo'
 import projectForm from './components/ProjectForm'

@@ -8,7 +8,7 @@ export const order = {
   auditOrder: '/operate/order/auditOrder',
   orderInfo: '/operate/order/orderInfo',
   auditBatchOrder: '/operate/order/auditBatchOrder',
-  getOrderPayByOrderId: '/operate/order/getOrderPayByOrderId',
+  getOrderPayByOrderId: '/public/common/getOrderPayByOrderId',
   addOrderPay: '/operate/order/addOrderPay',
   updateOrderPay: '/operate/order/updateOrderPay',
   removeOrderPay: '/operate/order/removeOrderPay'

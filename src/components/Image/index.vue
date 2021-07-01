@@ -1,13 +1,19 @@
 <template>
   <div class="preview-image-list">
-    <div
-      class="image-box"
-      v-for="(item, index) in images"
-      :key="index"
-      @click="previeImage(item)"
-    >
-      <img :src="item" :style="{ width: `${width}px`, height: `${width}px` }" />
-    </div>
+    <template v-if="images && images.length">
+      <div
+        class="image-box"
+        v-for="(item, index) in images"
+        :key="index"
+        @click="previeImage(item)"
+      >
+        <img
+          :src="item"
+          :style="{ width: `${width}px`, height: `${width}px` }"
+        />
+      </div>
+    </template>
+    <div v-else>无</div>
   </div>
 </template>
 

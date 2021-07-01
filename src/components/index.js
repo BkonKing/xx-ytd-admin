@@ -35,6 +35,10 @@ import SupplierSelect from '@/components/Business/SupplierSelect'
 import SupplierTypeSelect from '@/components/Business/SupplierTypeSelect'
 import MaterialTypeSelect from '@/components/Business/MaterialTypeSelect'
 import ContractSelect from '@/components/Business/ContractSelect'
+import PayStatusSelect from '@/components/Business/PayStatusSelect'
+import KpStatusSelect from '@/components/Business/KpStatusSelect'
+import UnitSelect from '@/components/Business/UnitSelect'
+import AdvancedForm from '@/components/Business/AdvancedForm'
 
 // 二次封装
 import UploadImage from '@/components/UploadImage'
@@ -77,5 +81,9 @@ export {
   SupplierSelect,
   SupplierTypeSelect,
   MaterialTypeSelect,
-  ContractSelect
+  ContractSelect,
+  PayStatusSelect,
+  KpStatusSelect,
+  UnitSelect,
+  AdvancedForm
 }

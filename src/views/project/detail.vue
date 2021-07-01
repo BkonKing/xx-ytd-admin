@@ -1,36 +1,43 @@
 <template>
   <page-header-wrapper
-    :title="title"
+    :title="projectInfo.projectName"
     :tab-list="tabList"
     :tab-active-key="tabActiveKey"
     @tabChange="handleTabChange"
   >
     <template v-slot:content>
       <a-descriptions size="small" :column="2">
-        <a-descriptions-item label="项目工期">曲丽丽</a-descriptions-item>
-        <a-descriptions-item label="项目ID">XX 服务</a-descriptions-item>
-        <a-descriptions-item label="项目负责">2017-07-07</a-descriptions-item>
-        <a-descriptions-item label="项目采购">
-          12421
+        <a-descriptions-item label="项目工期">
+          {{ projectInfo.startDate }}~{{ projectInfo.endDate }}
         </a-descriptions-item>
-        <a-descriptions-item label="技术负责"
-          >2017-07-07 ~ 2017-08-08</a-descriptions-item
-        >
-        <a-descriptions-item label="施工许可证"
-          >请于两个工作日内确认<a-button
-            v-if="projectInfo.images && projectInfo.images.length"
+        <a-descriptions-item label="项目ID">
+          {{ projectInfo.id }}
+        </a-descriptions-item>
+        <a-descriptions-item label="项目负责">
+          {{ projectInfo.manage }} {{ projectInfo.manageMobile }}
+        </a-descriptions-item>
+        <a-descriptions-item label="项目采购">
+          {{ projectInfo.buyer }} {{ projectInfo.buyerMobile }}
+        </a-descriptions-item>
+        <a-descriptions-item label="技术负责">
+          {{ projectInfo.technician }} {{ projectInfo.technicianMobile }}
+        </a-descriptions-item>
+        <a-descriptions-item label="施工许可证">
+          {{ projectInfo.licenceNum }}张
+          <a-button
+            v-if="projectInfo.licence && projectInfo.licence.length"
             type="link"
             @click="previewLicence"
           >
             查看
-          </a-button></a-descriptions-item
-        >
-        <a-descriptions-item label="创建人"
-          >2017-07-07 ~ 2017-08-08</a-descriptions-item
-        >
-        <a-descriptions-item label="参与公司"
-          >公司名称，公司名称名称，公司名称，公司名称</a-descriptions-item
-        >
+          </a-button>
+        </a-descriptions-item>
+        <a-descriptions-item label="创建人">
+          {{ projectInfo.createAdmin }}
+        </a-descriptions-item>
+        <a-descriptions-item label="参与公司">
+          {{ projectInfo.companyNames }}
+        </a-descriptions-item>
       </a-descriptions>
     </template>
 
@@ -38,33 +45,48 @@
       <a-row class="status-list">
         <a-col :xs="12" :sm="12">
           <div class="text">阶段</div>
-          <div class="heading">竣工验收</div>
+          <div class="heading">{{ projectInfo.stage }}</div>
         </a-col>
         <a-col :xs="12" :sm="12">
           <div class="text">参与公司</div>
-          <div class="heading">4家</div>
+          <div class="heading">{{ projectInfo.relationCompanyNum }}家</div>
         </a-col>
       </a-row>
     </template>
     <a-card style="margin-top: 24px" :bordered="false">
       <a-row>
         <a-col :sm="6" :xs="24">
-          <info title="合同（5个）" value="￥5,000.00" :bordered="true" />
+          <info
+            :title="`合同（${projectInfo.relationContractNum}个）`"
+            :value="`￥${projectInfo.relationContractMoneys}`"
+            :bordered="true"
+          />
         </a-col>
         <a-col :sm="6" :xs="24">
-          <info title="订单（25个）" value="￥3,000.00" :bordered="true" />
+          <info
+            :title="`订单（${projectInfo.relationOrderNum}个）`"
+            :value="`￥${projectInfo.relationOrderMoneys}`"
+            :bordered="true"
+          />
         </a-col>
         <a-col :sm="6" :xs="24">
-          <info title="供应商" value="14个" :bordered="true" />
+          <info
+            title="供应商"
+            :value="`${projectInfo.relationSupplierNum}个`"
+            :bordered="true"
+          />
         </a-col>
         <a-col :sm="6" :xs="24">
-          <info title="物料（10种）" value="1,000个" />
+          <info
+            :title="`物料（${projectInfo.relationMaterialNum}种）`"
+            :value="`${projectInfo.relationMaterialTotal}个`"
+          />
         </a-col>
       </a-row>
     </a-card>
 
     <template v-if="tabActiveKey === '0'">
-      <contract-tab></contract-tab>
+      <contract-tab :projectId="id"></contract-tab>
     </template>
     <template v-if="tabActiveKey === '1'">
       <order-tab></order-tab>
@@ -76,6 +98,7 @@
 import Info from './components/Info'
 import contractTab from './components/contractTab'
 import OrderTab from './components/OrderTab.vue'
+import { getProjectInfo } from '@/api/project'
 export default {
   name: 'projectDetail',
   components: {
@@ -85,22 +108,33 @@ export default {
   },
   data () {
     return {
-      title: '',
+      id: '',
       tabList: [
         { key: '0', tab: '合同' },
         { key: '1', tab: '订单' }
       ],
       tabActiveKey: '0',
       projectInfo: {
-        images: []
+        licence: []
       }
     }
   },
+  created () {
+    this.id = this.$route.query.id
+    this.getProjectInfo()
+  },
   methods: {
+    getProjectInfo () {
+      getProjectInfo({
+        id: this.id
+      }).then(({ data }) => {
+        this.projectInfo = data
+      })
+    },
     // 查看施工许可证
     previewLicence () {
       this.$viewerApi({
-        images: this.projectInfo.images
+        images: this.projectInfo.licence
       })
     },
     handleTabChange (key) {

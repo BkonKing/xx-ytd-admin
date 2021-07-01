@@ -6,7 +6,8 @@ export const project = {
   getProjectList: '/operate/project/projectList',
   addProject: '/operate/project/addProject',
   updateProject: '/operate/project/updateProject',
-  removeProject: '/operate/project/removeProject'
+  removeProject: '/operate/project/removeProject',
+  projectInfo: '/operate/project/projectInfo'
 }
 
 // 获取所有公司接口
@@ -60,5 +61,14 @@ export function removeProject (data) {
     url: project.removeProject,
     method: 'post',
     data
+  })
+}
+
+// 项目详情接口
+export function getProjectInfo (params) {
+  return request({
+    url: project.projectInfo,
+    method: 'get',
+    params
   })
 }

@@ -20,7 +20,7 @@ export default {
         showQuickJumper: true,
         pageSizeOptions: this.pageInfo ? this.pageInfo.pageSizeOptions : ['10', '20', '30', '50'],
         showTotal: (total) => {
-          console.log('total', total, this.localPagination, this.pageSize)
+          // console.log('total', total, this.localPagination, this.pageSize)
           let pageTotal = 0
           if (total % this.localPagination.defaultPageSize > 0) {
             pageTotal = parseInt(total / this.localPagination.defaultPageSize) + 1

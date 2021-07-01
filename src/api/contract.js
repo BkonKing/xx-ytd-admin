@@ -11,7 +11,7 @@ export const contract = {
   getSettleType: '/public/common/getAllSettleType',
   getPayType: '/public/common/getAllPayType',
   getOrderList: '/operate/order/orderList',
-  getOrderPayByContId: '/operate/order/getOrderPayByContId'
+  getOrderPayByContId: '/public/common/getOrderPayByContId'
 }
 
 // 获取合同列表接口

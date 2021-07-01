@@ -103,8 +103,8 @@
 
     <order-tab
       v-show="tabActiveKey === '1'"
-      type="1"
-      :contractId="info.id"
+      :contractId="id"
+      :companyId="info.companyId"
     ></order-tab>
 
     <a-modal
@@ -126,7 +126,7 @@
 <script>
 import Info from '../project/components/Info'
 import BasicInfo from './components/BasicInfo'
-import OrderTab from '@/views/project/components/OrderTab'
+import OrderTab from './components/OrderTab'
 import cSteps from '../order/components/Steps.vue'
 import cStepsInfo from '../order/components/Info.vue'
 import { CheckForm, LogList } from '@/components'
