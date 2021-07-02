@@ -2,7 +2,7 @@
   <div class="editContent">
 
     <a-card>
-      <a-form-model :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-model ref="form" :model='form' :rules='rules' :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-model-item label="消息类型">
           {{ info.messageName }}
         </a-form-model-item>
@@ -21,24 +21,24 @@
           </div>
         </a-form-model-item>
         <div class="title">站内消息</div>
-        <a-form-model-item label="消息标题">
+        <a-form-model-item label="消息标题" prop='webTitle'>
           <a-input
-            v-model="webTitle"
+            v-model="form.webTitle"
             :maxLength="20"
             style="width:440px"
           ></a-input>
           <div style="color: rgba(0, 0, 0, 0.447);">限2~20个字符</div>
         </a-form-model-item>
-        <a-form-model-item label="内容模板">
+        <a-form-model-item label="内容模板" prop="webMessageTemp">
           <a-textarea
-            v-model="webMessageTemp"
+            v-model="form.webMessageTemp"
             class="textarea"
             :maxLength='200'
             placeholder="请输入"
             auto-size
           />
           <div style="textAlign: right;width:440px">
-            {{webMessageTemp.length}} / 200
+            {{form.webMessageTemp.length}} / 200
           </div>
         </a-form-model-item>
         <a-form-model-item label="通知用户">
@@ -67,11 +67,11 @@
           <div class="inputBox">
             <div class="item">
               <span>流程编号：</span
-              ><a-textarea v-model="lcbh" :maxLength="25" placeholder="请输入" auto-size />
+              ><a-textarea v-model="form.lcbh" :maxLength="25" placeholder="请输入" auto-size />
             </div>
             <div class="item">
               <span>流程名称：</span
-              ><a-textarea v-model="lcmc" :maxLength="25" placeholder="请输入" auto-size />
+              ><a-textarea v-model="form.lcmc" :maxLength="25" placeholder="请输入" auto-size />
             </div>
             <!-- <div class="item">
               <span>发起时间：</span
@@ -79,11 +79,11 @@
             </div> -->
             <div class="item">
               <span>流程摘要：</span
-              ><a-textarea v-model="lczy" :maxLength="25" placeholder="请输入" auto-size />
+              ><a-textarea v-model="form.lczy" :maxLength="25" placeholder="请输入" auto-size />
             </div>
             <div class="item">
               <span>备注：</span
-              ><a-textarea v-model="lcbz" :maxLength="25" placeholder="请输入" auto-size />
+              ><a-textarea v-model="form.lcbz" :maxLength="25" placeholder="请输入" auto-size />
             </div>
           </div>
           <div style="color: rgba(0, 0, 0, 0.447);">每行限1~25个字</div>
@@ -127,31 +127,38 @@ export default {
       webTagArr: [], // 站内消息通知用户
       wxTagArr: [], // 微信消息通知用户
       id: '', // 是intID
-      webTitle: '', // 是varchar站内消息标题
-      webMessageTemp: '', // 是varchar站内消息模版
+      form: {
+        webTitle: '', // 是varchar站内消息标题
+        webMessageTemp: '', // 是varchar站内消息模版
+        lcbh: '',
+        lcmc: '',
+        fqsj: '',
+        lczy: '',
+        lcbz: ''
+      },
       webIds: undefined, // 否varchar站内消息通知用户：1,3,5
       wxMessageTemp: '', // 是varchar微信公众号消息模版
       wxIds: undefined, // 否varchar微信公众号通知用户：1,3,5
-      lcbh: '',
-      lcmc: '',
-      fqsj: '',
-      lczy: '',
-      lcbz: ''
+
+      rules: {
+        webTitle: [{ required: true, message: '必填', trigger: 'change' }],
+        webMessageTemp: [{ required: true, message: '必填', trigger: 'change' }]
+      }
     }
   },
   methods: {
     save () {
       const obj = {}
-      obj.lcbh = this.lcbz
-      obj.lcmc = this.lcmc
-      obj.fqsj = this.fqsj
-      obj.lczy = this.lczy
-      obj.lcbz = this.lcbz
+      obj.lcbh = this.form.lcbh
+      obj.lcmc = this.form.lcmc
+      obj.fqsj = this.form.fqsj
+      obj.lczy = this.form.lczy
+      obj.lcbz = this.form.lcbz
 
       toTemplateSet({
         id: this.id,
-        webTitle: this.webTitle,
-        webMessageTemp: this.webMessageTemp,
+        webTitle: this.form.webTitle,
+        webMessageTemp: this.form.webMessageTemp,
         webIds: this.webIds.join(','),
         wxMessageTemp: obj,
         wxIds: this.wxIds.join(',')
@@ -165,13 +172,13 @@ export default {
         this.info = res.data
         this.webTagArr = res.data.webIds
         this.wxTagArr = res.data.wxIds
-        this.webTitle = res.data.webTitle
-        this.webMessageTemp = res.data.webMessageTemp
-        this.fqsj = res.data.wxMessageTemp.fqsj
-        this.lcbh = res.data.wxMessageTemp.lcbh
-        this.lcbz = res.data.wxMessageTemp.lcbz
-        this.lcmc = res.data.wxMessageTemp.lcmc
-        this.lczy = res.data.wxMessageTemp.lczy
+        this.form.webTitle = res.data.webTitle
+        this.form.webMessageTemp = res.data.webMessageTemp
+        this.form.fqsj = res.data.wxMessageTemp.fqsj
+        this.form.lcbh = res.data.wxMessageTemp.lcbh
+        this.form.lcbz = res.data.wxMessageTemp.lcbz
+        this.form.lcmc = res.data.wxMessageTemp.lcmc
+        this.form.lczy = res.data.wxMessageTemp.lczy
         this.webIds = res.data.webIds.map(item => {
           return item.adminId
         })

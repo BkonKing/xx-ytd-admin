@@ -1,11 +1,11 @@
 import {
-  PageView
+  RouteView
 } from '@/layouts'
 
 export default {
   path: '/basicSet',
   name: 'basicSet',
-  component: PageView,
+  component: RouteView,
   meta: {
     title: '基础设置',
     icon: 'table'
@@ -36,6 +36,24 @@ export default {
       component: () => import('@/views/basicSet/checkSet'),
       meta: {
         title: '审批设置',
+        icon: 'table'
+      }
+    },
+    {
+      path: '/basicSet/materialSort',
+      name: 'materialSort',
+      component: () => import('@/views/basicSet/materialSort'),
+      meta: {
+        title: '物料设置',
+        icon: 'table'
+      }
+    },
+    {
+      path: '/basicSet/contractSet',
+      name: 'contractSet',
+      component: () => import('@/views/basicSet/contractSet'),
+      meta: {
+        title: '合同设置',
         icon: 'table'
       }
     }
