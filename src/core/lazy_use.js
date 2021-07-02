@@ -55,6 +55,8 @@ import {
 } from 'ant-design-vue'
 import Viser from 'viser-vue'
 
+import VueCropper from 'vue-cropper'
+
 // ext library
 import Dialog from '@/components/Dialog'
 import MultiTab from '@/components/MultiTab'
@@ -124,3 +126,4 @@ Vue.use(Dialog) // this.$dialog func
 Vue.use(MultiTab)
 Vue.use(PageLoading)
 Vue.use(PermissionHelper)
+Vue.use(VueCropper)

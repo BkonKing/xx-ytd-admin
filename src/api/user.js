@@ -3,8 +3,11 @@ import request from '@/utils/request'
 export const userApi = {
   Login: '/system/slognin/login',
   Logout: '/system/slognin/logout',
-  UserInfo: '/user/info',
-  UserMenu: '/user/nav'
+  UserInfo: '/public/common/getAccountInfo',
+  updateBasicSet: '/system/account/updateBasicSet',
+  updateSecuritySet: '/system/account/updateSecuritySet',
+  bdCode: '/public/common/bdCode',
+  uploadImg: '/file/uploads/uImages'
 }
 
 /**
@@ -24,18 +27,46 @@ export function login (data) {
   })
 }
 
-export function getSmsCaptcha (data) {
+export function getInfo () {
   return request({
-    url: userApi.Logout,
+    url: userApi.UserInfo,
+    method: 'post'
+  })
+}
+
+export function updateBasicSet (data) {
+  return request({
+    url: userApi.updateBasicSet,
     method: 'post',
     data
   })
 }
 
-export function getInfo () {
+export function updateSecuritySet (data) {
   return request({
-    url: userApi.UserInfo,
-    method: 'get'
+    url: userApi.updateSecuritySet,
+    method: 'post',
+    data
+  })
+}
+
+export function getDdCode (data) {
+  return request({
+    url: userApi.bdCode,
+    method: 'post',
+    data
+  })
+}
+
+export function uploadImg (data) {
+  console.log(data)
+  return request({
+    url: userApi.uploadImg,
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    data
   })
 }
 

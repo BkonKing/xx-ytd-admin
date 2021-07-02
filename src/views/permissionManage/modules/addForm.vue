@@ -109,6 +109,7 @@ export default {
       }
       // console.log(e.target.value)
       e.target.value = e.target.value.replace(
+        // eslint-disable-next-line no-useless-escape
         /[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g, ''
       )
     },
@@ -119,6 +120,7 @@ export default {
           this.$message.error('请输入正确的密码')
         }
       }
+      // eslint-disable-next-line no-useless-escape
       e.target.value = e.target.value.replace(/[^\a-\z\A-\Z0-9]/g, '')
     },
     onOk () {

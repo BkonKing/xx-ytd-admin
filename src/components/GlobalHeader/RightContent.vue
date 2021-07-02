@@ -8,6 +8,7 @@
 <script>
 import AvatarDropdown from './AvatarDropdown'
 import MessageCenter from './MessageCenter.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'RightContent',
@@ -46,14 +47,14 @@ export default {
         'ant-pro-global-header-index-right': true,
         [`ant-pro-global-header-index-${(this.isMobile || !this.topMenu) ? 'light' : this.theme}`]: true
       }
-    }
+    },
+    ...mapGetters(['userInfo'])
   },
   mounted () {
-    setTimeout(() => {
-      this.currentUser = {
-        name: 'Serati Ma'
-      }
-    }, 1500)
+    this.currentUser = {
+      name: this.userInfo.account,
+      avatar: this.userInfo.avatar
+    }
   }
 }
 </script>

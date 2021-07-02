@@ -90,7 +90,7 @@ import permissModal from './modules/permissModal.vue'
 import bus from '@/utils/bus'
 export default {
   components: {
-    addForm,
+    // addForm,
     permissModal
   },
   data () {

@@ -1,0 +1,60 @@
+<template>
+  <a-row>
+    <a-col :xs="24" :md="12" :style="{ height: '350px' }">
+      <a-form-model
+        ref="form"
+        :model="form"
+        :rules="rules"
+        layout="vertical"
+      >
+        <a-form-model-item label="登录账号" prop="account">
+          <a-input v-model="form.account" disabled />
+        </a-form-model-item>
+        <a-form-model-item label="登录密码" prop="pwd" required>
+          <a-input-password v-model="form.pwd" placeholder="请输入" />
+          <div>限6~18个英文、数字，区分大小写</div>
+        </a-form-model-item>
+        <a-form-model-item>
+          <a-button type="primary" :disabled="!form.pwd" @click="handleSubmit">更新信息</a-button>
+        </a-form-model-item>
+      </a-form-model>
+    </a-col>
+  </a-row>
+</template>
+<script>
+import { updateSecuritySet } from '@/api/user'
+export default {
+  data () {
+    return {
+      form: {
+        account: ''
+      },
+      rules: {
+        pwd: [{ required: true, message: '必填' }]
+      }
+    }
+  },
+  mounted () {
+    this.form.account = this.$store.getters.userInfo.account
+  },
+  methods: {
+    handleSubmit () {
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          this.updateSecuritySet()
+        } else {
+          return false
+        }
+      })
+    },
+    updateSecuritySet () {
+      updateSecuritySet(this.form).then(() => {
+        this.$message.success('更新成功')
+      })
+    }
+
+  }
+}
+</script>
+
+<style lang="less" scoped></style>

@@ -113,6 +113,7 @@ export default {
             .then((res) => {
               if (this.autoLogin) {
                 this.$store.commit('setAccountInfo', JSON.parse(JSON.stringify(this.form)))
+                this.$store.dispatch('GetInfo')
                 this.$store.commit('setAutoLogin', this.autoLogin)
                 window.localStorage.setItem('autoLogin', this.autoLogin)
                 window.localStorage.setItem('accountInfo', JSON.stringify(this.form))
