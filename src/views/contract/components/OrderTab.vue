@@ -22,6 +22,14 @@
             </a-col>
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
+                <a-form-item label="物料">
+                  <a-input
+                    v-model="queryParam.serachMaterialText"
+                    placeholder="ID、名称"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
                 <a-form-item label="付款情况">
                   <pay-status-select
                     v-model="queryParam.payStatus"
@@ -35,18 +43,10 @@
                   ></kp-status-select>
                 </a-form-item>
               </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="物料">
-                  <a-input
-                    v-model="queryParam.serachMaterialText"
-                    placeholder="ID、名称"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
             </template>
             <advanced-form
               v-model="advanced"
-              :md="24"
+              :md="8"
               @reset="this.queryParam = {}"
               @search="$refs.orderTable.refresh(true)"
             ></advanced-form>
@@ -111,7 +111,7 @@ import {
   KpStatusSelect,
   AdvancedForm
 } from '@/components'
-import { getOrderList, getOrderPayByContId } from '@/api/contract'
+import { getContOrderList, getOrderPayByContId } from '@/api/contract'
 export default {
   name: 'contractTab',
   components: {
@@ -141,8 +141,8 @@ export default {
           dataIndex: 'statusv'
         },
         {
-          title: '所属公司',
-          dataIndex: 'companyName'
+          title: '所属项目',
+          dataIndex: 'projectName'
         },
         {
           title: '订单ID',
@@ -174,8 +174,8 @@ export default {
         }
       ],
       orderLoadData: parameter => {
-        this.queryParam.companyId = this.companyId
-        return getOrderList(Object.assign(parameter, this.queryParam))
+        this.queryParam.contractId = this.contractId
+        return getContOrderList(Object.assign(parameter, this.queryParam))
       },
       payData: {},
       columns: [

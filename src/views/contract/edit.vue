@@ -54,9 +54,9 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
-        <a-form-model-item label="上传合同" prop="legalPersonPz">
+        <a-form-model-item label="上传合同" prop="contractPz">
           <upload-image
-            v-model="form.legalPersonPz"
+            v-model="form.contractPz"
             maxLength="50"
           ></upload-image>
           <div style="margin-top: -20px;">
@@ -178,7 +178,7 @@ const form = {
   signDate: '',
   rtime: [],
   contractStatus: '',
-  legalPersonPz: [],
+  contractPz: [],
   remarks: '',
   contractMoney: '',
   contractTotal: '',

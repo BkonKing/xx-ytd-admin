@@ -1,7 +1,15 @@
 <template>
-  <a-dropdown v-if="currentUser && currentUser.name" placement="bottomRight">
+  <a-dropdown
+    v-if="currentUser && currentUser.name"
+    placement="bottomRight"
+    :trigger="['click']"
+  >
     <span class="ant-pro-account-avatar">
-      <a-avatar size="small" src="https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png" class="antd-pro-global-header-index-avatar" />
+      <a-avatar
+        size="small"
+        src="https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png"
+        class="antd-pro-global-header-index-avatar"
+      />
       <span>{{ currentUser.name }}</span>
     </span>
     <template v-slot:overlay>
@@ -90,7 +98,6 @@ export default {
       })
     }
   }
-
 }
 </script>
 

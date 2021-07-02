@@ -8,7 +8,10 @@
     <template v-slot:content>
       <a-descriptions size="small" :column="isMobile ? 1 : 2">
         <a-descriptions-item label="所属项目">
-          {{ info.projectName || "--" }}
+          <router-link
+            :to="{ name: 'ProjectDetail', query: { id: info.projectId } }"
+            >{{ info.projectName || "--" }}</router-link
+          >
         </a-descriptions-item>
         <a-descriptions-item label="创建人">
           {{ info.createAdmin }}
@@ -22,7 +25,9 @@
     <!-- actions -->
     <template v-if="!isPass" v-slot:extra>
       <a-button @click="goEdit">编辑</a-button>
-      <a-button type="primary" @click="openCheck">审核</a-button>
+      <a-button v-if="+info.status === 0" type="primary" @click="openCheck"
+        >审核</a-button
+      >
     </template>
 
     <template v-slot:extraContent>
@@ -31,16 +36,14 @@
           <div class="text">状态</div>
           <div class="heading">{{ info.statusv }}</div>
         </a-col>
-        <template v-if="isPass">
-          <a-col flex="1">
-            <div class="text">合同金额</div>
-            <div class="heading">￥{{ info.contractMoney }}</div>
-          </a-col>
-          <a-col flex="1">
-            <div class="text">合同总量</div>
-            <div class="heading">{{ info.contractTotal }}</div>
-          </a-col>
-        </template>
+        <a-col flex="1">
+          <div class="text">合同金额</div>
+          <div class="heading">￥{{ info.contractMoney }}</div>
+        </a-col>
+        <a-col flex="1">
+          <div class="text">合同总量</div>
+          <div class="heading">{{ info.contractTotal }}</div>
+        </a-col>
       </a-row>
     </template>
 
@@ -215,7 +218,7 @@ export default {
     },
     goEdit () {
       this.$router.push({
-        name: 'SupplierEdit',
+        name: 'ContractEdit',
         query: {
           id: this.id
         }

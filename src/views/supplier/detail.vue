@@ -26,9 +26,9 @@
     </template>
 
     <!-- actions -->
-    <template v-if="!isPass" v-slot:extra>
+    <template v-slot:extra>
       <a-button @click="goEdit">编辑</a-button>
-      <a-button type="primary" @click="openCheck">审核</a-button>
+      <a-button v-if="!isPass" type="primary" @click="openCheck">审核</a-button>
     </template>
 
     <template v-slot:extraContent>
@@ -61,6 +61,7 @@
     <material-table
       v-if="isPass"
       v-show="tabActiveKey === '1'"
+      :supplierId="id"
     ></material-table>
 
     <a-modal
@@ -104,7 +105,8 @@ export default {
       tabList: [],
       tabActiveKey: '0',
       info: {},
-      visible: false
+      visible: false,
+      confirmLoading: false
     }
   },
   computed: {

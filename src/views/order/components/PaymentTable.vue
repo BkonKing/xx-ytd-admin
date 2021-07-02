@@ -160,6 +160,7 @@ export default {
           if (success) {
             this.$message.success('添加项目成功')
             this.$refs.table.refresh()
+            this.$emit('changePay')
             this.visible = false
           }
         })
@@ -173,6 +174,7 @@ export default {
           if (success) {
             this.$message.success('修改项目成功')
             this.$refs.table.refresh()
+            this.$emit('changePay')
             this.visible = false
           }
         })

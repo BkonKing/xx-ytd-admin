@@ -5,15 +5,41 @@
         <a-row :gutter="48">
           <a-col :md="8" :sm="24">
             <a-form-item label="模块">
-              <a-select v-model="queryParam.logType" placeholder="请选择">
-                <a-select-option
-                  v-for="option in typeOptions"
+              <a-tree-select
+                v-model="queryParam.logType"
+                style="width: 100%"
+                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                placeholder="请选择"
+                allow-clear
+                tree-default-expand-all
+                :show-checked-strategy="SHOW_PARENT"
+              >
+                <a-tree-select-node
+                  v-for="(option, index) in typeOptions"
+                  :key="index"
                   :value="option.typeId"
-                  :key="option.typeId"
+                  :title="option.logType"
                 >
-                  {{ option.logType }}
-                </a-select-option>
-              </a-select>
+                  <template v-if="option.children && option.children.length">
+                    <a-tree-select-node
+                      v-for="(node, i) in option.children"
+                      :key="`${index}-${i}`"
+                      :value="node.typeId"
+                      :title="node.logType"
+                    >
+                      <template v-if="node.children && node.children.length">
+                        <a-tree-select-node
+                          v-for="(leaf, ileaf) in node.children"
+                          :key="`${index}-${i}-${ileaf}`"
+                          :value="leaf.typeId"
+                          :title="leaf.logType"
+                        >
+                        </a-tree-select-node>
+                      </template>
+                    </a-tree-select-node>
+                  </template>
+                </a-tree-select-node>
+              </a-tree-select>
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="24">
@@ -94,6 +120,8 @@
 <script>
 import { STable } from '@/components'
 import { getLogType, getLogAdmin, getLogsList } from '@/api/common'
+import { TreeSelect } from 'ant-design-vue'
+const SHOW_PARENT = TreeSelect.SHOW_PARENT
 export default {
   name: 'logList',
   components: {
@@ -141,6 +169,7 @@ export default {
       advanced: false,
       typeOptions: [],
       adminOptions: [],
+      SHOW_PARENT,
       loadData: parameter => {
         const time = this.queryParam.time
         if (time) {

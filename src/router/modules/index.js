@@ -17,5 +17,13 @@ export default [
     meta: {
       title: '工作台'
     }
+  },
+  {
+    path: '/MessageCenter/index',
+    name: 'MessageCenterIndex',
+    component: () => import('@/views/user/MessageCenter'),
+    meta: {
+      title: '消息中心'
+    }
   }
 ]

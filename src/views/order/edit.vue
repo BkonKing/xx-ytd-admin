@@ -78,10 +78,10 @@
                       @change="handleTaxChange"
                       style="width: 100%;"
                     >
-                      <a-select-option :value="1">
+                      <a-select-option value="1">
                         含税
                       </a-select-option>
-                      <a-select-option :value="0">
+                      <a-select-option value="0">
                         不含税
                       </a-select-option>
                     </a-select>
@@ -103,15 +103,11 @@
               <a-row type="flex">
                 <a-col flex="50px">
                   <a-form-model-item prop="unit">
-                    <a-select v-model="record.unit" style="width: 100%;">
-                      <a-select-option
-                        v-for="option in unitOptions"
-                        :value="option.value"
-                        :key="option.value"
-                      >
-                        {{ option.text }}
-                      </a-select-option>
-                    </a-select>
+                    <unit-select
+                      v-model="record.unit"
+                      :options="unitOptions"
+                      style="width: 100%;"
+                    ></unit-select>
                   </a-form-model-item>
                 </a-col>
                 <a-col flex="1">
@@ -127,7 +123,9 @@
               </a-row>
             </a-col>
             <a-col flex="1">
-              <span style="word-break: break-all;">￥{{ NPTimes(record.unitPrice, record.total) }}</span>
+              <span style="word-break: break-all;"
+                >￥{{ NPTimes(record.unitPrice, record.total) }}</span
+              >
             </a-col>
             <a-col flex="100px">
               <a-form-model-item prop="listOrder">
@@ -148,11 +146,17 @@
             </a-col>
           </a-row>
         </a-form-model>
-        <a-row v-if="tableData && tableData.length" class="table-total" type="flex">
+        <a-row
+          v-if="tableData && tableData.length"
+          class="table-total"
+          type="flex"
+        >
           <a-col flex="6">总计</a-col>
           <a-col flex="180px"></a-col>
           <a-col flex="180px">{{ totalNum }}</a-col>
-          <a-col flex="1" style="word-break: break-all;">￥{{ totalMoney }}</a-col>
+          <a-col flex="1" style="word-break: break-all;"
+            >￥{{ totalMoney }}</a-col
+          >
           <a-col flex="160px"></a-col>
         </a-row>
         <a-button
@@ -175,8 +179,9 @@
 <script>
 import FooterToolBar from '@/components/FooterToolbar'
 import NP from 'number-precision'
-import { UploadImage, ContractSelect, MaterialTypeSelect } from '@/components'
+import { UploadImage, ContractSelect, MaterialTypeSelect, UnitSelect } from '@/components'
 import { appMixin } from '@/store/mixin'
+import { getAllUnit } from '@/api/common'
 import { addOrder, updateOrder, getOrderInfo } from '@/api/order'
 export default {
   name: '',
@@ -185,7 +190,8 @@ export default {
     FooterToolBar,
     UploadImage,
     ContractSelect,
-    MaterialTypeSelect
+    MaterialTypeSelect,
+    UnitSelect
   },
   data () {
     return {
@@ -199,12 +205,7 @@ export default {
         supplier: '',
         orderPz: []
       },
-      unitOptions: [
-        {
-          text: '件',
-          value: '1'
-        }
-      ],
+      unitOptions: [],
       rules: {
         contractId: [{ required: true, message: '必填' }]
       },
@@ -240,6 +241,7 @@ export default {
       this.title = '编辑订单'
       this.getOrderInfo()
     }
+    this.getAllUnit()
   },
   methods: {
     getOrderInfo () {
@@ -256,6 +258,11 @@ export default {
     getSupplier (value, option) {
       this.form.supplier = option.supplierName
     },
+    getAllUnit () {
+      getAllUnit().then(({ data }) => {
+        this.unitOptions = data
+      })
+    },
     handleAdd () {
       this.tableData.push({
         materialId: '',
@@ -263,7 +270,7 @@ export default {
         model: '',
         taxRate: (this.tableData[0] && this.tableData[0].taxRate) || 1,
         unitPrice: '',
-        unit: this.unitOptions[0].value,
+        unit: this.unitOptions[0].unit,
         total: '',
         listOrder: ''
       })

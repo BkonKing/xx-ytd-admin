@@ -55,15 +55,9 @@
         </a-col>
         <a-col :md="8" :sm="24">
           <a-form-item label="付款情况">
-            <a-select v-model="queryParam.payStatus" placeholder="请选择">
-              <a-select-option
-                v-for="option in payStatusOptions"
-                :value="option.value"
-                :key="option.value"
-              >
-                {{ option.text }}
-              </a-select-option>
-            </a-select>
+            <pay-status-select
+              v-model="queryParam.payStatus"
+            ></pay-status-select>
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="24">
@@ -75,31 +69,32 @@
           </a-form-item>
         </a-col>
       </template>
-      <a-col :md="(!advanced && 8) || 24" :sm="24">
-        <span
-          class="table-page-search-submitButtons"
-          :style="(advanced && { float: 'right', overflow: 'hidden' }) || {}"
-        >
-          <a-button type="primary" @click="search">查询</a-button>
-          <a-button style="margin-left: 8px" @click="reset">重置</a-button>
-          <a @click="toggleAdvanced" style="margin-left: 8px">
-            {{ advanced ? "收起" : "展开" }}
-            <a-icon :type="advanced ? 'up' : 'down'" />
-          </a>
-        </span>
-      </a-col>
+      <advanced-form
+        v-model="advanced"
+        :md="24"
+        @search="search"
+        @reset="reset"
+      ></advanced-form>
     </a-row>
   </a-form>
 </template>
 
 <script>
-import { ProjectSelect, CompanySelect, ContractTypeSelect } from '@/components'
+import {
+  ProjectSelect,
+  CompanySelect,
+  ContractTypeSelect,
+  PayStatusSelect,
+  AdvancedForm
+} from '@/components'
 export default {
   name: 'contractSearchForm',
   components: {
     ProjectSelect,
     CompanySelect,
-    ContractTypeSelect
+    ContractTypeSelect,
+    PayStatusSelect,
+    AdvancedForm
   },
   props: {
     value: {
@@ -128,25 +123,6 @@ export default {
         {
           value: 3,
           text: '终止'
-        }
-      ],
-      // 付款情况：0=全部、1=全部已付、2=全部未付、3=部分已付/未付
-      payStatusOptions: [
-        {
-          value: 0,
-          text: '全部'
-        },
-        {
-          value: 1,
-          text: '全部已付'
-        },
-        {
-          value: 2,
-          text: '全部未付'
-        },
-        {
-          value: 3,
-          text: '部分已付/未付'
         }
       ]
     }

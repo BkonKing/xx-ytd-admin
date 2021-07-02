@@ -7,7 +7,8 @@ export const project = {
   addProject: '/operate/project/addProject',
   updateProject: '/operate/project/updateProject',
   removeProject: '/operate/project/removeProject',
-  projectInfo: '/operate/project/projectInfo'
+  projectInfo: '/operate/project/projectInfo',
+  getProOrderPayList: '/public/common/getProOrderPayList'
 }
 
 // 获取所有公司接口
@@ -68,6 +69,15 @@ export function removeProject (data) {
 export function getProjectInfo (params) {
   return request({
     url: project.projectInfo,
+    method: 'get',
+    params
+  })
+}
+
+// 项目详情接口
+export function getProOrderPayList (params) {
+  return request({
+    url: project.getProOrderPayList,
     method: 'get',
     params
   })

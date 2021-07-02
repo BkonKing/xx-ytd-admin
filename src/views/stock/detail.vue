@@ -105,27 +105,12 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="(!advanced && 8) || 24" :sm="24">
-              <span
-                class="table-page-search-submitButtons"
-                :style="
-                  (advanced && { float: 'right', overflow: 'hidden' }) || {}
-                "
-              >
-                <a-button type="primary" @click="$refs.table.refresh(true)"
-                  >查询</a-button
-                >
-                <a-button
-                  style="margin-left: 8px"
-                  @click="() => (this.queryParam = {})"
-                  >重置</a-button
-                >
-                <a @click="toggleAdvanced" style="margin-left: 8px">
-                  {{ advanced ? "收起" : "展开" }}
-                  <a-icon :type="advanced ? 'up' : 'down'" />
-                </a>
-              </span>
-            </a-col>
+            <advanced-form
+              v-model="advanced"
+              :md="24"
+              @search="$refs.table.refresh(true)"
+              @reset="() => (this.queryParam = {})"
+            ></advanced-form>
           </a-row>
         </a-form>
       </div>
@@ -191,7 +176,7 @@
 </template>
 
 <script>
-import { STable, LogList } from '@/components'
+import { STable, LogList, AdvancedForm } from '@/components'
 import { getStockInfo, updateStock, getAllStockClkList } from '@/api/stock'
 import Info from '../project/components/Info.vue'
 import RecordDetailModal from './components/RecordDetail'
@@ -201,7 +186,8 @@ export default {
     STable,
     LogList,
     Info,
-    RecordDetailModal
+    RecordDetailModal,
+    AdvancedForm
   },
   data () {
     return {
@@ -255,8 +241,9 @@ export default {
           this.queryParam.startDate = time[0]
           this.queryParam.endDate = time[1]
         }
-        this.queryParam.projectId = this.info.projectId
-        this.queryParam.companyId = this.info.companyId
+        // this.queryParam.projectId = this.info.projectId
+        // this.queryParam.companyId = this.info.companyId
+        this.queryParam.stockId = this.id
         return getAllStockClkList(Object.assign(parameter, this.queryParam))
       },
       visible: false,

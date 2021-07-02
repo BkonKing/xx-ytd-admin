@@ -1,16 +1,19 @@
 <template>
   <div :class="wrpCls">
+    <message-center style="margin-right: 20px;"></message-center>
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
   </div>
 </template>
 
 <script>
 import AvatarDropdown from './AvatarDropdown'
+import MessageCenter from './MessageCenter.vue'
 
 export default {
   name: 'RightContent',
   components: {
-    AvatarDropdown
+    AvatarDropdown,
+    MessageCenter
   },
   props: {
     prefixCls: {
@@ -33,6 +36,7 @@ export default {
   data () {
     return {
       showMenu: true,
+      showMessage: false,
       currentUser: {}
     }
   },

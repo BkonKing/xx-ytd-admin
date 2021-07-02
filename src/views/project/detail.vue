@@ -49,7 +49,7 @@
         </a-col>
         <a-col :xs="12" :sm="12">
           <div class="text">参与公司</div>
-          <div class="heading">{{ projectInfo.relationCompanyNum }}家</div>
+          <div class="heading">{{ projectInfo.relationCompanyNum || 0 }}家</div>
         </a-col>
       </a-row>
     </template>
@@ -57,29 +57,29 @@
       <a-row>
         <a-col :sm="6" :xs="24">
           <info
-            :title="`合同（${projectInfo.relationContractNum}个）`"
-            :value="`￥${projectInfo.relationContractMoneys}`"
+            :title="`合同（${projectInfo.relationContractNum || 0}个）`"
+            :value="`￥${projectInfo.relationContractMoneys || 0}`"
             :bordered="true"
           />
         </a-col>
         <a-col :sm="6" :xs="24">
           <info
-            :title="`订单（${projectInfo.relationOrderNum}个）`"
-            :value="`￥${projectInfo.relationOrderMoneys}`"
+            :title="`订单（${projectInfo.relationOrderNum || 0}个）`"
+            :value="`￥${projectInfo.relationOrderMoneys || 0}`"
             :bordered="true"
           />
         </a-col>
         <a-col :sm="6" :xs="24">
           <info
             title="供应商"
-            :value="`${projectInfo.relationSupplierNum}个`"
+            :value="`${projectInfo.relationSupplierNum || 0}个`"
             :bordered="true"
           />
         </a-col>
         <a-col :sm="6" :xs="24">
           <info
-            :title="`物料（${projectInfo.relationMaterialNum}种）`"
-            :value="`${projectInfo.relationMaterialTotal}个`"
+            :title="`物料（${projectInfo.relationMaterialNum || 0}种）`"
+            :value="`${projectInfo.relationMaterialTotal || 0}个`"
           />
         </a-col>
       </a-row>
@@ -89,7 +89,7 @@
       <contract-tab :projectId="id"></contract-tab>
     </template>
     <template v-if="tabActiveKey === '1'">
-      <order-tab></order-tab>
+      <order-tab :projectId="id"></order-tab>
     </template>
   </page-header-wrapper>
 </template>

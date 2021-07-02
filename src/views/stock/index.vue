@@ -75,27 +75,11 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="8" :sm="24">
-              <span
-                class="table-page-search-submitButtons"
-                :style="
-                  (advanced && { float: 'right', overflow: 'hidden' }) || {}
-                "
-              >
-                <a-button type="primary" @click="$refs.table.refresh(true)"
-                  >查询</a-button
-                >
-                <a-button
-                  style="margin-left: 8px"
-                  @click="() => (this.queryParam = {})"
-                  >重置</a-button
-                >
-                <a @click="toggleAdvanced" style="margin-left: 8px">
-                  {{ advanced ? "收起" : "展开" }}
-                  <a-icon :type="advanced ? 'up' : 'down'" />
-                </a>
-              </span>
-            </a-col>
+            <advanced-form
+              v-model="advanced"
+              @search="$refs.table.refresh(true)"
+              @reset="() => (this.queryParam = {})"
+            ></advanced-form>
           </a-row>
         </a-form>
       </div>
@@ -120,7 +104,11 @@
           </template>
         </template>
         <template slot="remarks" slot-scope="text, record">
-          <a-input v-if="record.editable" v-model="record.remarks" />
+          <a-input
+            v-if="record.editable"
+            v-model="record.remarks"
+            :maxLength="100"
+          />
           <template v-else>
             {{ text }}
           </template>
@@ -152,10 +140,15 @@
 
 <script>
 // import moment from 'moment'
-import { STable, ProjectSelect, CompanySelect } from '@/components'
+import {
+  STable,
+  ProjectSelect,
+  CompanySelect,
+  AdvancedForm
+} from '@/components'
 import { getStockList, updateStock, removeStock } from '@/api/stock'
 import AddModal from './components/AddModal'
-import cloneDeep from 'lodash.clonedeep'
+import clonedeep from 'lodash.clonedeep'
 
 const columns = [
   {
@@ -181,12 +174,12 @@ const columns = [
   {
     title: '现有库存',
     dataIndex: 'currentNum',
-    sort: true
+    sorter: true
   },
   {
     title: '期初库存',
     dataIndex: 'originalNum',
-    sort: true,
+    sorter: true,
     scopedSlots: { customRender: 'originalNum' }
   },
   {
@@ -217,7 +210,8 @@ export default {
     STable,
     ProjectSelect,
     CompanySelect,
-    AddModal
+    AddModal,
+    AdvancedForm
   },
   data () {
     this.columns = columns
@@ -237,7 +231,7 @@ export default {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         return getStockList(requestParameters).then(res => {
           this.tableData = res.data.records
-          this.cacheData = cloneDeep(res.data.records)
+          this.cacheData = clonedeep(res.data.records)
           return res
         })
       }
@@ -277,11 +271,11 @@ export default {
         remarks
       }).then(({ data }) => {
         this.setEditable(index, false)
-        this.cacheData = cloneDeep(this.tableData)
+        this.cacheData = clonedeep(this.tableData)
       })
     },
     cancel (index) {
-      this.$set(this.tableData, index, cloneDeep(this.cacheData[index]))
+      this.$set(this.tableData, index, clonedeep(this.cacheData[index]))
       this.setEditable(index, false)
     },
     setEditable (index, value) {
