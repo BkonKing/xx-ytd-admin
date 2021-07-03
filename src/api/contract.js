@@ -11,6 +11,7 @@ export const contract = {
   getSettleType: '/public/common/getAllSettleType',
   getPayType: '/public/common/getAllPayType',
   getOrderList: '/operate/order/orderList',
+  getContOrderList: '/public/common/getContOrderList',
   getOrderPayByContId: '/public/common/getOrderPayByContId'
 }
 
@@ -99,6 +100,15 @@ export function getPayType (data) {
 export function getOrderList (params) {
   return request({
     url: contract.getOrderList,
+    method: 'get',
+    params
+  })
+}
+
+// 合同详情订单列表
+export function getContOrderList (params) {
+  return request({
+    url: contract.getContOrderList,
     method: 'get',
     params
   })

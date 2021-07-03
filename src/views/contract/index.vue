@@ -33,7 +33,7 @@
           <template>
             <a @click="goDetail(record)">查看</a>
             <a @click="goEdit(record)">编辑</a>
-            <a @click="handleRemove(record)">删除</a>
+            <a v-if="+record.status !== 1" @click="handleRemove(record)">删除</a>
             <a v-if="+record.status === 0" @click="openCheck(record)">审核</a>
           </template>
         </span>
@@ -162,6 +162,11 @@ export default {
     rowSelection () {
       return {
         selectedRowKeys: this.selectedRowKeys,
+        getCheckboxProps: record => ({
+          props: {
+            disabled: +record.status !== 0
+          }
+        }),
         onChange: this.onSelectChange
       }
     }

@@ -21,6 +21,7 @@ export default function Initializer () {
   store.commit(TOGGLE_COLOR, storage.get(TOGGLE_COLOR, defaultSettings.primaryColor))
   store.commit(TOGGLE_MULTI_TAB, storage.get(TOGGLE_MULTI_TAB, defaultSettings.multiTab))
   store.commit('SET_TOKEN', storage.get(ACCESS_TOKEN))
+  store.commit('SET_INFO', storage.get('userInfo'))
 
   // last step
 }

@@ -66,6 +66,7 @@
               v-model="form.manageMobile"
               placeholder="手机号"
               :maxLength="11"
+              v-number-input
             ></a-input>
           </a-form-model-item>
         </a-col>
@@ -89,6 +90,7 @@
               v-model="form.buyerMobile"
               placeholder="手机号"
               :maxLength="11"
+              v-number-input
             ></a-input>
           </a-form-model-item>
         </a-col>
@@ -112,21 +114,19 @@
               v-model="form.technicianMobile"
               placeholder="手机号"
               :maxLength="11"
+              v-number-input
             ></a-input>
           </a-form-model-item>
         </a-col>
       </a-row>
     </a-form-model-item>
-    <!-- <a-form-model-item v-show="false">
-        <a-input name="id" v-decorator="['id']"></a-input>
-      </a-form-model-item> -->
   </a-form-model>
 </template>
 
 <script>
 import chinaArea from '@/utils/chinaArea'
 import { UploadImage } from '@/components'
-import cloneDeep from 'lodash.clonedeep'
+import clonedeep from 'lodash.clonedeep'
 const initialForm = {
   projectName: '',
   stage: '',
@@ -165,7 +165,7 @@ export default {
     return {
       labelCol: { span: 7 },
       wrapperCol: { span: 14 },
-      form: cloneDeep(initialForm),
+      form: clonedeep(initialForm),
       rules: {
         projectName: [{ required: true, message: '请输入项目名称' }],
         manage: [{ required: true, message: '请输入项目负责人姓名' }],
@@ -202,7 +202,7 @@ export default {
     },
     resetFields () {
       this.$refs.projectForm.resetFields()
-      this.form = cloneDeep(initialForm)
+      this.form = clonedeep(initialForm)
     }
   }
 }

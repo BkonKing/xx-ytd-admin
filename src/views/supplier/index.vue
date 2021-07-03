@@ -263,6 +263,11 @@ export default {
     rowSelection () {
       return {
         selectedRowKeys: this.selectedRowKeys,
+        getCheckboxProps: record => ({
+          props: {
+            disabled: +record.status !== 0
+          }
+        }),
         onChange: this.onSelectChange
       }
     }

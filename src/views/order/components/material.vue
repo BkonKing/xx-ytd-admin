@@ -4,9 +4,9 @@
       <span slot="actions" slot-scope="text">
         <a-button type="link" @click="goOrderDetail(text)">查看</a-button>
       </span>
-      <!-- <template slot="footer">
+      <template slot="footer">
         总计 100 ￥10,000.00
-      </template> -->
+      </template>
     </s-table>
   </a-card>
 </template>

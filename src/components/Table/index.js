@@ -191,12 +191,12 @@ export default {
       )
       const result = this.data(parameter)
       // console.log(result)
-      // 对接自己的通用数据接口需要修改下方代码中的 r.pageindex, r.total, r.data
+      // 对接自己的通用数据接口需要修改下方代码中的 r.current, r.total, r.data
       // eslint-disable-next-line
       if ((typeof result === 'object' || typeof result === 'function') && typeof result.then === 'function') {
         result.then(({ data: r }) => {
           if (r.records && r.records.length > 0) {
-            this.localPagination = (this.showPagination === true || (this.showPagination && r.pageindex)) && Object.assign({}, this.localPagination, {
+            this.localPagination = (this.showPagination === true || (this.showPagination && r.current)) && Object.assign({}, this.localPagination, {
               current: parseInt(r.current), // 返回结果中的当前分页数
               total: parseInt(r.total), // 返回结果中的总记录数
               showSizeChanger: this.showSizeChanger,
@@ -213,7 +213,7 @@ export default {
             // 这里用于判断接口是否有返回 r.total 且 this.showPagination = true 且 pageindex 和 pagesize 存在 且 total 小于等于 pageindex * pagesize 的大小
             // 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
             try {
-              if ((['auto', true].includes(this.showPagination) && r.total <= (r.pageindex * this.localPagination.pagesize))) {
+              if ((['auto', true].includes(this.showPagination) && r.total <= (r.current * this.localPagination.pagesize))) {
                 this.localPagination.hideOnSinglePage = true
               }
             } catch (e) {

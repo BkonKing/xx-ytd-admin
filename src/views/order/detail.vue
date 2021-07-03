@@ -8,10 +8,16 @@
     <template v-slot:content>
       <a-descriptions size="small" :column="isMobile ? 1 : 2">
         <a-descriptions-item label="所属项目">
-          {{ info.projectName || "--" }}
+          <router-link
+            :to="{ name: 'ProjectDetail', query: { id: info.projectId } }"
+            >{{ info.projectName || "--" }}</router-link
+          >
         </a-descriptions-item>
         <a-descriptions-item label="供应商">
-          {{ info.supplierName }}
+          <router-link
+            :to="{ name: 'SupplierDetail', query: { id: info.supplierId } }"
+            >{{ info.supplierName }}</router-link
+          >
         </a-descriptions-item>
         <a-descriptions-item label="所属公司">
           {{ info.companyName }}
@@ -50,7 +56,27 @@
         </a-col>
       </a-row>
     </template>
-    <statistics v-if="isPass" v-show="tabActiveKey === '0'"></statistics>
+    <a-card
+      v-if="isPass"
+      v-show="tabActiveKey === '0'"
+      style="margin-top: 24px"
+      :bordered="false"
+    >
+      <a-row type="flex">
+        <a-col flex="1">
+          <info title="已付款" :value="`￥${info.paid}`" :bordered="true" />
+        </a-col>
+        <a-col flex="1">
+          <info title="未付款" :value="`￥${info.unpaid}`" :bordered="true" />
+        </a-col>
+        <a-col flex="1">
+          <info title="已收票" :value="`￥${info.invoiced}`" :bordered="true" />
+        </a-col>
+        <a-col flex="1">
+          <info title="未收票" :value="`￥${info.notInvoiced}`" />
+        </a-col>
+      </a-row>
+    </a-card>
     <order-steps
       v-show="!isPass || tabActiveKey === '1'"
       :data="info.auditLeveArr"
@@ -60,6 +86,7 @@
       v-if="isPass"
       v-show="tabActiveKey === '0'"
       :id="id"
+      @changePay="getOrderInfo"
     ></payment-table>
     <order-info
       v-show="!isPass || tabActiveKey === '1'"
@@ -88,8 +115,8 @@ import { appMixin } from '@/store/mixin'
 import OrderSteps from './components/Steps.vue'
 import OrderInfo from './components/Info.vue'
 import MaterialTable from './components/material.vue'
-import Statistics from './components/statistics'
 import PaymentTable from './components/PaymentTable'
+import Info from '../project/components/Info'
 import { LogList, CheckForm } from '@/components'
 import { getOrderInfo, auditOrder } from '@/api/order'
 export default {
@@ -99,10 +126,10 @@ export default {
     OrderSteps,
     OrderInfo,
     MaterialTable,
-    Statistics,
     PaymentTable,
     LogList,
-    CheckForm
+    CheckForm,
+    Info
   },
   data () {
     return {

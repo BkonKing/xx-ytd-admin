@@ -1,16 +1,20 @@
 <template>
   <div :class="wrpCls">
+    <message-center style="margin-right: 20px;"></message-center>
     <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
   </div>
 </template>
 
 <script>
 import AvatarDropdown from './AvatarDropdown'
+import MessageCenter from './MessageCenter.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'RightContent',
   components: {
-    AvatarDropdown
+    AvatarDropdown,
+    MessageCenter
   },
   props: {
     prefixCls: {
@@ -33,6 +37,7 @@ export default {
   data () {
     return {
       showMenu: true,
+      showMessage: false,
       currentUser: {}
     }
   },
@@ -42,14 +47,14 @@ export default {
         'ant-pro-global-header-index-right': true,
         [`ant-pro-global-header-index-${(this.isMobile || !this.topMenu) ? 'light' : this.theme}`]: true
       }
-    }
+    },
+    ...mapGetters(['userInfo'])
   },
   mounted () {
-    setTimeout(() => {
-      this.currentUser = {
-        name: 'Serati Ma'
-      }
-    }, 1500)
+    this.currentUser = {
+      name: this.userInfo.account,
+      avatar: this.userInfo.avatar
+    }
   }
 }
 </script>

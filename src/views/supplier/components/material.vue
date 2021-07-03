@@ -35,9 +35,7 @@
     </div>
     <s-table ref="table" size="default" :columns="columns" :data="loadData">
       <span slot="project" slot-scope="text, record">
-        <a-button type="link" @click="goProject(record.projectId)"
-          >text</a-button
-        >
+        <a @click="goProject(record.projectId)">{{text}}</a>
       </span>
     </s-table>
   </a-card>
@@ -54,8 +52,8 @@ export default {
     MaterialTypeSelect
   },
   props: {
-    type: {
-      type: Number,
+    supplierId: {
+      type: [Number, String],
       default: 0
     }
   },
@@ -87,6 +85,7 @@ export default {
         }
       ],
       loadData: parameter => {
+        this.queryParam.supplierId = this.supplierId
         return getSuppMaterialList(Object.assign(parameter, this.queryParam))
       }
     }

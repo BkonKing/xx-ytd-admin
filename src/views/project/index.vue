@@ -144,7 +144,7 @@ import {
   updateProject,
   removeProject
 } from '@/api/project'
-import cloneDeep from 'lodash.clonedeep'
+import clonedeep from 'lodash.clonedeep'
 const TagSelectOption = TagSelect.Option
 // const AvatarListItem = AvatarList.AvatarItem
 
@@ -220,7 +220,7 @@ export default {
       this.showModal()
       this.$refs.projectForm && this.$refs.projectForm.resetFields()
       this.$nextTick(() => {
-        const data = cloneDeep(obj)
+        const data = clonedeep(obj)
         if (obj.startDate) {
           data.buildTime = [moment(obj.startDate), moment(obj.endDate)]
         }

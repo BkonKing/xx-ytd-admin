@@ -35,9 +35,10 @@
     <a-table
       ref="table"
       size="default"
-      rowKey="id"
+      rowKey="materialId"
       :columns="columns"
       :data-source="data.materia"
+      :pagination="false"
     >
       <span slot="index" slot-scope="text, record, index">
         {{ index + 1 }}
@@ -53,7 +54,7 @@
         {{ text }} {{ record.unitv }}
       </span>
       <template slot="footer">
-        总计 {{data.materiaCount}}
+        总计 {{data.materiaNum}}
       </template>
     </a-table>
   </a-modal>

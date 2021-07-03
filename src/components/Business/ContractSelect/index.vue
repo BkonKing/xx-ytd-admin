@@ -47,7 +47,9 @@ export default {
       )
     },
     handleChange (value, option) {
-      this.$emit('change', value, option.context.options[0])
+      console.log(value)
+      const index = this.options.findIndex(obj => obj.contractId === value)
+      this.$emit('change', value, this.options[index])
     }
   },
   watch: {

@@ -68,36 +68,16 @@
               </a-col>
               <a-col :md="8" :sm="24">
                 <a-form-item label="付款情况">
-                  <a-select
+                  <pay-status-select
                     v-model="queryParam.payStatus"
-                    placeholder="请选择"
-                    default-value="0"
-                  >
-                    <a-select-option
-                      v-for="option in payStatusOptions"
-                      :value="option.value"
-                      :key="option.value"
-                    >
-                      {{ option.text }}
-                    </a-select-option>
-                  </a-select>
+                  ></pay-status-select>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
                 <a-form-item label="开票情况">
-                  <a-select
-                    mode="multiple"
+                  <kp-status-select
                     v-model="queryParam.kpStatus"
-                    placeholder="请选择"
-                  >
-                    <a-select-option
-                      v-for="option in kpStatusOptions"
-                      :value="option.value"
-                      :key="option.value"
-                    >
-                      {{ option.text }}
-                    </a-select-option>
-                  </a-select>
+                  ></kp-status-select>
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
@@ -109,27 +89,12 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="(!advanced && 8) || 16" :sm="24">
-              <span
-                class="table-page-search-submitButtons"
-                :style="
-                  (advanced && { float: 'right', overflow: 'hidden' }) || {}
-                "
-              >
-                <a-button type="primary" @click="$refs.table.refresh(true)"
-                  >查询</a-button
-                >
-                <a-button
-                  style="margin-left: 8px"
-                  @click="() => (this.queryParam = {})"
-                  >重置</a-button
-                >
-                <a @click="toggleAdvanced" style="margin-left: 8px">
-                  {{ advanced ? "收起" : "展开" }}
-                  <a-icon :type="advanced ? 'up' : 'down'" />
-                </a>
-              </span>
-            </a-col>
+            <advanced-form
+              v-model="advanced"
+              :md="16"
+              @reset="() => (this.queryParam = {})"
+              @search="$refs.table.refresh(true)"
+            ></advanced-form>
           </a-row>
         </a-form>
       </div>
@@ -159,11 +124,18 @@
           {{ text }}
         </span> -->
 
+        <span slot="paid" slot-scope="text, record">
+          <div v-if="+text">已付￥{{ text }}</div>
+          <div v-if="+record.unpaid">未付￥{{ record.unpaid }}</div>
+        </span>
+
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
             <a @click="goEdit(record)">编辑</a>
-            <a @click="handleRemove(record)">删除</a>
+            <a v-if="+record.status !== 1" @click="handleRemove(record)"
+              >删除</a
+            >
             <a v-if="+record.status === 0" @click="openCheck(record)">审核</a>
           </template>
         </span>
@@ -188,7 +160,15 @@
 </template>
 
 <script>
-import { STable, CheckForm, ProjectSelect, CompanySelect } from '@/components'
+import {
+  STable,
+  CheckForm,
+  ProjectSelect,
+  CompanySelect,
+  PayStatusSelect,
+  KpStatusSelect,
+  AdvancedForm
+} from '@/components'
 import {
   getOrderList,
   removeOrder,
@@ -233,12 +213,13 @@ const columns = [
   },
   {
     title: '金额',
-    dataIndex: 'allPrice',
+    dataIndex: 'orderPrice',
     sorter: true
   },
   {
     title: '付款情况',
-    dataIndex: 'status'
+    dataIndex: 'paid',
+    scopedSlots: { customRender: 'paid' }
   },
   {
     title: '创建时间',
@@ -258,7 +239,10 @@ export default {
     STable,
     CheckForm,
     ProjectSelect,
-    CompanySelect
+    CompanySelect,
+    PayStatusSelect,
+    KpStatusSelect,
+    AdvancedForm
   },
   data () {
     this.columns = columns
@@ -277,44 +261,6 @@ export default {
       advanced: false,
       // 查询参数
       queryParam: {},
-      // 付款情况：0=全部、1=全部已付、2=全部未付、3=部分已付/未付
-      payStatusOptions: [
-        {
-          text: '全部',
-          value: '0'
-        },
-        {
-          text: '全部已付',
-          value: '1'
-        },
-        {
-          text: '全部未付',
-          value: '2'
-        },
-        {
-          text: '部分已付/未付',
-          value: '3'
-        }
-      ],
-      // 开票情况：0=全部、1=全部已开、2=全部未开、3=部分已开/未开
-      kpStatusOptions: [
-        {
-          text: '全部',
-          value: '0'
-        },
-        {
-          text: '全部已开',
-          value: '1'
-        },
-        {
-          text: '全部未开',
-          value: '2'
-        },
-        {
-          text: '部分已开/未开',
-          value: '3'
-        }
-      ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
@@ -334,6 +280,11 @@ export default {
     rowSelection () {
       return {
         selectedRowKeys: this.selectedRowKeys,
+        getCheckboxProps: record => ({
+          props: {
+            disabled: +record.status !== 0
+          }
+        }),
         onChange: this.onSelectChange
       }
     }
@@ -358,9 +309,7 @@ export default {
         this.checkId = id
         this.idv = idv
       } else if (this.selectedRowKeys.length) {
-        this.idv = this.selectedRows
-          .map(data => data.idv)
-          .join('，')
+        this.idv = this.selectedRows.map(data => data.idv).join('，')
       }
       this.visible = true
       this.$refs.CheckForm && this.$refs.CheckForm.resetFields()

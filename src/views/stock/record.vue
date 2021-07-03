@@ -98,27 +98,12 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="8" :sm="24">
-              <span
-                class="table-page-search-submitButtons"
-                :style="
-                  (advanced && { float: 'right', overflow: 'hidden' }) || {}
-                "
-              >
-                <a-button type="primary" @click="$refs.table.refresh(true)"
-                  >查询</a-button
-                >
-                <a-button
-                  style="margin-left: 8px"
-                  @click="() => (this.queryParam = {})"
-                  >重置</a-button
-                >
-                <a @click="toggleAdvanced" style="margin-left: 8px">
-                  {{ advanced ? "收起" : "展开" }}
-                  <a-icon :type="advanced ? 'up' : 'down'" />
-                </a>
-              </span>
-            </a-col>
+            <advanced-form
+              v-model="advanced"
+              :md="8"
+              @search="$refs.table.refresh(true)"
+              @reset="() => (this.queryParam = {})"
+            ></advanced-form>
           </a-row>
         </a-form>
       </div>
@@ -145,8 +130,8 @@
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
-            <a @click="goEdit(record)">编辑</a>
-            <a @click="handleRemove(record)">删除</a>
+            <a v-if="record.stockType !== '1'" @click="goEdit(record)">编辑</a>
+            <a v-if="record.stockType !== '1'" @click="handleRemove(record)">删除</a>
           </template>
         </span>
       </s-table>
@@ -160,7 +145,7 @@
 
 <script>
 // import moment from 'moment'
-import { STable, ProjectSelect, CompanySelect } from '@/components'
+import { STable, ProjectSelect, CompanySelect, AdvancedForm } from '@/components'
 import { getStockClkList, removeStockCk } from '@/api/stock'
 import RecordDetailModal from './components/RecordDetail'
 
@@ -214,7 +199,8 @@ export default {
     STable,
     RecordDetailModal,
     ProjectSelect,
-    CompanySelect
+    CompanySelect,
+    AdvancedForm
   },
   data () {
     this.columns = columns
@@ -230,7 +216,11 @@ export default {
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
-      queryParam: {},
+      queryParam: {
+        stockType: '',
+        startDate: '',
+        endDate: ''
+      },
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
@@ -262,7 +252,7 @@ export default {
     handleTabChange (key) {
       this.tabActiveKey = key
       this.queryParam.stockType = key
-      this.$refs.table.refresh()
+      this.$refs.table.refresh(true)
     },
     toggleAdvanced () {
       this.advanced = !this.advanced
@@ -274,7 +264,6 @@ export default {
     },
     print () {
       if (this.selectedRowKeys.length) {
-
       } else {
         this.$message.warning('请选择出库单')
       }
