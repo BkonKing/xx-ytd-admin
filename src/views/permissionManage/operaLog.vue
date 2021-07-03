@@ -8,6 +8,7 @@
               <a-form-model-item label="模块">
 
                 <a-cascader
+                placeholder="请选择"
                 v-model="logType"
                 :field-names="{ label: 'logType', value: 'typeId', children: 'children' }"
                   :options="options"
@@ -71,7 +72,7 @@
       </div>
     </a-card>
     <a-card class="card2">
-      <a-table :columns="columns" :pagination="false" :data-source="tableData">
+      <a-table rowKey="id" :columns="columns" :pagination="false" :data-source="tableData">
       </a-table>
       <div class="pagination">
         <!-- :default-current="pagination.currentPage" -->
@@ -157,7 +158,7 @@ export default {
       },
       startDate: '', // 否date开始日期：2021-03-13
       endDate: '', // 否date结束日期：2021-03-16
-      logType: '', // 否int操作模块
+      logType: [], // 否int操作模块
       operationType: '', // 否varchar操作类型关键字
       serachText: '', // 否varchar操作说明关键字
       adminId: undefined, // 否int操作员

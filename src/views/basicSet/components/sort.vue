@@ -324,6 +324,11 @@ export default {
     },
     // 批量编辑权限菜单
     async saveEditData () {
+      if (this.idArr2.length > 0) {
+        await toRemoveBatchContract({ ids: this.idArr2 })
+        this.idArr2 = []
+        this.getData()
+      }
       // 顶级角色
       // if (this.parentId === 0) {
       let menus = this.itemInfo2.children.map(item => {
@@ -349,14 +354,14 @@ export default {
       const res = await toUpdateBatchContract({
         category: menus
       })
+      if (res.code === 200) {
+        this.itemInfo2.children = res.data
+        this.inputArr2 = []
+        this.idArr2 = []
+      }
       this.$message.success(res.message)
       this.getData()
 
-      if (this.idArr2.length > 0) {
-        await toRemoveBatchContract({ ids: this.idArr2 })
-        this.idArr2 = []
-        this.getData()
-      }
       this.editBol = false
     },
     // 添加 编辑初始化输入框
@@ -386,6 +391,9 @@ export default {
     // 批量编辑权限菜单
     async save () {
       console.log('删除的数组', this.idArr)
+      if (this.idArr.length > 0) {
+        await toRemoveBatchContract({ ids: this.idArr })
+      }
       if (this.parentId === 0) {
         let menus = this.itemInfo.children.map(item => {
           return {
@@ -407,6 +415,11 @@ export default {
           const res = await toUpdateBatchContract({
             category: menus
           })
+          if (res.code === 200) {
+            this.itemInfo.children = res.data
+            this.inputArr = []
+            this.idArr = []
+          }
           this.$message.info(res.message)
         }
       } else {
@@ -421,12 +434,15 @@ export default {
           const res = await toUpdateBatchContract({
             category: arr
           })
+          if (res.code === 200) {
+            this.itemInfo.children = res.data
+            this.inputArr = []
+            this.idArr = []
+          }
           this.$message.info(res.message)
         }
       }
-      if (this.idArr.length > 0) {
-        await toRemoveBatchContract({ ids: this.idArr })
-      }
+
       this.getData()
 
       this.createBol = true
@@ -558,9 +574,9 @@ export default {
 
       if (item.children) {
         this.itemInfo = JSON.parse(JSON.stringify(item))
-        this.itemInfo.children.forEach(item => {
-          item.display = +item.display
-        })
+        // this.itemInfo.children.forEach(item => {
+        //   item.display = +item.display
+        // })
         this.$nextTick(() => {
           this.createBol = true
         })

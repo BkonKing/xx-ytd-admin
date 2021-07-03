@@ -506,6 +506,11 @@ export default {
     // 创建分支的保存
     async Createsave () {
       this.createBol = true
+      if (this.idArr2.length > 0) {
+        await toRemoveBatchRole({ ids: this.idArr2 })
+        this.idArr2 = []
+        this.getData()
+      }
       if (this.itemInfo.children.length > 0) {
         let menus = this.itemInfo.children.map(item => {
           return {
@@ -526,6 +531,11 @@ export default {
         const res = await toUpdateBatchRole({
           roles: menus
         })
+        if (res.code === 200) {
+          this.itemInfo.children = res.data
+          this.inputArr = []
+          this.idArr = []
+        }
         this.$message.success(res.message)
         this.getData()
       } else {
@@ -539,13 +549,12 @@ export default {
         const res = await toUpdateBatchRole({
           roles: arr
         })
+        if (res.code === 200) {
+          this.$set(this.itemInfo, 'children', res.data)
+          this.inputArr = []
+          this.idArr = []
+        }
         this.$message.success(res.message)
-        this.getData()
-      }
-
-      if (this.idArr2.length > 0) {
-        await toRemoveBatchRole({ ids: this.idArr2 })
-        this.idArr2 = []
         this.getData()
       }
     },
@@ -572,6 +581,11 @@ export default {
     },
     // 批量编辑权限菜单
     async saveEditData () {
+      if (this.idArr.length > 0) {
+        await toRemoveBatchRole({ ids: this.idArr })
+        this.idArr = []
+        this.getData()
+      }
       // 顶级角色
       // if (this.parentId === 0) {
       let menus = this.itemInfo2.children.map(item => {
@@ -593,14 +607,13 @@ export default {
       const res = await toUpdateBatchRole({
         roles: menus
       })
+      if (res.code === 200) {
+        this.itemInfo2.children = res.data
+        this.inputArr2 = []
+        this.idArr2 = []
+      }
       this.$message.success(res.message)
       this.getData()
-
-      if (this.idArr.length > 0) {
-        await toRemoveBatchRole({ ids: this.idArr })
-        this.idArr = []
-        this.getData()
-      }
     },
     // 获取权限菜单数据
     async getData () {

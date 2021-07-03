@@ -143,7 +143,7 @@ export function toGetAllProject () {
 export function toCompanyList (params) {
   return request({
     url: permissionApi.companyList,
-    method: 'post',
+    method: 'get',
     params
   })
 }

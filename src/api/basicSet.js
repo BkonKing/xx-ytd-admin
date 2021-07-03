@@ -16,7 +16,13 @@ export const basicSetApi = {
   removeBatchContract: '/set/category/removeBatchContract',
   removeContract: '/set/category/removeContract',
   getAllAdminList: '/public/common/getAllAdminList',
-  updateSetData: '/set/auditset/updateSetData'
+  updateSetData: '/set/auditset/updateSetData',
+  settleType: '/set/category/settleType',
+  updateBatchSettleType: '/set/category/updateBatchSettleType',
+  removeBatchSettleType: '/set/category/removeBatchSettleType',
+  payType: '/set/category/payType',
+  updateBatchPayType: '/set/category/updateBatchPayType',
+  removeBatchPayType: '/set/category/removeBatchPayType'
 }
 
 // 消息设置数据接口(已验证)
@@ -136,6 +142,51 @@ export function toGetAllAdminList () {
 export function toUpdateSetData (data) {
   return request({
     url: basicSetApi.updateSetData,
+    method: 'post',
+    data
+  })
+}
+// 结算方式接口(已验证)
+export function toSettleType () {
+  return request({
+    url: basicSetApi.settleType
+
+  })
+}
+// 批量添加/编辑结算方式接口(已验证)
+export function toUpdateBatchSettleType (data) {
+  return request({
+    url: basicSetApi.updateBatchSettleType,
+    method: 'post',
+    data
+  })
+}
+// 批量删除结算方式接口(已验证)
+export function toRemoveBatchSettleType (data) {
+  return request({
+    url: basicSetApi.removeBatchSettleType,
+    method: 'post',
+    data
+  })
+}
+// 支付方式接口(已验证)
+export function toPayType () {
+  return request({
+    url: basicSetApi.payType
+  })
+}
+// 批量添加/编辑支付方式接口(已验证)
+export function toUpdateBatchPayType (data) {
+  return request({
+    url: basicSetApi.updateBatchPayType,
+    method: 'post',
+    data
+  })
+}
+// 批量删除支付方式接口(已验证)
+export function toRemoveBatchPayType (data) {
+  return request({
+    url: basicSetApi.removeBatchPayType,
     method: 'post',
     data
   })

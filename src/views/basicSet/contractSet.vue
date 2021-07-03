@@ -21,18 +21,21 @@
       </template>
     </page-header-wrapper>
     <sort v-if="currentIndex===0"></sort>
+    <other v-else></other>
   </div>
 </template>
 
 <script>
 import sort from './components/sort.vue'
+import other from './components/other.vue'
 export default {
   components: {
-    sort
+    sort,
+    other
   },
   data () {
     return {
-      currentIndex: 0
+      currentIndex: 1
     }
   },
   methods: {

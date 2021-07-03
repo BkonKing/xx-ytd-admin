@@ -54,6 +54,11 @@
                   style="width:120px"
                   placeholder="访问链接"
                 ></a-input>
+                  <a-input
+                  v-model="item.apiPath"
+                  style="width:120px"
+                  placeholder="接口路径"
+                ></a-input>
                 <a-input
                   v-model="item.listOrder"
                   style="width:120px"
@@ -118,6 +123,11 @@
                     style="width:120px"
                     placeholder="访问链接"
                   ></a-input>
+                         <a-input
+                  v-model="item.apiPath"
+                  style="width:120px"
+                  placeholder="接口路径"
+                ></a-input>
                   <a-input
                     v-model="item.listOrder"
                     style="width:120px"
@@ -159,6 +169,11 @@
                   v-model="item.limitsPath"
                   style="width:120px"
                   placeholder="访问链接"
+                ></a-input>
+                       <a-input
+                  v-model="item.apiPath"
+                  style="width:120px"
+                  placeholder="接口路径"
                 ></a-input>
                 <a-input
                   v-model="item.listOrder"
@@ -222,6 +237,11 @@
                     style="width:120px"
                     placeholder="访问链接"
                   ></a-input>
+                       <a-input
+                  v-model="item.apiPath"
+                  style="width:120px"
+                  placeholder="接口路径"
+                ></a-input>
                   <a-input
                     v-model="item.listOrder"
                     style="width:120px"
@@ -263,6 +283,11 @@
                   v-model="item.limitsPath"
                   style="width:120px"
                   placeholder="访问链接"
+                ></a-input>
+                       <a-input
+                  v-model="item.apiPath"
+                  style="width:120px"
+                  placeholder="接口路径"
                 ></a-input>
                 <a-input
                   v-model="item.listOrder"
@@ -380,6 +405,7 @@ export default {
           limitsPath: item.limitsPath,
           listOrder: item.listOrder,
           menuText: item.menuText,
+          apiPath: item.apiPath,
           parentId: 0
         }
       })
@@ -394,6 +420,7 @@ export default {
         menuText: '',
         limitsPath: '',
         icon: '',
+        apiPath: '',
         listOrder: '',
         display: ''
       })
@@ -404,6 +431,11 @@ export default {
     },
     // 批量编辑权限菜单
     async saveEditData () {
+      if (this.idArr2.length > 0) {
+        await toRemoveBatchMenu({ ids: this.idArr2 })
+        this.idArr2 = []
+        this.getData()
+      }
       // 顶级角色
       // if (this.parentId === 0) {
       let menus = this.itemInfo2.children.map(item => {
@@ -415,6 +447,7 @@ export default {
           limitsPath: item.limitsPath,
           listOrder: item.listOrder,
           menuText: item.menuText,
+          apiPath: item.apiPath,
           parentId: item.parentId
         }
       })
@@ -429,14 +462,14 @@ export default {
       const res = await toUpdateBatchMenu({
         menus: menus
       })
+      if (res.code === 200) {
+        this.itemInfo2.children = res.data
+        this.inputArr2 = []
+        this.idArr2 = []
+      }
       this.$message.success(res.message)
       this.getData()
 
-      if (this.idArr2.length > 0) {
-        await toRemoveBatchMenu({ ids: this.idArr2 })
-        this.idArr2 = []
-        this.getData()
-      }
       this.editBol = false
     },
     // 添加 编辑初始化输入框
@@ -448,6 +481,7 @@ export default {
         menuText: '',
         limitsPath: '',
         icon: '',
+        apiPath: '',
         listOrder: '',
         display: ''
       })
@@ -469,6 +503,9 @@ export default {
     // 批量编辑权限菜单
     async save () {
       console.log('删除的数组', this.idArr)
+      if (this.idArr.length > 0) {
+        await toRemoveBatchMenu({ ids: this.idArr })
+      }
       if (this.parentId === 0) {
         let menus = this.itemInfo.children.map(item => {
           return {
@@ -478,6 +515,7 @@ export default {
             limitsPath: item.limitsPath,
             icon: item.icon,
             listOrder: item.listOrder,
+            apiPath: item.apiPath,
             display: item.display
           }
         })
@@ -493,6 +531,11 @@ export default {
           const res = await toUpdateBatchMenu({
             menus: menus
           })
+          if (res.code === 200) {
+            this.itemInfo.children = res.data
+            this.inputArr = []
+            this.idArr = []
+          }
           this.$message.info(res.message)
         }
       } else {
@@ -507,12 +550,15 @@ export default {
           const res = await toUpdateBatchMenu({
             menus: arr
           })
+          if (res.code === 200) {
+            this.itemInfo.children = res.data
+            this.inputArr = []
+            this.idArr = []
+          }
           this.$message.info(res.message)
         }
       }
-      if (this.idArr.length > 0) {
-        await toRemoveBatchMenu({ ids: this.idArr })
-      }
+
       this.getData()
 
       this.createBol = true
@@ -537,6 +583,9 @@ export default {
         this.titleArr = arr2
         arr2 = []
         arr = []
+        this.$nextTick(() => {
+          this.createBol = true
+        })
       } else {
         // 设置编辑同级的标题
         if (info.node.dataRef.parentId === '0') {
@@ -549,6 +598,7 @@ export default {
               limitsPath: item.limitsPath,
               listOrder: item.listOrder,
               menuText: item.menuText,
+              apiPath: item.apiPath,
               parentId: item.parentId
             }
           })
@@ -576,6 +626,7 @@ export default {
                 level: item.level,
                 limitsPath: item.limitsPath,
                 listOrder: item.listOrder,
+                apiPath: item.apiPath,
                 menuText: item.menuText,
                 parentId: item.parentId
               }
@@ -629,6 +680,7 @@ export default {
         menuText: '',
         limitsPath: '',
         icon: '',
+        apiPath: '',
         listOrder: '',
         display: ''
       })
@@ -726,7 +778,7 @@ export default {
     }
   }
   .addArea {
-    width: 685px;
+    width: 644px;
     height: 32px;
     border-radius: 4px;
     border: 2px dashed #eeeeee;

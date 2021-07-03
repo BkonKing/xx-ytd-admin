@@ -1,8 +1,13 @@
 <template>
   <div class="editContent">
-
     <a-card>
-      <a-form-model ref="form" :model='form' :rules='rules' :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-model
+        ref="form"
+        :model="form"
+        :rules="rules"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
+      >
         <a-form-model-item label="消息类型">
           {{ info.messageName }}
         </a-form-model-item>
@@ -21,7 +26,7 @@
           </div>
         </a-form-model-item>
         <div class="title">站内消息</div>
-        <a-form-model-item label="消息标题" prop='webTitle'>
+        <a-form-model-item label="消息标题" prop="webTitle">
           <a-input
             v-model="form.webTitle"
             :maxLength="20"
@@ -33,19 +38,28 @@
           <a-textarea
             v-model="form.webMessageTemp"
             class="textarea"
-            :maxLength='200'
+            :maxLength="200"
             placeholder="请输入"
             auto-size
           />
           <div style="textAlign: right;width:440px">
-            {{form.webMessageTemp.length}} / 200
+            {{ form.webMessageTemp.length }} / 200
           </div>
         </a-form-model-item>
-        <a-form-model-item label="通知用户">
-
+        <a-form-model-item>
+          <template slot="label">
+            <div >
+              额外通知用户
+              <a-tooltip>
+                <template slot="title">
+                  通知所有的信息
+                </template>
+                <a-icon type="info-circle" />：
+              </a-tooltip>
+            </div>
+          </template>
           <a-select
-
-          v-model="webIds"
+            v-model="webIds"
             mode="multiple"
             style="width:440px"
             placeholder="select one country"
@@ -65,33 +79,61 @@
         <a-form-model-item label="模板标题">流程代办提醒</a-form-model-item>
         <a-form-model-item label="内容模板">
           <div class="inputBox">
-            <div class="item">
-              <span>流程编号：</span
-              ><a-textarea v-model="form.lcbh" :maxLength="25" placeholder="请输入" auto-size />
-            </div>
-            <div class="item">
-              <span>流程名称：</span
-              ><a-textarea v-model="form.lcmc" :maxLength="25" placeholder="请输入" auto-size />
-            </div>
-            <!-- <div class="item">
-              <span>发起时间：</span
-              ><a-textarea v-model="fqsj" :maxLength="25" placeholder="请输入" auto-size />
-            </div> -->
-            <div class="item">
-              <span>流程摘要：</span
-              ><a-textarea v-model="form.lczy" :maxLength="25" placeholder="请输入" auto-size />
-            </div>
-            <div class="item">
-              <span>备注：</span
-              ><a-textarea v-model="form.lcbz" :maxLength="25" placeholder="请输入" auto-size />
-            </div>
+            <a-form-model-item
+              label="流程编号"
+              prop="lcbh"
+              :rules="{ required: true, message: '必填 ', trigger: 'change' }"
+            >
+              <a-textarea
+                v-model="form.lcbh"
+                :maxLength="25"
+                placeholder="请输入"
+                auto-size
+              />
+            </a-form-model-item>
+            <a-form-model-item
+              label="流程名称"
+              prop="lcmc"
+              :rules="{ required: true, message: '必填 ', trigger: 'change' }"
+            >
+              <a-textarea
+                v-model="form.lcmc"
+                :maxLength="25"
+                placeholder="请输入"
+                auto-size
+              />
+            </a-form-model-item>
+
+            <a-form-model-item
+              label="流程摘要"
+              prop="lcmc"
+              :rules="{ required: true, message: '必填 ', trigger: 'change' }"
+            >
+              <a-textarea
+                v-model="form.lczy"
+                :maxLength="25"
+                placeholder="请输入"
+                auto-size
+              />
+            </a-form-model-item>
+            <a-form-model-item
+              label="备注"
+              prop="lcbz"
+              :rules="{ required: true, message: '必填 ', trigger: 'change' }"
+            >
+              <a-textarea
+                v-model="form.lcbz"
+                :maxLength="25"
+                placeholder="请输入"
+                auto-size
+              />
+            </a-form-model-item>
           </div>
           <div style="color: rgba(0, 0, 0, 0.447);">每行限1~25个字</div>
         </a-form-model-item>
         <a-form-model-item label="通知用户">
-        <a-select
-
-          v-model="wxIds"
+          <a-select
+            v-model="wxIds"
             mode="multiple"
             style="width:440px"
             placeholder="select one country"
@@ -109,7 +151,7 @@
         </a-form-model-item>
       </a-form-model>
       <div class="btn">
-        <a-button type="primary" @click="save">保存</a-button>
+        <a-button type="primary" @click="save" :disabled="bol">保存</a-button>
       </div>
     </a-card>
   </div>
@@ -120,7 +162,6 @@ import { toSetInfo, toTemplateSet } from '@/api/basicSet'
 export default {
   data () {
     return {
-
       info: {},
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
@@ -143,27 +184,54 @@ export default {
       rules: {
         webTitle: [{ required: true, message: '必填', trigger: 'change' }],
         webMessageTemp: [{ required: true, message: '必填', trigger: 'change' }]
-      }
+      },
+      bol: true
+    }
+  },
+  watch: {
+    form: {
+      handler () {
+        this.bol = false
+      },
+      deep: true
+    },
+    webIds: {
+      handler () {
+        this.bol = false
+      },
+      deep: true
+    },
+    wxIds: {
+      handler () {
+        this.bol = false
+      },
+      deep: true
     }
   },
   methods: {
     save () {
-      const obj = {}
-      obj.lcbh = this.form.lcbh
-      obj.lcmc = this.form.lcmc
-      obj.fqsj = this.form.fqsj
-      obj.lczy = this.form.lczy
-      obj.lcbz = this.form.lcbz
+      console.log(this.$refs.form)
+      this.$refs.form.validate(result => {
+        if (result) {
+          const obj = {}
+          obj.lcbh = this.form.lcbh
+          obj.lcmc = this.form.lcmc
+          obj.fqsj = this.form.fqsj
+          obj.lczy = this.form.lczy
+          obj.lcbz = this.form.lcbz
 
-      toTemplateSet({
-        id: this.id,
-        webTitle: this.form.webTitle,
-        webMessageTemp: this.form.webMessageTemp,
-        webIds: this.webIds.join(','),
-        wxMessageTemp: obj,
-        wxIds: this.wxIds.join(',')
-      }).then(res => {
-        this.$message.success(res.message)
+          toTemplateSet({
+            id: this.id,
+            webTitle: this.form.webTitle,
+            webMessageTemp: this.form.webMessageTemp,
+            webIds: this.webIds.join(','),
+            wxMessageTemp: obj,
+            wxIds: this.wxIds.join(',')
+          }).then(res => {
+            this.$message.success(res.message)
+            this.bol = true
+          })
+        }
       })
     },
     // 获取详情
@@ -186,7 +254,10 @@ export default {
         this.wxIds = res.data.wxIds.map(item => {
           return item.adminId
         })
-        console.log('this.wxIds', this.wxIds)
+        this.$nextTick(() => {
+          this.bol = true
+        })
+        // console.log('this.wxIds', this.wxIds)
       })
     }
   },
@@ -207,7 +278,6 @@ export default {
     flex-wrap: wrap;
     .item {
       width: 50%;
-
     }
   }
   .title {
@@ -232,25 +302,20 @@ export default {
     border: 1px solid rgba(217, 217, 217, 1);
     width: 440px;
     padding-left: 10px;
-    .item {
-      display: flex;
-      span {
-        width: 86px;
-        text-align: left;
-      }
-      textarea {
-        width: 366px;
-        border: none;
-        outline: none;
-        box-shadow: none;
-        resize: none;
-      }
-      /deep/.textarea:focus {
-        outline: none;
-        border: none;
-        box-shadow: none;
-      }
+
+    textarea {
+      width: 356px;
+      border: none;
+      outline: none;
+      box-shadow: none;
+      resize: none;
+    }
+    /deep/.textarea:focus {
+      outline: none;
+      border: none;
+      box-shadow: none;
     }
   }
+
 }
 </style>

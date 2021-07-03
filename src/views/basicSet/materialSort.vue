@@ -353,8 +353,11 @@ export default {
     },
     // 批量编辑权限菜单
     async saveEditData () {
-      // 顶级角色
-      // if (this.parentId === 0) {
+      if (this.idArr2.length > 0) {
+        await toRemoveBatchMaterial({ ids: this.idArr2 })
+        this.idArr2 = []
+        this.getData()
+      }
       let menus = this.itemInfo2.children.map(item => {
         return {
           id: item.id,
@@ -377,14 +380,14 @@ export default {
       const res = await toUpdateBatchMaterial({
         category: menus
       })
+      if (res.code === 200) {
+        this.itemInfo2.children = res.data
+        this.inputArr2 = []
+        this.idArr = []
+      }
       this.$message.success(res.message)
       this.getData()
 
-      if (this.idArr2.length > 0) {
-        await toRemoveBatchMaterial({ ids: this.idArr2 })
-        this.idArr2 = []
-        this.getData()
-      }
       this.editBol = false
     },
     // 添加 编辑初始化输入框
@@ -464,7 +467,7 @@ export default {
             category: arr
           })
           if (res.code === 200) {
-            this.itemInfo.children = res.data
+            this.$set(this.itemInfo, 'children', res.data)
             this.inputArr = []
             this.idArr = []
           }
@@ -496,6 +499,9 @@ export default {
         this.titleArr = arr2
         arr2 = []
         arr = []
+        this.$nextTick(() => {
+          this.createBol = true
+        })
       } else {
         // 设置编辑同级的标题
         if (info.node.dataRef.parentId === '0') {
@@ -593,9 +599,6 @@ export default {
     },
     // 批量删除 创建分支菜单
     removeMe (id, index) {
-      console.log('111', this.itemInfo.children)
-      console.log('批量删除菜单111', id)
-      console.log('批量删除菜单222', index)
       this.idArr.push(id)
       this.itemInfo.children.splice(index, 1)
     },
