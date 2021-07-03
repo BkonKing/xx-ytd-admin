@@ -51,9 +51,21 @@ export default {
     ...mapGetters(['userInfo'])
   },
   mounted () {
-    this.currentUser = {
-      name: this.userInfo.account,
-      avatar: this.userInfo.avatar
+    this.setCurrentUser()
+  },
+  methods: {
+    setCurrentUser () {
+      const account = (this.userInfo && this.userInfo.account) || '昵称'
+      const avatar = (this.userInfo && this.userInfo.avatar) || ''
+      this.currentUser = {
+        name: account,
+        avatar: avatar
+      }
+    }
+  },
+  watch: {
+    userInfo () {
+      this.setCurrentUser()
     }
   }
 }

@@ -81,7 +81,12 @@
       v-show="!isPass || tabActiveKey === '1'"
       :data="info.auditLeveArr"
     ></order-steps>
-    <material-table v-show="!isPass || tabActiveKey === '0'"></material-table>
+    <material-table
+      v-show="!isPass || tabActiveKey === '0'"
+      :data="info.material"
+      :number="info.materialNum"
+      :money="info.orderPrice"
+    ></material-table>
     <payment-table
       v-if="isPass"
       v-show="tabActiveKey === '0'"

@@ -11,7 +11,15 @@
           {{ info.companyName }}
         </a-descriptions-item>
         <a-descriptions-item label="关联项目">
-          {{ info.projectName || "--" }}
+          <template v-if="info.projectArr && info.projectArr.length">
+            <router-link
+              v-for="item in info.projectArr"
+              :key="item.projectId"
+              :to="{name: 'ProjectDetail', query: {id: item.projectId}}"
+              >{{ item.projectName }}</router-link
+            >
+          </template>
+          <span v-else>--</span>
         </a-descriptions-item>
         <a-descriptions-item label="类型">
           {{ info.supplierTypeName }}
@@ -62,6 +70,7 @@
       v-if="isPass"
       v-show="tabActiveKey === '1'"
       :supplierId="id"
+      :options="info.projectArr"
     ></material-table>
 
     <a-modal
@@ -104,7 +113,9 @@ export default {
       id: '',
       tabList: [],
       tabActiveKey: '0',
-      info: {},
+      info: {
+        projectArr: []
+      },
       visible: false,
       confirmLoading: false
     }

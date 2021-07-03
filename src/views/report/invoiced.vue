@@ -85,7 +85,7 @@
         </template>
         <template slot="contractMoney" slot-scope="text, record">
           <router-link
-            :to="{ name: 'ContractDetail', query: { id: record.id } }"
+            :to="{ name: 'ContractDetail', query: { id: record.contractId } }"
             >￥{{ text }}</router-link
           >
         </template>

@@ -268,7 +268,7 @@ export default {
         materialId: '',
         brand: '',
         model: '',
-        taxRate: (this.tableData[0] && this.tableData[0].taxRate) || 1,
+        taxRate: (this.tableData[0] && this.tableData[0].taxRate) || '1',
         unitPrice: '',
         unit: this.unitOptions[0].unit,
         total: '',

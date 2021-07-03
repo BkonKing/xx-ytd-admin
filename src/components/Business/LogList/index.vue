@@ -192,7 +192,7 @@ export default {
     // 获取操作日志模块接口
     getLogType () {
       getLogType({
-        id: this.typeId
+        pId: this.typeId
       }).then(({ data }) => {
         this.typeOptions = data
       })
