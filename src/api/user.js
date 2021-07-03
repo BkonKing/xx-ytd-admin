@@ -6,7 +6,7 @@ export const userApi = {
   UserInfo: '/public/common/getAccountInfo',
   updateBasicSet: '/system/account/updateBasicSet',
   updateSecuritySet: '/system/account/updateSecuritySet',
-  UserMenu: '/system/menus/getMenus',
+  UserMenu: '/public/common/getMenu',
   bdCode: '/public/common/bdCode',
   uploadImg: '/file/uploads/uImages'
 }
