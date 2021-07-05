@@ -82,7 +82,7 @@
             <a-form-model-item
               label="流程编号"
               prop="lcbh"
-              :rules="{ required: true, message: '必填 ', trigger: 'change' }"
+              :rules="{ required: true, message: '请填写 ', trigger: 'change' }"
             >
               <a-textarea
                 v-model="form.lcbh"
@@ -94,7 +94,7 @@
             <a-form-model-item
               label="流程名称"
               prop="lcmc"
-              :rules="{ required: true, message: '必填 ', trigger: 'change' }"
+              :rules="{ required: true, message: '请填写 ', trigger: 'change' }"
             >
               <a-textarea
                 v-model="form.lcmc"
@@ -107,7 +107,7 @@
             <a-form-model-item
               label="流程摘要"
               prop="lcmc"
-              :rules="{ required: true, message: '必填 ', trigger: 'change' }"
+              :rules="{ required: true, message: '请填写 ', trigger: 'change' }"
             >
               <a-textarea
                 v-model="form.lczy"
@@ -119,7 +119,7 @@
             <a-form-model-item
               label="备注"
               prop="lcbz"
-              :rules="{ required: true, message: '必填 ', trigger: 'change' }"
+              :rules="{ required: true, message: '请填写 ', trigger: 'change' }"
             >
               <a-textarea
                 v-model="form.lcbz"
@@ -182,8 +182,8 @@ export default {
       wxIds: undefined, // 否varchar微信公众号通知用户：1,3,5
 
       rules: {
-        webTitle: [{ required: true, message: '必填', trigger: 'change' }],
-        webMessageTemp: [{ required: true, message: '必填', trigger: 'change' }]
+        webTitle: [{ required: true, message: '请填写', trigger: 'change' }],
+        webMessageTemp: [{ required: true, message: '请填写', trigger: 'change' }]
       },
       bol: true
     }

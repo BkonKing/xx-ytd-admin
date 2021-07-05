@@ -1,16 +1,11 @@
 <template>
   <div>
     <a-steps :current="current">
-      <a-step
-        v-for="(item, index) in steps"
-        :key="item.title"
-        :title="item.title"
-        @click="handleClick(index)"
-      />
+      <a-step v-for="(item, index) in steps" :key="index" :title="item.title" @click.stop="handleClick(index)" />
     </a-steps>
     <div class="steps-content">
       <div v-if="current === 0">
-        <QRCode :qrcode="qrcode" style="width:200px;height:200px;"></QRCode>
+        <QRCode v-if="qrcode" :qrcode="qrcode" style="width:200px;height:200px;"></QRCode>
         <div style="margin-top: 10px;">打开微信“扫一扫”，进行扫码</div>
       </div>
       <div v-if="current === 1">
@@ -30,7 +25,7 @@
 </template>
 <script>
 import { QRCode } from '@/components'
-import { getDdCode } from '@/api/user'
+import { getDdCode, getDdStatus } from '@/api/user'
 import { mapGetters } from 'vuex'
 export default {
   components: {
@@ -50,7 +45,9 @@ export default {
           title: '完成'
         }
       ],
-      isComplate: false
+      isComplate: false,
+      qrcode: '',
+      timer: null
     }
   },
   computed: {
@@ -58,26 +55,64 @@ export default {
   },
   created () {
     this.isComplate = Boolean(this.userInfo.wxOpenid)
-    this.isComplate && (this.current = 2)
-    this.getDdCode()
+    if (this.isComplate) {
+      this.current = 2
+    } else {
+      this.getDdCode()
+    }
   },
   methods: {
     // 重新绑定
     reset () {
       this.current = 0
       this.isComplate = false
+      this.getDdCode()
     },
     getDdCode () {
       getDdCode().then(res => {
         this.qrcode = res.qrcode
+        this.getDdStatus()
       })
     },
-    getStatus () {
-      this.$store.dispatch('GetInfo')
+    getDdStatus () {
+      getDdStatus().then(({ bdStatus }) => {
+        switch (bdStatus) {
+          case 0:
+            this.timer && clearTimeout(this.timer)
+            this.timer = setTimeout(() => {
+              this.getDdStatus()
+            }, 3000)
+            break
+          case 1:
+            if (this.current === 1) {
+              this.timer && clearTimeout(this.timer)
+              this.timer = setTimeout(() => {
+                this.getDdStatus()
+              }, 3000)
+            } else {
+              this.current = 1
+              this.getDdStatus()
+            }
+            break
+          case 2:
+            this.current = 2
+            this.$store.dispatch('GetInfo')
+            break
+        }
+      })
     },
     handleClick (index) {
-      !this.isComplate && index !== 2 && (this.current = index)
+      console.log(index)
+      if (!this.isComplate && index !== 2) {
+        this.current = index
+        if (this.current === 0) {
+          this.getDdCode()
+        }
+      }
     }
+  },
+  beforeDestroy () {
+    this.timer && clearTimeout(this.timer)
   }
 }
 </script>

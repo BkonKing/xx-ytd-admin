@@ -69,7 +69,7 @@ export default {
     return {
       form: clonedeep(form),
       rules: {
-        auidtStatus: [{ required: true, message: '必填', trigger: 'change' }]
+        auidtStatus: [{ required: true, message: '请填写', trigger: 'change' }]
       },
       labelCol: { span: 7 },
       wrapperCol: { span: 14 }

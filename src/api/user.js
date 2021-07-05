@@ -8,6 +8,7 @@ export const userApi = {
   updateSecuritySet: '/system/account/updateSecuritySet',
   UserMenu: '/public/common/getMenu',
   bdCode: '/public/common/bdCode',
+  bdStatus: '/public/common/bdStatus',
   uploadImg: '/file/uploads/uImages'
 }
 
@@ -54,6 +55,14 @@ export function updateSecuritySet (data) {
 export function getDdCode (data) {
   return request({
     url: userApi.bdCode,
+    method: 'post',
+    data
+  })
+}
+
+export function getDdStatus (data) {
+  return request({
+    url: userApi.bdStatus,
     method: 'post',
     data
   })

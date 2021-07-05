@@ -207,14 +207,14 @@ export default {
       },
       unitOptions: [],
       rules: {
-        contractId: [{ required: true, message: '必填' }]
+        contractId: [{ required: true, message: '请填写' }]
       },
       tableRules: {
-        materialId: [{ required: true, message: '必填' }],
-        brand: [{ required: true, message: '必填' }],
-        model: [{ required: true, message: '必填' }],
-        unitPrice: [{ required: true, message: '必填' }],
-        total: [{ required: true, message: '必填' }]
+        materialId: [{ required: true, message: '请填写' }],
+        brand: [{ required: true, message: '请填写' }],
+        model: [{ required: true, message: '请填写' }],
+        unitPrice: [{ required: true, message: '请填写' }],
+        total: [{ required: true, message: '请填写' }]
       },
       tableData: []
     }

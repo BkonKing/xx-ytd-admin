@@ -188,15 +188,15 @@ export default {
         stockPz: []
       },
       rules: {
-        projectId: [{ required: true, message: '必填' }],
-        department: [{ required: true, message: '必填' }],
-        stockMen: [{ required: true, message: '必填' }],
-        clktime: [{ required: true, message: '必填' }]
+        projectId: [{ required: true, message: '请填写' }],
+        department: [{ required: true, message: '请填写' }],
+        stockMen: [{ required: true, message: '请填写' }],
+        clktime: [{ required: true, message: '请填写' }]
       },
       tableRules: {
-        materialIdArr: [{ required: true, message: '必填' }],
-        stockNum: [{ required: true, message: '必填' }]
-        // stockNum: [{ required: true, message: '必填' }],
+        materialIdArr: [{ required: true, message: '请填写' }],
+        stockNum: [{ required: true, message: '请填写' }]
+        // stockNum: [{ required: true, message: '请填写' }],
       },
       tableData: []
     }

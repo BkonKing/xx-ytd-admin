@@ -69,7 +69,7 @@ export default {
         avatar: ''
       },
       rules: {
-        realName: [{ required: true, message: '必填' }]
+        realName: [{ required: true, message: '请填写' }]
       }
     }
   },

@@ -177,10 +177,10 @@ export default {
       },
       unitOptions: [],
       tableRules: {
-        materialId: [{ required: true, message: '必填' }],
-        brand: [{ required: true, message: '必填' }],
-        model: [{ required: true, message: '必填' }],
-        originalNum: [{ required: true, message: '必填' }]
+        materialId: [{ required: true, message: '请填写' }],
+        brand: [{ required: true, message: '请填写' }],
+        model: [{ required: true, message: '请填写' }],
+        originalNum: [{ required: true, message: '请填写' }]
       },
       tableData: []
     }

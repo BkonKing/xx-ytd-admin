@@ -6,6 +6,10 @@ body,
   height: 100%;
 }
 
+body {
+  overflow-y: auto;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -125,7 +129,7 @@ body,
 
 #app {
   background-color: #f0f2f5;
-  overflow-y: auto;
+  // overflow-y: auto;
 }
 div.ant-pro-grid-content.wide {
   max-width: inherit;
@@ -186,4 +190,8 @@ div.ant-pro-grid-content.wide {
   > a + a {
     margin-left: 10px;
   }
+}
+
+.ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+  word-break: break-all;
 }

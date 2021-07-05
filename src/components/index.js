@@ -46,6 +46,7 @@ import TImage from '@/components/Image'
 import Dialog from '@/components/Dialog'
 
 import QRCode from '@/components/QRCode'
+import TimeWait from '@/components/Time'
 
 export {
   AvatarList,
@@ -87,5 +88,6 @@ export {
   KpStatusSelect,
   UnitSelect,
   AdvancedForm,
-  QRCode
+  QRCode,
+  TimeWait
 }
