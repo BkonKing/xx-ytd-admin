@@ -48,15 +48,29 @@
         </a-form-model-item>
         <a-form-model-item>
           <template slot="label">
-            <div >
+            <span>
+              默认通知用户
+              <a-tooltip>
+                <template slot="title">
+                  仅通知与本人相关的信息
+                </template>
+                <a-icon type="info-circle" />
+              </a-tooltip>
+            </span>
+          </template>
+            <div>姓名、姓名、姓名名、姓名</div>
+        </a-form-model-item>
+        <a-form-model-item>
+          <template slot="label">
+            <span>
               额外通知用户
               <a-tooltip>
                 <template slot="title">
                   通知所有的信息
                 </template>
-                <a-icon type="info-circle" />：
+                <a-icon type="info-circle" />
               </a-tooltip>
-            </div>
+            </span>
           </template>
           <a-select
             v-model="webIds"
@@ -131,7 +145,32 @@
           </div>
           <div style="color: rgba(0, 0, 0, 0.447);">每行限1~25个字</div>
         </a-form-model-item>
-        <a-form-model-item label="通知用户">
+             <a-form-model-item>
+          <template slot="label">
+            <span>
+              默认通知用户
+              <a-tooltip>
+                <template slot="title">
+                  仅通知与本人相关的信息
+                </template>
+                <a-icon type="info-circle" />
+              </a-tooltip>
+            </span>
+          </template>
+            <div>姓名、姓名、姓名名、姓名</div>
+        </a-form-model-item>
+        <a-form-model-item >
+            <template slot="label">
+            <span>
+              额外通知用户
+              <a-tooltip>
+                <template slot="title">
+                  通知所有的信息
+                </template>
+                <a-icon type="info-circle" />
+              </a-tooltip>
+            </span>
+          </template>
           <a-select
             v-model="wxIds"
             mode="multiple"
@@ -316,6 +355,5 @@ export default {
       box-shadow: none;
     }
   }
-
 }
 </style>

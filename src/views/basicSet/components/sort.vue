@@ -24,7 +24,7 @@
         </a-card>
       </a-col>
       <a-col :span="14">
-            <a-card class="card2" v-if="treeData.length === 0">
+            <a-card class="card2" >
             <div class="title">新增</div>
             <div class="content">
               <div class="left">
@@ -39,35 +39,16 @@
                 v-for="(item, index) in inputArr3"
                 :key="index"
               >
-                <a-input
-                  v-model="item.categoryName"
-                  style="width:120px"
-                  placeholder="菜单名称"
-                ></a-input>
-                <a-input
-                  v-model="item.icon"
-                  style="width:120px"
-                  placeholder="菜单图标"
-                ></a-input>
-                <a-input
-                  v-model="item.limitsPath"
-                  style="width:120px"
-                  placeholder="访问链接"
-                ></a-input>
-                <a-input
-                  v-model="item.listOrder"
-                  style="width:120px"
-                  placeholder="排序"
-                ></a-input>
-
-                <a-radio-group v-model="item.display">
-                  <a-radio :value="0">
-                    隐藏
-                  </a-radio>
-                  <a-radio :value="1">
-                    显示
-                  </a-radio>
-                </a-radio-group>
+                 <a-input
+                    v-model="item.categoryName"
+                    style="width:120px"
+                    placeholder="名称"
+                  ></a-input>
+                  <a-input
+                    v-model="item.listOrder"
+                    style="width:120px"
+                    placeholder="排序"
+                  ></a-input>
 
                 <a-icon
                   type="minus-circle"
@@ -76,7 +57,7 @@
                 />
               </div>
                 <div class="addArea" @click="add3">+ <span>添加</span></div>
-                <a-button type="primary" @click="initSave">保存</a-button>
+                <a-button type="primary" :disabled='initBol' @click="initSave">保存</a-button>
               </div>
             </div>
           </a-card>
@@ -261,13 +242,20 @@ export default {
       type: '', // 区分编辑 还是  创建分支
       idArr2: [],
       createBol: true,
-      inputArr3: []
+      inputArr3: [],
+      initBol: true
     }
   },
   watch: {
     inputArr2: {
       handler () {
         this.editBol = false
+      },
+      deep: true
+    },
+    inputArr3: {
+      handler () {
+        this.initBol = false
       },
       deep: true
     },
@@ -307,6 +295,8 @@ export default {
         }
       })
       const res = await toUpdateBatchContract({ category: arr })
+      this.getData()
+      this.initBol = true
       this.$message.success(res.message)
     },
     // 添加 编辑初始化输入框
@@ -527,6 +517,7 @@ export default {
         onOk: () => {
           toRemoveContract({ id: id }).then(() => {
             this.$message.success('删除成功')
+            this.inputArr3 = []
             this.getData()
           })
         },
