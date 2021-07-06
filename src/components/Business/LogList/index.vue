@@ -134,11 +134,13 @@ export default {
       default: () => [
         {
           title: 'id',
-          dataIndex: 'id'
+          dataIndex: 'id',
+          width: '90px'
         },
         {
           title: '操作时间',
-          dataIndex: 'ctime'
+          dataIndex: 'ctime',
+          width: '165px'
         },
         {
           title: '模块',
@@ -192,7 +194,7 @@ export default {
     // 获取操作日志模块接口
     getLogType () {
       getLogType({
-        id: this.typeId
+        pId: this.typeId
       }).then(({ data }) => {
         this.typeOptions = data
       })

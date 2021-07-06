@@ -17,10 +17,16 @@
           {{ projectInfo.manage }} {{ projectInfo.manageMobile }}
         </a-descriptions-item>
         <a-descriptions-item label="项目采购">
-          {{ projectInfo.buyer }} {{ projectInfo.buyerMobile }}
+          <template v-if="projectInfo.buyer && projectInfo.buyerMobile">
+            {{ projectInfo.buyer }} {{ projectInfo.buyerMobile }}
+          </template>
+          <template v-else>无</template>
         </a-descriptions-item>
         <a-descriptions-item label="技术负责">
-          {{ projectInfo.technician }} {{ projectInfo.technicianMobile }}
+          <template v-if="projectInfo.technician && projectInfo.technicianMobile">
+            {{ projectInfo.technician }} {{ projectInfo.technicianMobile }}
+          </template>
+          <template v-else>无</template>
         </a-descriptions-item>
         <a-descriptions-item label="施工许可证">
           {{ projectInfo.licenceNum }}张
@@ -36,7 +42,7 @@
           {{ projectInfo.createAdmin }}
         </a-descriptions-item>
         <a-descriptions-item label="参与公司">
-          {{ projectInfo.companyNames }}
+          {{ projectInfo.companyNames || '无' }}
         </a-descriptions-item>
       </a-descriptions>
     </template>
@@ -45,7 +51,7 @@
       <a-row class="status-list">
         <a-col :xs="12" :sm="12">
           <div class="text">阶段</div>
-          <div class="heading">{{ projectInfo.stage }}</div>
+          <div class="heading">{{ projectInfo.stage || "无" }}</div>
         </a-col>
         <a-col :xs="12" :sm="12">
           <div class="text">参与公司</div>

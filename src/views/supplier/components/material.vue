@@ -1,16 +1,19 @@
 <template>
-  <a-card
-    class="search-card"
-    :bordered="false"
-    title="供应物料"
-    style="margin-top: 24px;"
-  >
+  <a-card :bordered="false" title="供应物料" style="margin-top: 24px;">
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="48">
           <a-col :md="8" :sm="24">
             <a-form-item label="关联项目">
-              <project-select v-model="queryParam.projectId"></project-select>
+              <a-select v-model="queryParam.projectId" placeholder="请选择">
+                <a-select-option
+                  v-for="option in options"
+                  :value="option.projectId"
+                  :key="option.projectId"
+                >
+                  {{ option.projectName }}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="24">
@@ -34,27 +37,33 @@
       </a-form>
     </div>
     <s-table ref="table" size="default" :columns="columns" :data="loadData">
+      <span slot="name" slot-scope="text, record"
+        >{{ record.materialNo }} {{ text }}</span
+      >
       <span slot="project" slot-scope="text, record">
-        <a @click="goProject(record.projectId)">{{text}}</a>
+        <a @click="goProject(record.projectId)">{{ text }}</a>
       </span>
     </s-table>
   </a-card>
 </template>
 
 <script>
-import { STable, ProjectSelect, MaterialTypeSelect } from '@/components'
+import { STable, MaterialTypeSelect } from '@/components'
 import { getSuppMaterialList } from '@/api/supplier'
 export default {
   name: '',
   components: {
     STable,
-    ProjectSelect,
     MaterialTypeSelect
   },
   props: {
     supplierId: {
       type: [Number, String],
       default: 0
+    },
+    options: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
@@ -63,7 +72,8 @@ export default {
       columns: [
         {
           title: '物料',
-          dataIndex: 'materialName'
+          dataIndex: 'materialName',
+          scopedSlots: { customRender: 'name' }
         },
         {
           title: '数量',
@@ -72,7 +82,7 @@ export default {
         {
           title: '金额',
           dataIndex: 'allPrice',
-          width: '10%'
+          width: '20%'
         },
         {
           title: '订单',

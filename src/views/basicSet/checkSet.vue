@@ -187,9 +187,9 @@ export default {
         auditHours3: 24
       },
       rules: {
-        auditHours1: [{ required: true, message: '必填', trigger: 'change' }],
-        auditHours2: [{ required: true, message: '必填', trigger: 'change' }],
-        auditHours3: [{ required: true, message: '必填', trigger: 'change' }]
+        auditHours1: [{ required: true, message: '请填写', trigger: 'change' }],
+        auditHours2: [{ required: true, message: '请填写', trigger: 'change' }],
+        auditHours3: [{ required: true, message: '请填写', trigger: 'change' }]
       },
       orderCheck: {
 

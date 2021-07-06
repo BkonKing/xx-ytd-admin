@@ -43,8 +43,10 @@ import AdvancedForm from '@/components/Business/AdvancedForm'
 // 二次封装
 import UploadImage from '@/components/UploadImage'
 import TImage from '@/components/Image'
-
 import Dialog from '@/components/Dialog'
+
+import QRCode from '@/components/QRCode'
+import TimeWait from '@/components/Time'
 
 export {
   AvatarList,
@@ -85,5 +87,7 @@ export {
   PayStatusSelect,
   KpStatusSelect,
   UnitSelect,
-  AdvancedForm
+  AdvancedForm,
+  QRCode,
+  TimeWait
 }

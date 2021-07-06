@@ -88,7 +88,7 @@
                 </div>
               </template>
               <template slot="avatar">
-                <a-avatar size="large" :src="item.avatar" />
+                <img style="width: 40px;height: 40px;" src="@/assets/project-avatar.png" />
               </template>
             </a-card-meta>
             <template slot="actions">
@@ -198,7 +198,6 @@ export default {
     },
     // 获取项目列表
     getProjectList () {
-      console.log(this.companyIds)
       getProjectList({
         companyIds: this.companyIds.join(','),
         serachText: this.serachText,

@@ -71,33 +71,33 @@
       </s-table>
     </a-card>
     <a-card title="付款信息" style="margin-top: 24px" :bordered="false">
-      <s-table ref="table" size="default" :columns="columns" :data="loadData">
+      <s-table ref="table" size="default" rowKey="id" :columns="columns" :data="loadData">
         <span slot="index" slot-scope="text, record, index">
-          {{ payData.records.length - index }}
+          {{ payData.data.records.length - index }}
         </span>
         <span slot="payPz" slot-scope="text, record">
           <a v-if="text" @click="previewImage(record.payPz)"> {{ text }}张 </a>
           <template v-else>--</template>
         </span>
         <span slot="action" slot-scope="text, record">
-          <a @click="goOrderDetail(record.id)">查看</a>
+          <a @click="goOrderDetail(record.orderId)">查看</a>
         </span>
       </s-table>
       <a-row
-        v-if="payData.allMoney"
+        v-if="payData.data && payData.data.allMoney"
         class="table-total"
         type="flex"
         align="middle"
       >
         <a-col flex="1">
-          总计({{ `${payData.unKpNum + payData.kpNum}` }})
+          总计({{ `${payData.data.unKpNum + payData.data.kpNum}` }})
         </a-col>
-        <a-col flex="1">￥{{ payData.allMoney }}</a-col>
+        <a-col flex="1">￥{{ payData.data.allMoney }}</a-col>
         <a-col flex="1">
-          已开{{ payData.kpNum }} (￥{{ payData.kpMoney }}) 未开{{
-            payData.unKpNum
+          已开{{ payData.kpNum }} (￥{{ payData.data.kpMoney }}) 未开{{
+            payData.data.unKpNum
           }}
-          (￥{{ payData.unKpMoney }})
+          (￥{{ payData.data.unKpMoney }})
         </a-col>
       </a-row>
     </a-card>

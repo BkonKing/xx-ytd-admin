@@ -17,11 +17,11 @@
         <!-- <a-menu-item v-if="menu" key="center" @click="handleToCenter">
           <a-icon type="user" />
           个人中心
-        </a-menu-item>
+        </a-menu-item> -->
         <a-menu-item v-if="menu" key="settings" @click="handleToSettings">
           <a-icon type="setting" />
           个人设置
-        </a-menu-item> -->
+        </a-menu-item>
         <!-- <a-menu-divider v-if="menu" /> -->
         <a-menu-item key="logout" @click="handleLogout">
           <a-icon type="logout" />
@@ -73,20 +73,14 @@ export default {
     }
   },
   methods: {
-    // handleToCenter () {
-    //   this.$router.push({ path: '/account/center' })
-    // },
-    // handleToSettings () {
-    //   this.$router.push({ path: '/account/settings' })
-    // },
+    handleToSettings () {
+      this.$router.push({ path: '/account/base' })
+    },
     handleLogout (e) {
       Modal.confirm({
         title: '提示',
         content: '是否退出登录？',
         onOk: () => {
-          // return new Promise((resolve, reject) => {
-          //   setTimeout(Math.random() > 0.5 ? resolve : reject, 1500)
-          // }).catch(() => console.log('Oops errors!'))
           logout().then(() => {
             window.localStorage.removeItem('access_token')
             window.localStorage.setItem('toLogout', true)

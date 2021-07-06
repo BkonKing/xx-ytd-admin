@@ -15,7 +15,12 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button type="primary" :disabled="!selectedRowKeys.length" @click="openCheck">审核</a-button>
+        <a-button
+          type="primary"
+          :disabled="!selectedRowKeys.length"
+          @click="openCheck"
+          >审核</a-button
+        >
         <a-button @click="goEdit">新增</a-button>
       </div>
 
@@ -25,15 +30,21 @@
         rowKey="id"
         :columns="columns"
         :data="loadData"
-        :alert="{clear: true}"
+        :alert="{ clear: true }"
         :rowSelection="rowSelection"
         showPagination="auto"
       >
+        <span slot="auditTime" slot-scope="text, record">
+          <time-wait v-if="text" :remainTime="`${text - record.nowTime}`"></time-wait>
+          <template v-else>--</template>
+        </span>
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
             <a @click="goEdit(record)">编辑</a>
-            <a v-if="+record.status !== 1" @click="handleRemove(record)">删除</a>
+            <a v-if="+record.status !== 1" @click="handleRemove(record)"
+              >删除</a
+            >
             <a v-if="+record.status === 0" @click="openCheck(record)">审核</a>
           </template>
         </span>
@@ -56,8 +67,13 @@
 
 <script>
 // import moment from 'moment'
-import { STable, CheckForm } from '@/components'
-import { getContractList, removeCont, auditCont, auditBatchCont } from '@/api/contract'
+import { STable, CheckForm, TimeWait } from '@/components'
+import {
+  getContractList,
+  removeCont,
+  auditCont,
+  auditBatchCont
+} from '@/api/contract'
 import SearchForm from './components/seachForm.vue'
 
 const checkColumn = [
@@ -113,7 +129,8 @@ export default {
   components: {
     STable,
     CheckForm,
-    SearchForm
+    SearchForm,
+    TimeWait
   },
   data () {
     this.columns = columns

@@ -2,12 +2,7 @@
   <div class="account-settings-info-view">
     <a-row :gutter="16">
       <a-col :md="24" :lg="12">
-        <a-form-model
-          ref="form"
-          :model="form"
-          :rules="rules"
-          layout="vertical"
-        >
+        <a-form-model ref="form" :model="form" :rules="rules" layout="vertical">
           <a-form-model-item label="姓名" prop="realName" required>
             <a-input
               v-model="form.realName"
@@ -23,6 +18,11 @@
               v-number-input
             />
           </a-form-model-item>
+          <a-form-model-item label="国家地区">
+            <a-select defaultValue="0" disabled>
+              <a-select-option key="0" value="0">中国</a-select-option>
+            </a-select>
+          </a-form-model-item>
           <a-form-model-item label="所在省市" prop="area">
             <a-cascader
               v-model="form.area"
@@ -31,10 +31,7 @@
             />
           </a-form-model-item>
           <a-form-model-item label="街道地址" prop="address">
-            <a-input
-              v-model="form.address"
-              :maxLength="100"
-            />
+            <a-input v-model="form.address" :maxLength="100" />
           </a-form-model-item>
           <a-form-model-item>
             <a-button type="primary" @click="handleSubmit">更新信息</a-button>
@@ -47,7 +44,7 @@
           <div class="mask">
             <a-icon type="plus" />
           </div>
-          <img :src="form.avatar" />
+          <img v-if="form.avatar" :src="form.avatar" />
         </div>
       </a-col>
     </a-row>
@@ -68,19 +65,27 @@ export default {
   data () {
     return {
       area: chinaArea,
-      form: {},
+      form: {
+        avatar: ''
+      },
       rules: {
-        realName: [{ required: true, message: '必填' }]
+        realName: [{ required: true, message: '请填写' }]
       }
     }
   },
   mounted () {
     this.form = this.$store.getters.userInfo
-    this.form.area = [this.form.provinceId, this.form.cityId, this.form.areaId]
+    if (this.form.provinceId) {
+      this.form.area = [
+        this.form.provinceId,
+        this.form.cityId,
+        this.form.areaId
+      ]
+    }
   },
   methods: {
     setavatar (url) {
-      this.form.avatar = url
+      this.$set(this.form, 'avatar', url)
     },
     handleSubmit () {
       this.$refs.form.validate(valid => {
@@ -100,7 +105,7 @@ export default {
       }
       updateBasicSet(this.form).then(() => {
         this.$message.success('更新成功')
-        this.$store.commit('SET_INFO', this.form)
+        this.$store.dispatch('GetInfo')
       })
     }
   }
