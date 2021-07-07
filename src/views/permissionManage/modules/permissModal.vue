@@ -9,6 +9,7 @@
         :tree-data="roleMunes"
         :replaceFields="{ key: 'id' }"
         @select="onSelect"
+        @check="onCheck"
         :default-expanded-keys="openArr"
       >
         <template slot="custom" slot-scope="item">
@@ -29,7 +30,8 @@ export default {
       openArr: [], // 展开的菜单节点
       isShow: false,
       // roleId: '', // 角色id
-      id: ''
+      id: '',
+      halfCheckedKeys: []
     }
   },
   methods: {
@@ -37,7 +39,7 @@ export default {
     async submit () {
       const res = await toUpdateAdminMenus({
         adminId: this.id,
-        allots: this.checkedKeys.join(',')
+        allots: this.checkedKeys.concat(this.halfCheckedKeys).join(',')
       })
       this.$parent.getData()
       this.$message.success(res.message)
@@ -49,6 +51,10 @@ export default {
       this.$nextTick(() => {
         this.selectMenuBol = true
       })
+    },
+    // 点击复选框
+    onCheck (checkedKeys, e) {
+      this.halfCheckedKeys = e.halfCheckedKeys
     },
     // 获取所有需要展开的id数组
     getOpenArr (arr) {

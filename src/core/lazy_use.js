@@ -64,6 +64,11 @@ import PageLoading from '@/components/PageLoading'
 import PermissionHelper from '@/core/permission'
 import '@/directives/action'
 
+// mixin
+import Permissions from '@/store/permission-mixin'
+
+Vue.mixin(Permissions)
+
 Vue.use(ConfigProvider)
 Vue.use(Layout)
 Vue.use(Input)

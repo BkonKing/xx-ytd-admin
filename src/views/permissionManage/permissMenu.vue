@@ -24,6 +24,7 @@
         </a-card>
       </a-col>
       <a-col :span="14">
+        <a-alert message="操作权限请统一在icon中填入以下几种类型：新增-CreatePermission、编辑-UpdatePermission、删除-RemovePermission、审核-AuditPermission" type="info" />
             <a-card class="card2"  v-if="showInit">
             <div class="title">新增</div>
             <div class="content">
@@ -61,7 +62,7 @@
                 ></a-input>
                 <a-input
                   v-model="item.listOrder"
-                  style="width:120px"
+                  style="width:60px"
                   placeholder="排序"
                 ></a-input>
 
@@ -130,7 +131,7 @@
                 ></a-input>
                   <a-input
                     v-model="item.listOrder"
-                    style="width:120px"
+                    style="width:60px"
                     placeholder="排序"
                   ></a-input>
 
@@ -177,7 +178,7 @@
                 ></a-input>
                 <a-input
                   v-model="item.listOrder"
-                  style="width:120px"
+                  style="width:60px"
                   placeholder="排序"
                 ></a-input>
 
@@ -244,7 +245,7 @@
                 ></a-input>
                   <a-input
                     v-model="item.listOrder"
-                    style="width:120px"
+                    style="width:60px"
                     placeholder="排序"
                   ></a-input>
 
@@ -291,7 +292,7 @@
                 ></a-input>
                 <a-input
                   v-model="item.listOrder"
-                  style="width:120px"
+                  style="width:60px"
                   placeholder="排序"
                 ></a-input>
 

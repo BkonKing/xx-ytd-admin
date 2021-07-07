@@ -64,7 +64,7 @@ export default {
           name: 'stockEdit',
           component: () => import('@/views/stock/edit'),
           meta: {
-            title: '库存编辑',
+            title: '库存单编辑',
             selectedKey: '/stock/record',
             hidden: true
           }
