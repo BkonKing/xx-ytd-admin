@@ -64,7 +64,13 @@ export default {
   mounted () {},
   methods: {
     clear () {},
-    viewMore () {}
+    viewMore () {
+      this.visible = false
+      const status = this.$route.name !== 'MessageCenterIndex'
+      status && this.$router.push({
+        name: 'MessageCenterIndex'
+      })
+    }
   }
 }
 </script>

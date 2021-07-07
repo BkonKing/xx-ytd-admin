@@ -1,140 +1,151 @@
 <template>
   <div>
-    <span v-if="!str">{{
-      day
-        ? dayString + "天" + `${hourString}:${minuteString}`
-        : `${hourString}:${minuteString}`
-    }}</span>
     <!--计时器-->
-    <span v-else>{{ str }}</span>
+    <span :class="upClass" v-if="timeTotal"
+      >{{ upText }} {{ timerString }}</span
+    >
+    <!-- 倒计时 -->
+    <span :class="downClass" v-else>{{ downText }} {{ countString }}</span>
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    time: {
+      type: [String, Number],
+      default: 0
+    },
+    downClass: {
+      type: String,
+      default: ''
+    },
+    downText: {
+      type: String,
+      default: '剩余'
+    },
+    upClass: {
+      type: String,
+      default: ''
+    },
+    upText: {
+      type: String,
+      default: '超时'
+    },
+    // 延迟时间（多久执行一次的时间）
+    delay: {
+      type: Number,
+      default: 1000
+    }
+  },
   data () {
     return {
-      /* 计时器 */
+      // 计时器
       d: 0, // 定义天，时，分，秒，毫秒并初始化为0；
       h: 0,
       m: 0,
       s: 0,
-      ms: 0,
-      time: 0, // 定时器
-      str: '',
-      times: '', // 统计共多少秒时间
-
+      timeTotal: 0, // 计时总时长 ms
+      countUpTimer: 0, // 定时器
+      // 倒计时
       day: '',
       hour: '',
       minute: '',
       second: '',
-      promiseTimer: '',
-      lastTime: 0,
-      deviation: 0
-    }
-  },
-  props: {
-    remainTime: {
-      // 倒计时间总秒数
-      default: '2'
+      countDowmTotal: 0, // 倒计时总时长 ms
+      countDowmTimer: '',
+      // 公共
+      lastTime: 0, // 上一次开始执行时间
+      first: true
     }
   },
   mounted () {
-    if (this.remainTime > 0) {
-      this.day = Math.floor(this.remainTime / 86400)
-      this.hour = Math.floor((this.remainTime / 3600) % 24)
-      this.minute = Math.floor((this.remainTime / 60) % 60)
-      this.second = Math.floor(this.remainTime % 60)
+    if (this.time > 0) {
+      this.countDowmTotal = this.time * 1000
+      this.setCountDownNumber()
       this.countDowm()
     } else {
-      const time = Math.abs(this.remainTime)
-      this.ms = time * 1000
+      const time = Math.abs(this.time)
+      this.timeTotal = time * 1000
+      this.setTimerNumber()
+      this.countUp()
+    }
+  },
+  methods: {
+    // 计时
+    countUp () {
+      this.countUpTimer && clearTimeout(this.countUpTimer)
+      const deviation = this.getDeviation()
+      // 增加计时总时长，可以在这里减去偏差值，这偏差值不用判断
+      // 如果在setTimeout延迟时间中，则需要判断偏差是否小于delay，小于则使用delay
+      // （因为矫正回来（延迟时间小于delay），start-this.lastTime会比delay小，则偏差值就会为负值，矫正就会又偏移）
+      this.timeTotal = this.timeTotal + this.delay // 毫秒
+      this.setTimerNumber()
+      this.first = false
+      this.countUpTimer = setTimeout(() => {
+        this.countUp()
+      }, this.delay - deviation)
+    },
+    // 将计时总时间转换为时间
+    setTimerNumber () {
+      const time = this.timeTotal / 1000
       this.d = Math.floor(time / 86400)
       this.h = Math.floor((time / 3600) % 24)
       this.m = Math.floor((time / 60) % 60)
       this.s = Math.floor(time % 60)
-      this.startTimer()
-    }
-  },
-  methods: {
-    // 计时器开始
-    startTimer () {
-      this.time = setInterval(this.timer, 1000)
-    },
-    timer () {
-      const start = new Date().getTime()
-      this.deviation && (this.deviation = start - this.lastTime - 1000)
-      this.lastTime = start
-      // 定义计时函数
-      this.ms = this.ms + 1000 - this.deviation // 毫秒
-      if (this.ms >= 1000) {
-        this.ms = 0
-        this.s = this.s + 1 // 秒
-      }
-      if (this.s >= 60) {
-        this.s = 0
-        this.m = this.m + 1 // 分钟
-      }
-      if (this.m >= 60) {
-        this.m = 0
-        this.h = this.h + 1 // 小时
-      }
-      if (this.h >= 24) {
-        this.h = 0
-        this.d = this.d + 1 // 天
-      }
-      this.str = this.d
-        ? this.d + '天' + `${this.toDub(this.h)}:${this.toDub(this.m)}:${this.toDub(this.s)}`
-        : `${this.toDub(this.h)}:${this.toDub(this.m)}:${this.toDub(this.s)}`
-      // 统计共看了多少秒
-      this.times = this.s + this.m * 60 + this.h * 3600 + this.d * 86400
-    },
-    toDub (n) {
-      // 补0操作
-      if (n < 10) {
-        return '0' + n
-      } else {
-        return '' + n
-      }
     },
     // 倒计时
     countDowm () {
-      var self = this
-      clearInterval(this.promiseTimer)
-      this.promiseTimer = setInterval(() => {
-        if (self.hour === 0) {
-          if (self.minute !== 0 && self.second === 0) {
-            self.second = 59
-            self.minute -= 1
-          } else if (self.minute === 0 && self.second === 0) {
-            self.second = 0
-            self.$emit('countDowmEnd', true)
-            clearInterval(self.promiseTimer)
-            self.startTimer()
-          } else {
-            self.second -= 1
-          }
-        } else {
-          if (self.minute !== 0 && self.second === 0) {
-            self.second = 59
-            self.minute -= 1
-          } else if (self.minute === 0 && self.second === 0) {
-            self.hour -= 1
-            self.minute = 59
-            self.second = 59
-          } else {
-            self.second -= 1
-          }
-        }
-      }, 1000)
+      this.countDowmTimer && clearTimeout(this.countDowmTimer)
+      const deviation = this.getDeviation()
+      // 减少倒计时总时长，可以在这里减去偏差值，这偏差值不用判断
+      const residue = this.countDowmTotal - this.delay
+      this.countDowmTotal = residue > 0 ? residue : 0 // 毫秒
+      this.setCountDownNumber()
+      if (this.countDowmTotal) {
+        this.countDowmTimer = setTimeout(() => {
+          this.countDowm()
+        }, this.delay - deviation)
+      } else {
+        // 倒计时结束，开启计时器
+        this.$emit('finish', true)
+        clearTimeout(this.countDowmTimer)
+        this.countUp()
+      }
     },
+    setCountDownNumber () {
+      const time = this.countDowmTotal / 1000
+      this.day = Math.floor(time / 86400)
+      this.hour = Math.floor((time / 3600) % 24)
+      this.minute = Math.floor((time / 60) % 60)
+      this.second = Math.floor(time % 60)
+    },
+    // 获取两次执行间隔跟delay的偏差值
+    getDeviation () {
+      let deviation = 0 // 偏差值
+      // 获取当前时间，可以更改为服务器时间
+      const start = new Date().getTime()
+      // 计算上次跟这次执行的除去delay的偏差时间
+      if (!this.first) {
+        const pcTime = start - this.lastTime - this.delay
+        // deviation = pcTime
+        deviation = pcTime > 0 ? pcTime : 0
+      }
+      // 记录这次当前时间，留作下次比较
+      this.lastTime = start
+      this.first = false
+      return deviation
+    },
+    // 补0
     formatNum (num) {
       return num < 10 ? '0' + num : '' + num
     }
   },
   computed: {
-    dayString () {
-      return this.day
+    // 倒计时显示
+    countString () {
+      const time = `${this.hourString}:${this.minuteString}`
+      return this.day ? this.day + '天' + time : time
     },
     hourString () {
       return this.formatNum(this.hour)
@@ -144,11 +155,16 @@ export default {
     },
     secondString () {
       return this.formatNum(this.second)
+    },
+    // 计时器显示
+    timerString () {
+      const time = `${this.formatNum(this.h)}:${this.formatNum(this.m)}`
+      return this.d ? this.d + '天' + time : time
     }
   },
   beforeDestroy () {
-    this.time && clearTimeout(this.time)
-    this.promiseTimer && clearTimeout(this.promiseTimer)
+    this.countUpTimer && clearTimeout(this.countUpTimer)
+    this.countDowmTimer && clearTimeout(this.countDowmTimer)
   }
 }
 </script>

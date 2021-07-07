@@ -26,6 +26,14 @@ export default {
     }
   },
   {
+    path: '/report/amoeba',
+    name: 'reportAmoeba',
+    component: () => import('@/views/report/amoeba'),
+    meta: {
+      title: '阿米巴报表'
+    }
+  },
+  {
     path: '/report/contract',
     name: 'reportContract',
     component: () => import('@/views/report/contract'),

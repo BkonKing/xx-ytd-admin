@@ -55,10 +55,7 @@
           </a-select>
         </a-form-model-item>
         <a-form-model-item label="上传合同" prop="contractPz">
-          <upload-image
-            v-model="form.contractPz"
-            maxLength="50"
-          ></upload-image>
+          <upload-image v-model="form.contractPz" maxLength="50"></upload-image>
           <div style="margin-top: -20px;">
             最多50张；支持扩展名：.png .jpg；
           </div>
@@ -145,6 +142,9 @@
 
     <!-- fixed footer toolbar -->
     <footer-tool-bar :is-mobile="isMobile" :collapsed="sideCollapsed">
+      <a-button @click="$router.go(-1)" style="margin-right: 20px;">
+        取消
+      </a-button>
       <a-button type="primary" @click="validate" :loading="loading">
         提交
       </a-button>

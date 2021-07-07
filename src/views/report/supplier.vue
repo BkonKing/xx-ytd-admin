@@ -124,7 +124,8 @@ const columns = [
   },
   {
     title: '供应商ID',
-    dataIndex: 'id'
+    dataIndex: 'id',
+    width: '95px'
   },
   {
     title: '供应商',
@@ -136,17 +137,18 @@ const columns = [
   },
   {
     title: '统一社会信用代码',
-    dataIndex: 'supplierTypeName'
+    dataIndex: 'socialCode'
   },
   {
     title: '供应物料',
     dataIndex: 'materialCount',
-    sorter: true
+    sorter: true,
+    width: '110px'
   },
   {
     title: '操作',
     dataIndex: 'action',
-    width: '100px',
+    width: '80px',
     scopedSlots: { customRender: 'action' }
   }
 ]

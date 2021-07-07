@@ -23,7 +23,7 @@ export default {
   menu: {
     locale: true
   },
-  title: '美好生活后台',
+  title: '永同达',
   pwa: false,
   iconfontUrl: '',
   production: process.env.NODE_ENV === 'production' && process.env.VUE_APP_PREVIEW !== 'true'
