@@ -36,7 +36,7 @@
       </a-col>
       <a-col :span="14">
         <div class="rightCard">
-          <a-card class="card2" v-if="treeData.length === 0">
+          <a-card class="card2" >
             <div class="title">新增</div>
             <div class="content">
               <div class="left">
@@ -69,7 +69,7 @@
                   />
                 </div>
                 <div class="addArea" @click="add3">+ <span>添加</span></div>
-                <a-button type="primary" @click="initSave">保存</a-button>
+                <a-button type="primary" :disabled='initBol' @click="initSave">保存</a-button>
               </div>
             </div>
           </a-card>
@@ -335,7 +335,8 @@ export default {
       arr3: [],
       createBol: true,
       editBol: true,
-      selectMenuBol: true
+      selectMenuBol: true,
+      initBol: true
     }
   },
   watch: {
@@ -355,6 +356,12 @@ export default {
     inputArr2: {
       handler () {
         this.editBol = false
+      },
+      deep: true
+    },
+    inputArr3: {
+      handler () {
+        this.initBol = false
       },
       deep: true
     },
@@ -386,6 +393,11 @@ export default {
         }
       })
       const res = await toUpdateBatchRole({ roles: arr })
+      this.inputArr3 = res.data
+      this.getData()
+      this.$nextTick(() => {
+        this.initBol = true
+      })
       this.$message.success(res.message)
     },
     // 删除初始角色数据
@@ -459,6 +471,7 @@ export default {
         onOk: () => {
           toRemoveRole({ id: id }).then(res => {
             this.getData()
+            this.inputArr3 = []
             this.$message.success('删除成功')
           })
         },

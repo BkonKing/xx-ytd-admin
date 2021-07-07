@@ -24,7 +24,7 @@
         </a-card>
       </a-col>
       <a-col :span="14">
-            <a-card class="card2" v-if="treeData.length === 0">
+            <a-card class="card2" >
             <div class="title">新增</div>
             <div class="content">
               <div class="left">
@@ -67,7 +67,7 @@
                 />
               </div>
                 <div class="addArea" @click="add3">+ <span>添加</span></div>
-                <a-button type="primary" @click="initSave">保存</a-button>
+                <a-button type="primary" :disabled='initBol' @click="initSave">保存</a-button>
               </div>
             </div>
           </a-card>
@@ -290,13 +290,20 @@ export default {
       type: '', // 区分编辑 还是  创建分支
       idArr2: [],
       createBol: true,
-      inputArr3: []
+      inputArr3: [],
+      initBol: true
     }
   },
   watch: {
     inputArr2: {
       handler () {
         this.editBol = false
+      },
+      deep: true
+    },
+    inputArr3: {
+      handler () {
+        this.initBol = false
       },
       deep: true
     },
@@ -325,7 +332,7 @@ export default {
     async initSave () {
       const arr = this.inputArr3.map(item => {
         return {
-          id: item.id,
+          id: 0,
           categoryNo: item.categoryNo,
           categoryName: item.categoryName,
           unit: item.unit,
@@ -334,6 +341,10 @@ export default {
         }
       })
       const res = await toUpdateBatchMaterial({ category: arr })
+      this.getData()
+      this.$nextTick(() => {
+        this.initBol = true
+      })
       this.$message.success(res.message)
     },
     // 添加 初始化输入框
@@ -566,6 +577,7 @@ export default {
         onOk: () => {
           toRemoveMaterial({ id: id }).then(() => {
             this.$message.success('删除成功')
+            this.inputArr3 = []
             this.getData()
           })
         },

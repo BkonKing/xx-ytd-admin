@@ -102,19 +102,19 @@ export default {
           title: '人员姓名',
           dataIndex: 'realName',
           key: 'realName',
-          width: '14.22222222%'
+          width: '10%'
         },
         {
           title: '登录账号 ',
           dataIndex: 'account',
           key: 'account',
-          width: '14.22222222%'
+          width: '10%'
         },
         {
           title: '角色',
           dataIndex: 'roleName',
           key: 'roleName',
-          width: '14.22222222%'
+          width: '16%'
         },
         {
           title: '手机号',
@@ -126,13 +126,14 @@ export default {
           title: '添加时间',
           dataIndex: 'ctime',
           key: 'ctime',
-          width: '14.22222222%'
+          width: '16%'
         },
         {
           title: '最后登录',
           dataIndex: 'loginTime',
           key: 'loginTime',
-          width: '14.22222222%'
+          width: '20%'
+
         },
         {
           title: '操作',
@@ -140,6 +141,7 @@ export default {
           key: 'opera',
           scopedSlots: { customRender: 'opera' },
           width: '14.22222222%'
+          // align: 'right'
         }
       ],
       pagination: {
@@ -308,6 +310,9 @@ export default {
 <style lang="less" scoped>
 .personList {
   .card {
+   /deep/ .ant-card-body{
+      padding: 24px 24px 4px 24px;
+    }
     .btns {
       text-align: right;
       button {
@@ -331,6 +336,11 @@ export default {
         float: left;
         // margin-left: 20px;
         // margin-right: 300px;
+      }
+    }
+    .opera{
+      button{
+        padding-left: 0;
       }
     }
   }

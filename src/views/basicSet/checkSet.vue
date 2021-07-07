@@ -538,6 +538,9 @@ export default {
 
 <style lang="less" scoped>
 .checkSet {
+  /deep/ .ant-form-item{
+    margin-bottom: 14px;
+  }
   .title {
     margin-left: 150px;
     font-family: "PingFang SC Bold", "PingFang SC";
@@ -552,6 +555,7 @@ export default {
     .item {
       display: flex;
       align-items: center;
+      margin-bottom: 12px;
       .icon {
         margin-left: 10px;
         font-size: 16px;

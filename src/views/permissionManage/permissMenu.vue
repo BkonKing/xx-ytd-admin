@@ -24,7 +24,7 @@
         </a-card>
       </a-col>
       <a-col :span="14">
-            <a-card class="card2" v-if="treeData.length === 0">
+            <a-card class="card2" >
             <div class="title">新增</div>
             <div class="content">
               <div class="left">
@@ -81,7 +81,7 @@
                 />
               </div>
                 <div class="addArea" @click="add3">+ <span>添加</span></div>
-                <a-button type="primary" @click="initSave">保存</a-button>
+                <a-button type="primary" :disabled='initBol' @click="initSave">保存</a-button>
               </div>
             </div>
           </a-card>
@@ -363,13 +363,20 @@ export default {
       type: '', // 区分编辑 还是  创建分支
       idArr2: [],
       createBol: true,
-      inputArr3: []
+      inputArr3: [],
+      initBol: true
     }
   },
   watch: {
     inputArr2: {
       handler () {
         this.editBol = false
+      },
+      deep: true
+    },
+    inputArr3: {
+      handler () {
+        this.initBol = false
       },
       deep: true
     },
@@ -410,6 +417,11 @@ export default {
         }
       })
       const res = await toUpdateBatchMenu({ menus: arr })
+      this.inputArr3 = res.data
+      this.getData()
+      this.$nextTick(() => {
+        this.initBol = true
+      })
       this.$message.success(res.message)
     },
     // 添加 编辑初始化输入框
@@ -656,7 +668,11 @@ export default {
         onOk: () => {
           toRemoveMenu({ id: id }).then(() => {
             this.$message.success('删除成功')
+
             this.getData()
+            this.$nextTick(() => {
+              this.inputArr3 = []
+            })
           })
         },
         onCancel () {
