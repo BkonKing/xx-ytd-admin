@@ -36,7 +36,7 @@
       </a-col>
       <a-col :span="14">
         <div class="rightCard">
-          <a-card class="card2" >
+          <a-card class="card2"  v-if="showInit">
             <div class="title">新增</div>
             <div class="content">
               <div class="left">
@@ -336,7 +336,8 @@ export default {
       createBol: true,
       editBol: true,
       selectMenuBol: true,
-      initBol: true
+      initBol: true,
+      showInit: true
     }
   },
   watch: {
@@ -446,6 +447,7 @@ export default {
     showPermiasionMenu (item) {
       this.createShow = false
       this.permissionShow = true
+      this.showInit = false
       this.editShow = false
       this.roleId = item.id
       this.openArr = []
@@ -485,7 +487,7 @@ export default {
     selectItem (item, type) {
       this.type = type
       this.secondParentId = item.id
-
+      this.showInit = false
       // 显示右边结构
       this.createShow = true
       this.permissionShow = false
@@ -718,6 +720,7 @@ export default {
       this.parentId = item.dataRef.parentId
       this.editShow = true
       this.createShow = false
+      this.showInit = false
       this.permissionShow = false
     },
     // 批量 编辑删除菜单

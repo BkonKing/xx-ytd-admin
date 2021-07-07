@@ -24,7 +24,7 @@
         </a-card>
       </a-col>
       <a-col :span="14">
-            <a-card class="card2" >
+            <a-card class="card2" v-if="showInit">
             <div class="title">新增</div>
             <div class="content">
               <div class="left">
@@ -291,7 +291,8 @@ export default {
       idArr2: [],
       createBol: true,
       inputArr3: [],
-      initBol: true
+      initBol: true,
+      showInit: true
     }
   },
   watch: {
@@ -592,6 +593,7 @@ export default {
       this.parentId = item.dataRef.parentId
       this.type = 'edit'
       this.editShow = true
+      this.showInit = false
       this.rightShow = false
     },
     // 添加创建分支输入框
@@ -619,6 +621,7 @@ export default {
       // 显示右边结构
       this.rightShow = true
       this.editShow = false
+      this.showInit = false
       this.type = 'create'
       this.itemInfo = {}
       // 清空右侧输入框数组
