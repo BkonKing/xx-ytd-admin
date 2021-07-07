@@ -35,7 +35,12 @@
         showPagination="auto"
       >
         <span slot="auditTime" slot-scope="text, record">
-          <time-wait v-if="text" :remainTime="`${text - record.nowTime}`"></time-wait>
+          <time-wait
+            v-if="text"
+            :time="`${text - record.nowTime}`"
+            upClass="error-text"
+            :delay="60000"
+          ></time-wait>
           <template v-else>--</template>
         </span>
         <span class="table-action" slot="action" slot-scope="text, record">

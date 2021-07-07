@@ -80,7 +80,7 @@
             @change="handleCreateDateChange"
           />
         </a-form-model-item>
-        <a-form-model-item label="营业期限" >
+        <a-form-model-item label="营业期限">
           <a-row type="flex">
             <a-col flex="1">
               <a-form-model-item prop="businessTime">
@@ -130,18 +130,17 @@
             maxLength="5"
           ></upload-image>
         </a-form-model-item>
-        <a-form-model-item
-          :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }"
-        >
-          <a-button type="primary" @click="onSubmit">
-            提交
-          </a-button>
-          <a-button style="margin-left: 10px;" @click="resetForm">
-            取消
-          </a-button>
-        </a-form-model-item>
       </a-form-model>
     </a-card>
+
+    <footer-tool-bar :is-mobile="isMobile" :collapsed="sideCollapsed">
+      <a-button @click="resetForm" style="margin-right: 15px;">
+        取消
+      </a-button>
+      <a-button type="primary" @click="onSubmit" :loading="loading">
+        提交
+      </a-button>
+    </footer-tool-bar>
   </page-header-wrapper>
 </template>
 
@@ -151,14 +150,18 @@ import {
   SupplierTypeSelect,
   MaterialTypeSelect
 } from '@/components'
+import FooterToolBar from '@/components/FooterToolbar'
 import { addSupplier, updateSupplier, getSuppInfo } from '@/api/supplier'
+import { appMixin } from '@/store/mixin'
 
 export default {
   name: 'SupplierEdit',
+  mixins: [appMixin],
   components: {
     UploadImage,
     SupplierTypeSelect,
-    MaterialTypeSelect
+    MaterialTypeSelect,
+    FooterToolBar
   },
   data () {
     return {

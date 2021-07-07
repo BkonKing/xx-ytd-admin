@@ -169,6 +169,9 @@
       </div>
     </a-card>
     <footer-tool-bar :is-mobile="isMobile" :collapsed="sideCollapsed">
+      <a-button @click="$router.go(-1)" style="margin-right: 15px;">
+        取消
+      </a-button>
       <a-button type="primary" @click="validate" :loading="loading"
         >提交</a-button
       >
@@ -179,7 +182,12 @@
 <script>
 import FooterToolBar from '@/components/FooterToolbar'
 import NP from 'number-precision'
-import { UploadImage, ContractSelect, MaterialTypeSelect, UnitSelect } from '@/components'
+import {
+  UploadImage,
+  ContractSelect,
+  MaterialTypeSelect,
+  UnitSelect
+} from '@/components'
 import { appMixin } from '@/store/mixin'
 import { getAllUnit } from '@/api/common'
 import { addOrder, updateOrder, getOrderInfo } from '@/api/order'

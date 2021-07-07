@@ -10,7 +10,7 @@
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="审核状态">
-                <a-select v-model="queryParam.status" placeholder="请选择">
+                <a-select v-model="queryParam.status" :disabled="tabActiveKey !== '0'" placeholder="请选择">
                   <a-select-option
                     v-for="option in tabList"
                     :value="option.key"
@@ -110,7 +110,15 @@
         :rowSelection="rowSelection"
         showPagination="auto"
       >
-        <!-- <span slot="auditTime" slot-scope="text, record, index"> </span> -->
+        <span slot="auditTime" slot-scope="text, record">
+          <time-wait
+            v-if="text"
+            :time="`${text - record.nowTime}`"
+            upClass="error-text"
+            :delay="60000"
+          ></time-wait>
+          <template v-else>--</template>
+        </span>
 
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
@@ -148,7 +156,8 @@ import {
   ProjectSelect,
   CompanySelect,
   SupplierTypeSelect,
-  MaterialTypeSelect
+  MaterialTypeSelect,
+  TimeWait
 } from '@/components'
 import {
   getSupplierList,
@@ -221,7 +230,8 @@ export default {
     ProjectSelect,
     CompanySelect,
     SupplierTypeSelect,
-    MaterialTypeSelect
+    MaterialTypeSelect,
+    TimeWait
   },
   data () {
     this.columns = columns

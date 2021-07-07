@@ -120,9 +120,15 @@
         :rowSelection="rowSelection"
         showPagination="auto"
       >
-        <!-- <span slot="checkTime" slot-scope="text, record, index">
-          {{ text }}
-        </span> -->
+        <span slot="auditTime" slot-scope="text, record">
+          <time-wait
+            v-if="text"
+            :time="`${text - record.nowTime}`"
+            upClass="error-text"
+            :delay="60000"
+          ></time-wait>
+          <template v-else>--</template>
+        </span>
 
         <span slot="paid" slot-scope="text, record">
           <div v-if="+text">已付￥{{ text }}</div>
@@ -167,7 +173,8 @@ import {
   CompanySelect,
   PayStatusSelect,
   KpStatusSelect,
-  AdvancedForm
+  AdvancedForm,
+  TimeWait
 } from '@/components'
 import {
   getOrderList,
@@ -242,7 +249,8 @@ export default {
     CompanySelect,
     PayStatusSelect,
     KpStatusSelect,
-    AdvancedForm
+    AdvancedForm,
+    TimeWait
   },
   data () {
     this.columns = columns
