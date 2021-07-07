@@ -6,33 +6,60 @@
     placement="bottomRight"
     overlayClassName="message-popover"
   >
-    <template v-slot:content>
+    <template v-slot:content v-if="shortInfo !==''">
       <div class="message-container">
         <div class="message-list">
           <a-tabs default-active-key="1">
-            <a-tab-pane key="1" tab="通知">
-              <a-row v-for="i in 3" :key="i" class="message-item" type="flex">
+            <a-tab-pane key="1" >
+              <template slot="tab">
+                <div>
+                  通知 <span v-if="+shortInfo.tz.count>0">({{shortInfo.tz.count}})</span>
+                  <span v-else-if="+shortInfo.tz.count>99">99+</span>
+                </div>
+              </template>
+              <a-row v-for="(item,index) in shortInfo.tz.list" :key="index" class="message-item" type="flex">
                 <a-col
                   v-if="false"
                   flex="32px"
                   style="margin-right: 10px;"
                 ></a-col>
                 <a-col flex="1">
-                  <div class="message-item-title">订单审核完成</div>
-                  <div class="message-item-content">订单审核完成</div>
+                  <div class="message-item-title">{{item.title}}</div>
+                  <div class="message-item-content">{{item.content}}</div>
                 </a-col>
               </a-row>
             </a-tab-pane>
-            <a-tab-pane key="2" tab="消息">
-              <a-row v-for="i in 7" :key="i" class="message-item" type="flex">
-                <a-col flex="32px" style="margin-right: 10px;"></a-col>
+            <a-tab-pane key="2" >
+              <template slot="tab">
+                <div>
+                  消息 <span v-if="+shortInfo.xx.count>0">({{shortInfo.xx.count}})</span>
+                  <span v-else-if="+shortInfo.xx.count>99">99+</span>
+
+                </div>
+              </template>
+              <a-row v-for="(item,index) in shortInfo.xx.list" :key="index" class="message-item" type="flex">
+                <a-col  v-if="false" flex="32px" style="margin-right: 10px;"></a-col>
                 <a-col flex="1">
-                  <div class="message-item-title">订单审核完成</div>
-                  <div class="message-item-content">订单审核完成</div>
+                  <div class="message-item-title">{{item.title}}</div>
+                  <div class="message-item-content">{{item.content}}</div>
                 </a-col>
               </a-row>
             </a-tab-pane>
-            <a-tab-pane key="3" tab="待办"> </a-tab-pane>
+            <a-tab-pane key="3" >
+              <template slot="tab">
+                <div>
+                  代办 <span v-if="+shortInfo.db.count>0">({{shortInfo.db.count}})</span>
+                  <span v-else-if="+shortInfo.db.count>99">99+</span>
+                </div>
+              </template>
+                 <a-row v-for="(item,index) in shortInfo.db.list" :key="index" class="message-item" type="flex">
+                <a-col  v-if="false" flex="32px" style="margin-right: 10px;"></a-col>
+                <a-col flex="1">
+                  <div class="message-item-title">{{item.title}}</div>
+                  <div class="message-item-content">{{item.content}}</div>
+                </a-col>
+              </a-row>
+            </a-tab-pane>
           </a-tabs>
         </div>
         <a-row class="message-btn-box" type="flex">
@@ -48,6 +75,7 @@
 </template>
 
 <script>
+import { toGetShortMessage, toClearMessage } from '@/api/user'
 export default {
   name: 'AvatarDropdown',
   props: {
@@ -58,12 +86,24 @@ export default {
   },
   data () {
     return {
-      visible: false
+      visible: false,
+      shortInfo: ''
     }
   },
   mounted () {},
   methods: {
-    clear () {},
+    // 获取弹窗消息接口
+    getData () {
+      toGetShortMessage().then(({ data }) => {
+        console.log('获取弹窗消息', data)
+        this.shortInfo = data
+      })
+    },
+    clear () {
+      toClearMessage().then(() => {
+        this.getData()
+      })
+    },
     viewMore () {
       this.visible = false
       const status = this.$route.name !== 'MessageCenterIndex'
@@ -71,19 +111,22 @@ export default {
         name: 'MessageCenterIndex'
       })
     }
+  },
+  created () {
+    this.getData()
   }
 }
 </script>
 
 <style lang="less" scoped>
 .message-container {
-  width: 360px;
+  // width: 360px;
   /deep/ .ant-tabs-tab {
-    margin: 0 30px;
+    margin-left: 30px;
+    margin-right: 0;
   }
   .message-list {
-    min-height: 144px;
-    max-height: 360px;
+   width: 338px;
   }
   .message-btn-box {
     height: 46px;

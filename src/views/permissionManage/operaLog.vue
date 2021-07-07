@@ -243,6 +243,9 @@ export default {
   /deep/ .ant-form-item-label {
     min-width: 88px;
   }
+  /deep/ .ant-card-body{
+    padding: 24px 24px 4px 24px;
+  }
   .piker-time {
     width: 100% !important;
   }

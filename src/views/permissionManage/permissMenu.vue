@@ -797,6 +797,7 @@ export default {
     }
   }
   .addArea {
+    margin-top: 24px;
     width: 644px;
     height: 32px;
     border-radius: 4px;
@@ -826,7 +827,10 @@ export default {
       margin-right: 10px;
     }
     button{
-      margin-top: 20px;
+      margin-top: 32px;
+    }
+    .r2{
+      margin-bottom: 20px;
     }
   }
   .card2{
@@ -847,6 +851,9 @@ export default {
     }
      input{
       margin-right: 10px;
+    }
+    .inputItem,.r2{
+      margin-bottom: 20px;
     }
     button{
       margin-top: 20px;

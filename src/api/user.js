@@ -9,7 +9,12 @@ export const userApi = {
   UserMenu: '/public/common/getMenu',
   bdCode: '/public/common/bdCode',
   bdStatus: '/public/common/bdStatus',
-  uploadImg: '/file/uploads/uImages'
+  uploadImg: '/file/uploads/uImages',
+  getMessageList: '/public/common/getMessageList',
+  getShortMessage: '/public/common/getShortMessage',
+  readMessageById: '/public/common/readMessageById',
+  readAllMessage: '/public/common/readAllMessage',
+  clearMessage: '/public/common/clearMessage'
 }
 
 /**
@@ -91,5 +96,40 @@ export function logout () {
   return request({
     url: userApi.Logout,
     method: 'post'
+  })
+}
+// 获取消息列表接口(已验证)
+export function toGetMessageList (params) {
+  return request({
+    url: userApi.getMessageList,
+    params
+  })
+}
+// 获取弹窗消息接口(已验证)
+export function toGetShortMessage (params) {
+  return request({
+    url: userApi.getShortMessage
+
+  })
+}
+// 设置消息已读接口(已验证)
+export function toReadMessageById (data) {
+  return request({
+    url: userApi.readMessageById,
+    method: 'post',
+    data
+  })
+}
+// 消息全部已读接口(已验证)
+export function toReadAllMessage () {
+  return request({
+    url: userApi.readAllMessage
+
+  })
+}
+// 清除弹窗通知接口(已验证)
+export function toClearMessage () {
+  return request({
+    url: userApi.clearMessage
   })
 }

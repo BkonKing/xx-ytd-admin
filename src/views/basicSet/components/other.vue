@@ -1,38 +1,68 @@
 <template>
   <a-card class="card">
-    <a-form-model :model="form" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-model-item label="结算方式" required >
+    <a-form-model :model="form" ref="form" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-model-item label="结算方式" required>
         <div class="box">
-          <div class="item" v-for="(item,index) in settleTypeList" :key="item.id">
+          <div
+            class="item"
+            v-for="(item, index) in settleTypeList"
+            :key="item.id"
+          >
+            <a-form-model-item
+
+            >
+              <a-input
+                v-model="item.categoryName"
+                placeholder="结算方式"
+              ></a-input>
+            </a-form-model-item>
+            <a-form-model-item
+
+            >
+              <a-input v-model="item.listOrder" placeholder="排序"></a-input>
+            </a-form-model-item>
+            <a-icon
+              type="minus-circle"
+              class="circle"
+              @click="removeApiData(item.id, index)"
+            />
+          </div>
+          <div class="item2" v-for="(item, index) in arr1" :key="item.id">
             <a-input
               v-model="item.categoryName"
               placeholder="结算方式"
             ></a-input>
             <a-input v-model="item.listOrder" placeholder="排序"></a-input>
-            <a-icon type="minus-circle" class="circle" @click="removeApiData(item.id,index)"/>
-          </div>
-          <div class="item2" v-for="(item,index) in arr1" :key='item.id'>
-            <a-input  v-model="item.categoryName" placeholder="结算方式"></a-input>
-            <a-input v-model="item.listOrder" placeholder="排序"></a-input>
-            <a-icon type="minus-circle" class="circle" @click="remove1(index)" />
+            <a-icon
+              type="minus-circle"
+              class="circle"
+              @click="remove1(index)"
+            />
           </div>
         </div>
         <div class="addArea" @click="add1">
           + 添加
         </div>
       </a-form-model-item>
-      <a-form-model-item label="付款方式"  required>
+      <a-form-model-item label="付款方式" required>
         <div class="box">
-         <div class="item" v-for="(item,index) in payTypeList" :key="item.id">
+          <div class="item" v-for="(item, index) in payTypeList" :key="item.id">
             <a-input
               v-model="item.categoryName"
               placeholder="结算方式"
             ></a-input>
             <a-input v-model="item.listOrder" placeholder="排序"></a-input>
-            <a-icon type="minus-circle" class="circle" @click="removeApiData2(item.id,index)"/>
+            <a-icon
+              type="minus-circle"
+              class="circle"
+              @click="removeApiData2(item.id, index)"
+            />
           </div>
-          <div class="item2" v-for="item in arr2" :key='item.id'>
-            <a-input  v-model="item.categoryName" placeholder="结算方式"></a-input>
+          <div class="item2" v-for="item in arr2" :key="item.id">
+            <a-input
+              v-model="item.categoryName"
+              placeholder="结算方式"
+            ></a-input>
             <a-input v-model="item.listOrder" placeholder="排序"></a-input>
             <a-icon type="minus-circle" class="circle" @click="remove2" />
           </div>
@@ -49,7 +79,14 @@
 </template>
 
 <script>
-import { toSettleType, toUpdateBatchSettleType, toRemoveBatchSettleType, toPayType, toUpdateBatchPayType, toRemoveBatchPayType } from '@/api/basicSet'
+import {
+  toSettleType,
+  toUpdateBatchSettleType,
+  toRemoveBatchSettleType,
+  toPayType,
+  toUpdateBatchPayType,
+  toRemoveBatchPayType
+} from '@/api/basicSet'
 export default {
   data () {
     return {
@@ -106,7 +143,9 @@ export default {
     removeApiData (id, index) {
       this.idApiArr.push(id)
       if (this.settleTypeList.length === 1) {
-        this.settleTypeList = [{ id: 0, categoryName: '', listOrder: '', parentId: 0 }]
+        this.settleTypeList = [
+          { id: 0, categoryName: '', listOrder: '', parentId: 0 }
+        ]
         return
       }
 
@@ -115,7 +154,9 @@ export default {
     removeApiData2 (id, index) {
       this.idApiArr2.push(id)
       if (this.payTypeList.length === 1) {
-        this.payTypeList = [{ id: 0, categoryName: '', listOrder: '', parentId: 0 }]
+        this.payTypeList = [
+          { id: 0, categoryName: '', listOrder: '', parentId: 0 }
+        ]
         return
       }
 
@@ -163,7 +204,7 @@ export default {
         toUpdateBatchSettleType({
           category: arrSum
         }).then(res => {
-        // console.log('保存结算', res)
+          // console.log('保存结算', res)
           this.arr1 = []
           this.getSettleTypeData()
           // this.$message.success(res.message)
@@ -196,7 +237,7 @@ export default {
         toUpdateBatchPayType({
           category: arrSum2
         }).then(res => {
-        // console.log('保存结算', res)
+          // console.log('保存结算', res)
           this.arr2 = []
           this.getPayTypeData()
           // this.$message.success(res.message)
@@ -219,11 +260,19 @@ export default {
     },
     // 添加结算方式输入框
     add1 () {
-      this.arr1.push({ id: Math.random() * 999, categoryName: '', listOrder: '' })
+      this.arr1.push({
+        id: Math.random() * 999,
+        categoryName: '',
+        listOrder: ''
+      })
     },
     // 添加支付方式输入框
     add2 () {
-      this.arr2.push({ id: Math.random() * 999, categoryName: '', listOrder: '' })
+      this.arr2.push({
+        id: Math.random() * 999,
+        categoryName: '',
+        listOrder: ''
+      })
     }
   },
   created () {
@@ -251,7 +300,7 @@ export default {
         margin-left: 10px;
       }
     }
-     .item2 {
+    .item2 {
       display: flex;
       align-items: center;
       input {
@@ -267,7 +316,7 @@ export default {
     }
   }
   .addArea {
-    margin-top: 10px;
+    margin-top: 12px;
     margin-left: 10px;
     width: 440px;
     height: 32px;
@@ -277,7 +326,7 @@ export default {
     line-height: 28px;
     cursor: pointer;
   }
-  .btn{
+  .btn {
     margin-left: 280px;
   }
 }
