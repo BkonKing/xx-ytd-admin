@@ -209,6 +209,9 @@ export default {
     },
     // 打开新增项目弹窗
     openAddProject () {
+      if (!this.Permissions.CreatePermissions) {
+        this.$message.warning('对不起，您没有这个权限')
+      }
       this.title = '新增项目'
       this.showModal()
       this.$refs.projectForm && this.$refs.projectForm.resetFields()

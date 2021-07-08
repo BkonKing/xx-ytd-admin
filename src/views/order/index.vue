@@ -139,10 +139,10 @@
           <template>
             <a @click="goDetail(record)">查看</a>
             <a @click="goEdit(record)">编辑</a>
-            <a v-if="+record.status !== 1" @click="handleRemove(record)"
+            <a v-if="+record.status !== 1 && permissions.RemovePermission" @click="handleRemove(record)"
               >删除</a
             >
-            <a v-if="+record.status === 0" @click="openCheck(record)">审核</a>
+            <a v-if="+record.status === 0 && permissions.AuditPermission" @click="openCheck(record)">审核</a>
           </template>
         </span>
       </s-table>

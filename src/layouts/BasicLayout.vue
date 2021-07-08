@@ -9,7 +9,6 @@
     :sider-width="210"
     v-bind="settings"
   >
-
     <!-- 1.0.0+ 版本 pro-layout 提供 API，
           我们推荐使用这种方式进行 LOGO 和 title 自定义
     -->
@@ -36,7 +35,11 @@
       </div>
     </setting-drawer> -->
     <template v-slot:rightContentRender>
-      <right-content :top-menu="settings.layout === 'topmenu'" :is-mobile="isMobile" :theme="settings.theme" />
+      <right-content
+        :top-menu="settings.layout === 'topmenu'"
+        :is-mobile="isMobile"
+        :theme="settings.theme"
+      />
     </template>
     <!-- custom footer / 自定义Footer -->
     <template v-slot:footerRender>
@@ -48,7 +51,11 @@
 
 <script>
 // import { SettingDrawer } from 'xx-ant-design-vue-pro-layout'
-import { CONTENT_WIDTH_TYPE, SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'
+import {
+  CONTENT_WIDTH_TYPE,
+  SIDEBAR_TYPE,
+  TOGGLE_MOBILE_TYPE
+} from '@/store/mutation-types'
 
 import defaultSettings from '@/settings'
 import RightContent from '@/components/GlobalHeader/RightContent'
@@ -67,7 +74,9 @@ export default {
   data () {
     return {
       // preview.pro.antdv.com only use.
-      isProPreviewSite: process.env.VUE_APP_PREVIEW === 'true' && process.env.NODE_ENV !== 'development',
+      isProPreviewSite:
+        process.env.VUE_APP_PREVIEW === 'true' &&
+        process.env.NODE_ENV !== 'development',
       // end
 
       // base
@@ -79,7 +88,10 @@ export default {
         // 布局类型
         layout: defaultSettings.layout, // 'sidemenu', 'topmenu'
         // CONTENT_WIDTH_TYPE
-        contentWidth: defaultSettings.layout === 'sidemenu' ? CONTENT_WIDTH_TYPE.Fluid : defaultSettings.contentWidth,
+        contentWidth:
+          defaultSettings.layout === 'sidemenu'
+            ? CONTENT_WIDTH_TYPE.Fluid
+            : defaultSettings.contentWidth,
         // 主题 'dark' | 'light'
         theme: defaultSettings.navTheme,
         // 主色调
@@ -100,7 +112,10 @@ export default {
   },
   created () {
     getMenu().then(({ data }) => {
-      this.menus = data
+      // this.menus = data
+      console.log(data)
+      this.menus = this.formatMenu(data)
+      console.log(this.menus)
     })
     // 处理侧栏收起状态
     this.$watch('collapsed', () => {
@@ -122,6 +137,31 @@ export default {
     }
   },
   methods: {
+    formatMenu (data) {
+      if (data && data.length) {
+        const menu = data.map(obj => {
+          const newObj = {
+            meta: {}
+          }
+          if (obj.children && obj.children.length) {
+            newObj.children = this.formatMenu(obj.children)
+          }
+          newObj.meta.title = obj.menuText
+          newObj.meta.icon = obj.icon || null
+          newObj.path = obj.limitsPath
+          newObj.name = obj.limitsPath
+          if (obj.display === '0' && !(obj.children && obj.children.length)) {
+            newObj.hideChildrenInMenu = true
+          } else if (obj.display === '0') {
+            newObj.hidden = true
+          }
+          return newObj
+        })
+        return menu
+      } else {
+        return data
+      }
+    },
     handleMediaQuery (val) {
       this.query = val
       if (this.isMobile && !val['screen-xs']) {

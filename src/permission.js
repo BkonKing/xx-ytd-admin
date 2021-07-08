@@ -1,10 +1,14 @@
 import router from './router'
+import store from './store'
 import NProgress from 'nprogress' // progress bar
 import '@/components/NProgress/nprogress.less' // progress bar custom style
 import {
   setDocumentTitle,
   domTitle
 } from '@/utils/domUtil'
+import {
+  getAllots
+} from '@/api/user'
 import storage from 'store'
 // import { ACCESS_TOKEN } from '@/store/mutation-types'
 
@@ -13,22 +17,27 @@ NProgress.configure({
 }) // NProgress Configuration
 
 const allowList = ['login'] // 免登录路由name
+const allotWhiteList = ['Workplace', 'login', '403', '404']
 const loginRoutePath = '/user/login'
-const defaultRoutePath = '/dashboard/workplace'
+// const defaultRoutePath = '/dashboard/workplace'
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   NProgress.start() // start progress bar
   to.meta && (typeof to.meta.title !== 'undefined' && setDocumentTitle(`${to.meta.title} - ${domTitle}`))
-  /* has token */
-  if (storage.get('access_token')) {
-    if (to.path === loginRoutePath) {
-      next({
-        path: defaultRoutePath
-      })
-      NProgress.done()
+  if (!allotWhiteList.includes(to.name)) {
+    const {
+      data: permissions
+    } = await getAllots({
+      limitsPath: to.path
+    })
+    if (permissions.limitsPath) {
+      store.commit('SET_PERMISSIONS', permissions)
     } else {
-      next()
+      next('/403')
     }
+  }
+  if (storage.get('access_token')) {
+    next()
   } else {
     if (allowList.includes(to.name)) {
       // 在免登录名单，直接进入

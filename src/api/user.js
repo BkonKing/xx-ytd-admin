@@ -6,7 +6,8 @@ export const userApi = {
   UserInfo: '/public/common/getAccountInfo',
   updateBasicSet: '/system/account/updateBasicSet',
   updateSecuritySet: '/system/account/updateSecuritySet',
-  UserMenu: '/public/common/getMenu',
+  UserMenu: '/public/common/leftMenu',
+  allots: '/public/common/allots',
   bdCode: '/public/common/bdCode',
   bdStatus: '/public/common/bdStatus',
   uploadImg: '/file/uploads/uImages',
@@ -89,6 +90,15 @@ export function getMenu () {
   return request({
     url: userApi.UserMenu,
     method: 'get'
+  })
+}
+
+// 前端页面权限判断接口
+export function getAllots (data) {
+  return request({
+    url: userApi.allots,
+    method: 'post',
+    data
   })
 }
 
