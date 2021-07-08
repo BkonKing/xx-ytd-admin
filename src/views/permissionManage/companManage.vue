@@ -74,10 +74,10 @@
               <div class="actions-span" @click.stop="openCompanyPermiss(item.id)">
                 权限
               </div>
-              <div class="actions-span" @click.stop="openEditCompany(item)">
+              <div class="actions-span" @click.stop="openEditCompany(item)" v-if="+permissions.UpdatePermission===1">
                 编辑
               </div>
-              <div class="actions-span" @click.stop="removeCompany(item)">
+              <div class="actions-span" @click.stop="removeCompany(item)" v-if="+permissions.RemovePermission===1">
                 删除
               </div>
             </template>

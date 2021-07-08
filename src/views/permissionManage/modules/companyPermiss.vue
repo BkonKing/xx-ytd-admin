@@ -10,6 +10,7 @@
         :replaceFields="{ key: 'id' }"
         @select="onSelect"
         :default-expanded-keys="openArr"
+        @check='onCheck'
       >
         <template slot="custom" slot-scope="item">
           {{ item.menuText }}
@@ -29,15 +30,20 @@ export default {
       openArr: [], // 展开的菜单节点
       isShow: false,
       // roleId: '', // 角色id
-      id: ''
+      id: '',
+      halfCheckedKeys: []
     }
   },
   methods: {
+    onCheck (checkedKeys, e) {
+      // console.log('e.halfCheckedKeys', e.halfCheckedKeys)
+      this.halfCheckedKeys = e.halfCheckedKeys
+    },
     // 配置角色对应的菜单
     async submit () {
       const res = await toUpdateAllCompanyMenus({
         companyId: this.id,
-        allots: this.checkedKeys.join(',')
+        allots: this.checkedKeys.concat(this.halfCheckedKeys).join(',')
       })
       this.$parent.getData()
       this.$message.success(res.message)

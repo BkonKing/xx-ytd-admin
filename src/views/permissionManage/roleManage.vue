@@ -204,6 +204,7 @@
             </div>
           </a-card>
           <a-card v-if="permissionShow && treeData.length > 0" class="card3">
+            {{checkedKeys}}
             <div class="title">
               <div>
                 权限
@@ -337,7 +338,8 @@ export default {
       editBol: true,
       selectMenuBol: true,
       initBol: true,
-      showInit: true
+      showInit: true,
+      halfCheckedKeys: []
     }
   },
   watch: {
@@ -378,8 +380,9 @@ export default {
     }
   },
   methods: {
-    onCheck (checkedKeys) {
-      // console.log('onCheck', checkedKeys)
+    onCheck (checkedKeys, e) {
+      console.log('e.halfCheckedKeys', e.halfCheckedKeys)
+      this.halfCheckedKeys = e.halfCheckedKeys
       this.selectMenuBol = false
       // this.checkedKeys = checkedKeys
     },
@@ -417,7 +420,7 @@ export default {
     async setRoleMenus () {
       const res = await toUpdateAllotsMenus({
         roleId: this.roleId,
-        allots: this.checkedKeys.join(',')
+        allots: this.checkedKeys.concat(this.halfCheckedKeys).join(',')
       })
       this.getData()
       this.$message.success(res.message)
@@ -784,7 +787,8 @@ export default {
         margin-top: 32px;
       }
       .addArea {
-        width: 440px;
+        width: 100%;
+        max-width: 440px;
         height: 32px;
         border-radius: 4px;
         border: 2px dashed #eeeeee;

@@ -13,7 +13,7 @@ import Vue from 'vue'
 // 创建 axios 实例
 const request = axios.create({
   headers: {
-    Authorization: Cookies.get('access_token'),
+    Authorization: window.localStorage.getItem('access_token'),
     'Content-Type': 'application/x-www-form-urlencoded',
     Projectid: Cookies.get('project_id')
   },

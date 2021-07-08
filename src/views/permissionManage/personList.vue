@@ -40,7 +40,7 @@
       </div>
     </a-card>
     <a-card class="card2">
-      <a-button type="primary" @click="add">新增人员</a-button>
+      <a-button type="primary" @click="add" v-if="+permissions.CreatePermission===1">新增人员</a-button>
       <div class="table">
         <a-table
           :columns="columns"
@@ -53,8 +53,8 @@
               <a-button type="link" @click="openEditPermiss(record)"
                 >权限</a-button
               >
-              <a-button type="link" @click="edit(record)">编辑</a-button>
-              <a-button type="link" @click="delPerson(record)">删除</a-button>
+              <a-button type="link" @click="edit(record)" v-if="+permissions.UpdatePermission===1">编辑</a-button>
+              <a-button type="link" @click="delPerson(record)" v-if="+permissions.RemovePermission===1">删除</a-button>
             </div>
           </template>
         </a-table>

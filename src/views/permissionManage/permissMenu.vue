@@ -799,7 +799,8 @@ export default {
   }
   .addArea {
     margin-top: 24px;
-    width: 644px;
+    max-width: 584px;
+    width: 100%;
     height: 32px;
     border-radius: 4px;
     border: 2px dashed #eeeeee;

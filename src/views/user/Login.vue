@@ -125,6 +125,7 @@ export default {
               }
               // console.log(res.oauthToken)
               window.localStorage.setItem('access_token', res.oauthToken)
+
               this.$message.success('登录成功')
               this.$router.push('/')
             })
