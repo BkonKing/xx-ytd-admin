@@ -58,7 +58,7 @@
               </a-tooltip>
             </span>
           </template>
-            <div>姓名、姓名、姓名名、姓名</div>
+            <div>{{info.webSendName}}</div>
         </a-form-model-item>
         <a-form-model-item>
           <template slot="label">
@@ -157,7 +157,7 @@
               </a-tooltip>
             </span>
           </template>
-            <div>姓名、姓名、姓名名、姓名</div>
+            <div>{{info.wxSendName}}</div>
         </a-form-model-item>
         <a-form-model-item >
             <template slot="label">

@@ -71,7 +71,7 @@
               </template>
             </a-card-meta>
             <template slot="actions">
-              <div class="actions-span" @click.stop="openCompanyPermiss(item.id)">
+              <div class="actions-span" @click.stop="openCompanyPermiss(item.id)"  v-if="+permissions.AllotsPermission===1">
                 权限
               </div>
               <div class="actions-span" @click.stop="openEditCompany(item)" v-if="+permissions.UpdatePermission===1">

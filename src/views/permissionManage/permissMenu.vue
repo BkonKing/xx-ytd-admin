@@ -514,13 +514,13 @@ export default {
     newAdd () {
       this.$refs.addModel.isShow = true
     },
-    // 批量编辑权限菜单
+    //  创建分支权限菜单
     async save () {
-      console.log('删除的数组', this.idArr)
       if (this.idArr.length > 0) {
         await toRemoveBatchMenu({ ids: this.idArr })
       }
       if (this.parentId === 0) {
+        console.log('执行了1')
         let menus = this.itemInfo.children.map(item => {
           return {
             id: item.id,
@@ -553,6 +553,19 @@ export default {
           this.$message.info(res.message)
         }
       } else {
+        console.log('执行了2')
+        let menus = this.itemInfo.children.map(item => {
+          return {
+            id: item.id,
+            parentId: item.parentId,
+            menuText: item.menuText,
+            limitsPath: item.limitsPath,
+            icon: item.icon,
+            listOrder: item.listOrder,
+            apiPath: item.apiPath,
+            display: item.display
+          }
+        })
         const arr = this.inputArr.filter(item => {
           return item.menuText !== ''
         })
@@ -560,9 +573,10 @@ export default {
           item.parentId = this.parentId
           item.id = 0
         })
-        if (arr.length > 0) {
+        menus = [...menus, ...arr]
+        if (menus.length > 0) {
           const res = await toUpdateBatchMenu({
-            menus: arr
+            menus: menus
           })
           if (res.code === 200) {
             this.itemInfo.children = res.data
@@ -575,7 +589,9 @@ export default {
 
       this.getData()
 
-      this.createBol = true
+      this.$nextTick(() => {
+        this.createBol = true
+      })
     },
     // 获取权限菜单数据
     async getData () {
@@ -724,8 +740,9 @@ export default {
       this.itemInfo = {}
       // 清空右侧输入框数组
       this.inputArr = []
-
       if (item.children) {
+        console.log('执行了这里1', item)
+        this.parentId = item.id
         this.itemInfo = JSON.parse(JSON.stringify(item))
         this.itemInfo.children.forEach(item => {
           item.display = +item.display
@@ -734,6 +751,7 @@ export default {
           this.createBol = true
         })
       } else {
+        console.log('执行了这里2')
         this.parentId = item.id
         // let obj = {}
         // obj = {

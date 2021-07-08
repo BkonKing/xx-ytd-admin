@@ -414,6 +414,14 @@ export default {
           this.$message.info(res.message)
         }
       } else {
+        let menus = this.itemInfo.children.map(item => {
+          return {
+            id: item.id,
+            parentId: item.parentId,
+            categoryName: item.categoryName,
+            listOrder: item.listOrder
+          }
+        })
         const arr = this.inputArr.filter(item => {
           return item.categoryName !== ''
         })
@@ -421,9 +429,10 @@ export default {
           item.parentId = this.parentId
           item.id = 0
         })
-        if (arr.length > 0) {
+        menus = [...menus, ...arr]
+        if (menus.length > 0) {
           const res = await toUpdateBatchContract({
-            category: arr
+            category: menus
           })
           if (res.code === 200) {
             this.itemInfo.children = res.data
@@ -567,6 +576,7 @@ export default {
       this.inputArr = []
 
       if (item.children) {
+        this.parentId = item.id
         this.itemInfo = JSON.parse(JSON.stringify(item))
         // this.itemInfo.children.forEach(item => {
         //   item.display = +item.display

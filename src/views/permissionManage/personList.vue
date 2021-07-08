@@ -51,7 +51,7 @@
           <template slot="opera" slot-scope="text, record">
             <div class="opera">
               <a-button type="link" @click="openEditPermiss(record)"
-                >权限</a-button
+                v-if="+permissions.AllotsPermission===1">权限</a-button
               >
               <a-button type="link" @click="edit(record)" v-if="+permissions.UpdatePermission===1">编辑</a-button>
               <a-button type="link" @click="delPerson(record)" v-if="+permissions.RemovePermission===1">删除</a-button>

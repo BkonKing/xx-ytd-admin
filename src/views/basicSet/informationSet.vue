@@ -4,7 +4,7 @@
       <a-table :columns="columns" :data-source="tableData" :pagination="false">
         <template slot="opera" slot-scope="text,record">
           <div>
-            <a-button type="link" @click="toEditContent(record)">编辑内容</a-button>
+            <a-button type="link" @click="toEditContent(record)" >编辑内容</a-button>
           </div>
         </template>
         <template slot="webSend" slot-scope="text,record">

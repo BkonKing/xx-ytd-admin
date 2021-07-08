@@ -204,7 +204,7 @@
             </div>
           </a-card>
           <a-card v-if="permissionShow && treeData.length > 0" class="card3">
-            {{checkedKeys}}
+
             <div class="title">
               <div>
                 权限
@@ -572,6 +572,9 @@ export default {
           this.inputArr = []
           this.idArr = []
         }
+        this.$nextTick(() => {
+          this.createBol = true
+        })
         this.$message.success(res.message)
         this.getData()
       }
@@ -630,6 +633,7 @@ export default {
         this.inputArr2 = []
         this.idArr2 = []
       }
+
       this.$message.success(res.message)
       this.getData()
     },
