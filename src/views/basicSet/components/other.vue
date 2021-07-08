@@ -1,23 +1,38 @@
 <template>
   <a-card class="card">
-    <a-form-model :model="form" ref="form" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form-model
+      :model="form"
+      ref="form"
+      :label-col="labelCol"
+      :wrapper-col="wrapperCol"
+    >
       <a-form-model-item label="结算方式" required>
         <div class="box">
           <div
             class="item"
-            v-for="(item, index) in settleTypeList"
+            v-for="(item, index) in form.settleTypeList"
             :key="item.id"
           >
             <a-form-model-item
-
+              :prop="'settleTypeList.' + index + '.categoryName'"
+              :rules="{
+                required: true,
+                message: '必填',
+                trigger: 'change'
+              }"
             >
               <a-input
                 v-model="item.categoryName"
-                placeholder="结算方式"
+                placeholder="必填"
               ></a-input>
             </a-form-model-item>
             <a-form-model-item
-
+              :prop="'settleTypeList.' + index + '.listOrder'"
+              :rules="{
+                required: true,
+                message: '必填',
+                trigger: 'change'
+              }"
             >
               <a-input v-model="item.listOrder" placeholder="排序"></a-input>
             </a-form-model-item>
@@ -46,12 +61,34 @@
       </a-form-model-item>
       <a-form-model-item label="付款方式" required>
         <div class="box">
-          <div class="item" v-for="(item, index) in payTypeList" :key="item.id">
+          <div
+            class="item"
+            v-for="(item, index) in form.payTypeList"
+            :key="item.id"
+          >
+             <a-form-model-item
+              :prop="'payTypeList.' + index + '.categoryName'"
+              :rules="{
+                required: true,
+                message: '必填',
+                trigger: 'change'
+              }"
+            >
             <a-input
               v-model="item.categoryName"
               placeholder="结算方式"
             ></a-input>
+             </a-form-model-item>
+               <a-form-model-item
+              :prop="'payTypeList.' + index + '.listOrder'"
+              :rules="{
+                required: true,
+                message: '必填',
+                trigger: 'change'
+              }"
+            >
             <a-input v-model="item.listOrder" placeholder="排序"></a-input>
+               </a-form-model-item>
             <a-icon
               type="minus-circle"
               class="circle"
@@ -92,18 +129,21 @@ export default {
     return {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
-      form: {},
-      settleTypeList: [],
+      form: {
+        settleTypeList: [],
+        payTypeList: []
+      },
+
       arr1: [],
       idApiArr: [],
-      payTypeList: [],
+
       arr2: [],
       idApiArr2: [],
       bol: true
     }
   },
   watch: {
-    settleTypeList: {
+    form: {
       handler () {
         this.bol = false
       },
@@ -132,7 +172,7 @@ export default {
     // 获取支付数据
     getPayTypeData () {
       toPayType().then(({ data }) => {
-        this.payTypeList = data
+        this.form.payTypeList = data
         this.$nextTick(() => {
           this.bol = true
         })
@@ -142,25 +182,25 @@ export default {
     // 删除接口返回的数据
     removeApiData (id, index) {
       this.idApiArr.push(id)
-      if (this.settleTypeList.length === 1) {
-        this.settleTypeList = [
+      if (this.form.settleTypeList.length === 1) {
+        this.form.settleTypeList = [
           { id: 0, categoryName: '', listOrder: '', parentId: 0 }
         ]
         return
       }
 
-      this.settleTypeList.splice(index, 1)
+      this.form.settleTypeList.splice(index, 1)
     },
     removeApiData2 (id, index) {
       this.idApiArr2.push(id)
-      if (this.payTypeList.length === 1) {
-        this.payTypeList = [
+      if (this.form.payTypeList.length === 1) {
+        this.form.payTypeList = [
           { id: 0, categoryName: '', listOrder: '', parentId: 0 }
         ]
         return
       }
 
-      this.payTypeList.splice(index, 1)
+      this.form.payTypeList.splice(index, 1)
     },
     remove1 (index) {
       this.arr1.splice(index, 1)
@@ -170,88 +210,92 @@ export default {
     },
     // 保存
     save () {
-      if (this.idApiArr.length > 0) {
-        toRemoveBatchSettleType({ ids: this.idApiArr })
-        this.idApiArr = []
-      }
-      if (this.idApiArr2.length > 0) {
-        toRemoveBatchPayType({ ids: this.idApiArr2 })
-        this.idApiArr2 = []
-      }
-      let arrSum = []
-      const newArr1 = this.arr1.map(item => {
-        return {
-          id: 0,
-          categoryName: item.categoryName,
-          listOrder: item.listOrder,
-          parentId: 0
+      this.$refs.form.validate(result => {
+        if (result) {
+          if (this.idApiArr.length > 0) {
+            toRemoveBatchSettleType({ ids: this.idApiArr })
+            this.idApiArr = []
+          }
+          if (this.idApiArr2.length > 0) {
+            toRemoveBatchPayType({ ids: this.idApiArr2 })
+            this.idApiArr2 = []
+          }
+          let arrSum = []
+          const newArr1 = this.arr1.map(item => {
+            return {
+              id: 0,
+              categoryName: item.categoryName,
+              listOrder: item.listOrder,
+              parentId: 0
+            }
+          })
+          let newArr2 = []
+          if (this.form.settleTypeList.length > 0) {
+            newArr2 = this.form.settleTypeList.map(item => {
+              return {
+                id: item.id,
+                categoryName: item.categoryName,
+                listOrder: item.listOrder,
+                parentId: 0
+              }
+            })
+          }
+
+          arrSum = [...newArr2, ...newArr1]
+          if (arrSum.length > 0) {
+            toUpdateBatchSettleType({
+              category: arrSum
+            }).then(res => {
+              // console.log('保存结算', res)
+              this.arr1 = []
+              this.getSettleTypeData()
+              // this.$message.success(res.message)
+            })
+          }
+          let arrSum2 = []
+          const twoArr1 = this.arr2.map(item => {
+            return {
+              id: 0,
+              categoryName: item.categoryName,
+              listOrder: item.listOrder,
+              parentId: 0
+            }
+          })
+          console.log('twoArr1', twoArr1)
+          let twoArr2 = []
+          if (this.form.payTypeList.length > 0) {
+            twoArr2 = this.form.payTypeList.map(item => {
+              return {
+                id: item.id,
+                categoryName: item.categoryName,
+                listOrder: item.listOrder,
+                parentId: 0
+              }
+            })
+          }
+
+          arrSum2 = [...twoArr1, ...twoArr2]
+          if (arrSum2.length > 0) {
+            toUpdateBatchPayType({
+              category: arrSum2
+            }).then(res => {
+              // console.log('保存结算', res)
+              this.arr2 = []
+              this.getPayTypeData()
+              // this.$message.success(res.message)
+            })
+          }
+          this.$nextTick(() => {
+            this.bol = true
+          })
+          this.$message.success('保存成功')
         }
       })
-      let newArr2 = []
-      if (this.settleTypeList.length > 0) {
-        newArr2 = this.settleTypeList.map(item => {
-          return {
-            id: item.id,
-            categoryName: item.categoryName,
-            listOrder: item.listOrder,
-            parentId: 0
-          }
-        })
-      }
-
-      arrSum = [...newArr2, ...newArr1]
-      if (arrSum.length > 0) {
-        toUpdateBatchSettleType({
-          category: arrSum
-        }).then(res => {
-          // console.log('保存结算', res)
-          this.arr1 = []
-          this.getSettleTypeData()
-          // this.$message.success(res.message)
-        })
-      }
-      let arrSum2 = []
-      const twoArr1 = this.arr2.map(item => {
-        return {
-          id: 0,
-          categoryName: item.categoryName,
-          listOrder: item.listOrder,
-          parentId: 0
-        }
-      })
-      console.log('twoArr1', twoArr1)
-      let twoArr2 = []
-      if (this.payTypeList.length > 0) {
-        twoArr2 = this.payTypeList.map(item => {
-          return {
-            id: item.id,
-            categoryName: item.categoryName,
-            listOrder: item.listOrder,
-            parentId: 0
-          }
-        })
-      }
-
-      arrSum2 = [...twoArr1, ...twoArr2]
-      if (arrSum2.length > 0) {
-        toUpdateBatchPayType({
-          category: arrSum2
-        }).then(res => {
-          // console.log('保存结算', res)
-          this.arr2 = []
-          this.getPayTypeData()
-          // this.$message.success(res.message)
-        })
-      }
-      this.$nextTick(() => {
-        this.bol = true
-      })
-      this.$message.success('保存成功')
     },
     // 结算方式数据
     getSettleTypeData () {
       toSettleType().then(({ data }) => {
-        this.settleTypeList = data
+        this.form.settleTypeList = data
         this.$nextTick(() => {
           this.bol = true
         })
