@@ -94,6 +94,7 @@
                       placeholder="请输入"
                       :maxLength="15"
                       v-number-input
+                      :disabled="isDisabled"
                     />
                   </a-form-model-item>
                 </a-col>
@@ -117,6 +118,7 @@
                       placeholder="请输入"
                       :min="0"
                       :maxLength="15"
+                      :disabled="isDisabled"
                     />
                   </a-form-model-item>
                 </a-col>
@@ -164,7 +166,7 @@
           type="dashed"
           icon="plus"
           @click="handleAdd"
-          >新增成员</a-button
+          >新增物料</a-button
         >
       </div>
     </a-card>
@@ -191,6 +193,7 @@ import {
 import { appMixin } from '@/store/mixin'
 import { getAllUnit } from '@/api/common'
 import { addOrder, updateOrder, getOrderInfo } from '@/api/order'
+import { getAllots } from '@/api/user'
 export default {
   name: '',
   mixins: [appMixin],
@@ -204,6 +207,7 @@ export default {
   data () {
     return {
       id: '',
+      UpdatePermission: 0,
       title: '新增订单',
       loading: false,
       NPTimes: NP.times,
@@ -215,7 +219,7 @@ export default {
       },
       unitOptions: [],
       rules: {
-        contractId: [{ required: true, message: '请填写' }]
+        contractId: [{ required: true, message: '请选择关联合同' }]
       },
       tableRules: {
         materialId: [{ required: true, message: '请填写' }],
@@ -241,6 +245,9 @@ export default {
         num = this.NPPlus(num, obj.total)
       })
       return num
+    },
+    isDisabled () {
+      return this.UpdatePermission !== 1 && this.form.status === '1'
     }
   },
   mounted () {
@@ -248,6 +255,7 @@ export default {
     if (this.id) {
       this.title = '编辑订单'
       this.getOrderInfo()
+      this.getAllots()
     }
     this.getAllUnit()
   },
@@ -258,9 +266,18 @@ export default {
       }).then(({ data }) => {
         this.form.id = this.id
         this.form.contractId = data.contractId
+        this.form.status = data.status
         this.form.orderPz = data.orderPz
         this.form.supplier = data.supplierName
         this.tableData = data.material
+      })
+    },
+    // 获取编辑权限
+    getAllots () {
+      getAllots({
+        limitsPath: '/order/index'
+      }).then(({ data }) => {
+        this.UpdatePermission = data.UpdatePermission
       })
     },
     getSupplier (value, option) {
@@ -279,7 +296,7 @@ export default {
         taxRate: (this.tableData[0] && this.tableData[0].taxRate) || '1',
         unitPrice: '',
         unit: this.unitOptions[0].unit,
-        total: '',
+        total: 0,
         listOrder: ''
       })
     },

@@ -10,7 +10,7 @@
     tree-default-expand-all
     :show-checked-strategy="SHOW_PARENT"
     treeNodeFilterProp="title"
-    @change="$emit('change')"
+    @change="handleChange"
   >
     <a-tree-select-node
       v-for="(option, index) in options"
@@ -67,6 +67,13 @@ export default {
     getAllMaterialType().then(({ data }) => {
       this.options = data
     })
+  },
+  methods: {
+    handleChange () {
+      this.$nextTick(() => {
+        this.$emit('change')
+      })
+    }
   },
   watch: {
     value (val) {

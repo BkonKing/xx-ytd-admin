@@ -35,7 +35,7 @@
     <a-table
       ref="table"
       size="default"
-      rowKey="materialId"
+      rowKey="stockId"
       :columns="columns"
       :data-source="data.materia"
       :pagination="false"

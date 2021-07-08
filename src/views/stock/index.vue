@@ -7,7 +7,7 @@
       <a-row class="status-list">
         <a-col :xs="24" :sm="24">
           <div class="text">现有库存</div>
-          <div class="heading">1000个</div>
+          <div class="heading">{{ currentNums }}</div>
         </a-col>
       </a-row>
     </template>
@@ -20,12 +20,12 @@
                 <project-select v-model="queryParam.projectId"></project-select>
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
+            <a-col v-if="isParentCompany" :md="8" :sm="24">
               <a-form-item label="所属公司">
                 <company-select v-model="queryParam.companyId"></company-select>
               </a-form-item>
             </a-col>
-            <template v-if="advanced">
+            <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="物料">
                   <a-input
@@ -34,6 +34,8 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="规格型号">
                   <a-input
@@ -77,6 +79,7 @@
             </template>
             <advanced-form
               v-model="advanced"
+              :md="isParentCompany ? 8 : 16"
               @search="$refs.table.refresh(true)"
               @reset="() => (this.queryParam = {})"
             ></advanced-form>
@@ -86,7 +89,9 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button @click="openAdd">新增入库</a-button>
+        <a-button v-if="permissions.CreatePermission" @click="openAdd"
+          >新增入库</a-button
+        >
       </div>
 
       <s-table
@@ -123,8 +128,12 @@
           </span>
           <span class="table-action" v-else>
             <a @click="goDetail(record)">查看</a>
-            <a @click="handleEdit(index)">编辑</a>
-            <a @click="handleRemove(record)">删除</a>
+            <a v-if="permissions.UpdatePermission" @click="handleEdit(index)"
+              >编辑</a
+            >
+            <a v-if="permissions.RemovePermission" @click="handleRemove(record)"
+              >删除</a
+            >
           </span>
         </template>
       </s-table>
@@ -226,10 +235,12 @@ export default {
       queryParam: {},
       tableData: [],
       cacheData: [],
+      currentNums: 0,
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         return getStockList(requestParameters).then(res => {
+          this.currentNums = res.data.currentNums
           this.tableData = res.data.records
           this.cacheData = clonedeep(res.data.records)
           return res

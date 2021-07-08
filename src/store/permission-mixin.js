@@ -1,10 +1,11 @@
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 const mixin = {
   computed: {
     ...mapState({
       permissions: state => state.user.permissions
-    })
+    }),
+    ...mapGetters(['isParentCompany'])
   }
 }
 

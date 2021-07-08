@@ -4,37 +4,52 @@
       <a-col :span="10">
         <a-card>
           <div v-if="treeData.length > 0">
-          <a-tree
-            class="draggable-tree"
-            :tree-data="treeData"
-            @select="selectInfo"
-          >
-            <template slot="custom" slot-scope="item">
-             {{item.categoryNo}} {{ item.categoryName }}
+            <a-tree
+              class="draggable-tree"
+              :tree-data="treeData"
+              @select="selectInfo"
+            >
+              <template slot="custom" slot-scope="item">
+                {{ item.categoryNo }} {{ item.categoryName }}
 
-              <a-icon class="icon" type="edit" @click="edit(item)" />
-              <a-icon class="icon" type="apartment" @click="selectItem(item)" />
-              <a-icon class="icon" type="delete" @click="del(item.id)" />
-            </template>
-          </a-tree>
+                <a-icon
+                  v-if="permissions.UpdatePermission"
+                  class="icon"
+                  type="edit"
+                  @click="edit(item)"
+                />
+                <a-icon
+                  v-if="permissions.UpdatePermission"
+                  class="icon"
+                  type="apartment"
+                  @click="selectItem(item)"
+                />
+                <a-icon
+                  v-if="permissions.RemovePermission"
+                  class="icon"
+                  type="delete"
+                  @click="del(item.id)"
+                />
+              </template>
+            </a-tree>
           </div>
-           <div v-else>
-            当前还没有角色，请从右侧创建
+          <div v-else>
+            当前还没有物料，请从右侧创建
           </div>
         </a-card>
       </a-col>
       <a-col :span="14">
-            <a-card class="card2" v-if="showInit">
-            <div class="title">新增</div>
-            <div class="content">
-              <div class="left">
-                <div>
-                  权限菜单
-                  <a-icon class="rightIcon" type="right" />
-                </div>
+        <a-card class="card2" v-if="showInit && permissions.UpdatePermission">
+          <div class="title">新增</div>
+          <div class="content">
+            <div class="left">
+              <div>
+                物料类型
+                <a-icon class="rightIcon" type="right" />
               </div>
-              <div class="right">
-                    <div
+            </div>
+            <div class="right">
+              <div
                 class="r1 inputItem"
                 v-for="(item, index) in inputArr3"
                 :key="index"
@@ -66,11 +81,13 @@
                   @click="remove3(index)"
                 />
               </div>
-                <div class="addArea" @click="add3">+ <span>添加</span></div>
-                <a-button type="primary" :disabled='initBol' @click="initSave">保存</a-button>
-              </div>
+              <div class="addArea" @click="add3">+ <span>添加</span></div>
+              <a-button type="primary" :disabled="initBol" @click="initSave"
+                >保存</a-button
+              >
             </div>
-          </a-card>
+          </div>
+        </a-card>
         <a-card v-if="rightShow" class="card3">
           <div class="title">
             创建分支
@@ -78,7 +95,7 @@
           <div class="content">
             <div class="left">
               <div>
-                美好生活家园APP
+                物料类型
                 <a-icon class="rightIcon" type="right" />
               </div>
               <div class="t1" v-for="(item, index) in titleArr" :key="index">
@@ -94,26 +111,26 @@
                   v-for="(item, index) in itemInfo.children"
                   :key="index"
                 >
-                   <a-input
-                  v-model="item.categoryNo"
-                  style="width:120px"
-                  placeholder="编码"
-                ></a-input>
-                <a-input
-                  v-model="item.categoryName"
-                  style="width:120px"
-                  placeholder="名称"
-                ></a-input>
-                <a-input
-                  v-model="item.unit"
-                  style="width:120px"
-                  placeholder="单位"
-                ></a-input>
-                <a-input
-                  v-model="item.listOrder"
-                  style="width:120px"
-                  placeholder="排序"
-                ></a-input>
+                  <a-input
+                    v-model="item.categoryNo"
+                    style="width:120px"
+                    placeholder="编码"
+                  ></a-input>
+                  <a-input
+                    v-model="item.categoryName"
+                    style="width:120px"
+                    placeholder="名称"
+                  ></a-input>
+                  <a-input
+                    v-model="item.unit"
+                    style="width:120px"
+                    placeholder="单位"
+                  ></a-input>
+                  <a-input
+                    v-model="item.listOrder"
+                    style="width:120px"
+                    placeholder="排序"
+                  ></a-input>
                   <a-icon
                     type="minus-circle"
                     class="close"
@@ -126,7 +143,7 @@
                 v-for="(item, index) in inputArr"
                 :key="index"
               >
-             <a-input
+                <a-input
                   v-model="item.categoryNo"
                   style="width:120px"
                   placeholder="编码"
@@ -154,7 +171,9 @@
                 />
               </div>
               <div class="addArea" @click="add">+ <span>添加</span></div>
-              <a-button type="primary" :disabled="createBol" @click="save">保存</a-button>
+              <a-button type="primary" :disabled="createBol" @click="save"
+                >保存</a-button
+              >
             </div>
           </div>
         </a-card>
@@ -172,33 +191,33 @@
               </div>
             </div>
             <div class="right">
-               <div>
+              <div>
                 <div
                   class="r2"
                   v-show="itemInfo"
                   v-for="(item, index) in itemInfo2.children"
                   :key="index"
                 >
-                   <a-input
-                  v-model="item.categoryNo"
-                  style="width:120px"
-                  placeholder="编码"
-                ></a-input>
-                <a-input
-                  v-model="item.categoryName"
-                  style="width:120px"
-                  placeholder="名称"
-                ></a-input>
-                <a-input
-                  v-model="item.unit"
-                  style="width:120px"
-                  placeholder="单位"
-                ></a-input>
-                <a-input
-                  v-model="item.listOrder"
-                  style="width:120px"
-                  placeholder="排序"
-                ></a-input>
+                  <a-input
+                    v-model="item.categoryNo"
+                    style="width:120px"
+                    placeholder="编码"
+                  ></a-input>
+                  <a-input
+                    v-model="item.categoryName"
+                    style="width:120px"
+                    placeholder="名称"
+                  ></a-input>
+                  <a-input
+                    v-model="item.unit"
+                    style="width:120px"
+                    placeholder="单位"
+                  ></a-input>
+                  <a-input
+                    v-model="item.listOrder"
+                    style="width:120px"
+                    placeholder="排序"
+                  ></a-input>
                   <a-icon
                     type="minus-circle"
                     class="close"
@@ -206,12 +225,12 @@
                   />
                 </div>
               </div>
-               <div
+              <div
                 class="r1 inputItem"
                 v-for="(item, index) in inputArr2"
                 :key="index"
               >
-                 <a-input
+                <a-input
                   v-model="item.categoryNo"
                   style="width:120px"
                   placeholder="编码"
@@ -724,7 +743,7 @@ export default {
     }
 
     .title {
-     padding-left: 24px;
+      padding-left: 24px;
       height: 55px;
       line-height: 55px;
       border-bottom-width: 1px;
@@ -735,15 +754,15 @@ export default {
       font-size: 16px;
       color: rgba(0, 0, 0, 0.847058823529412);
     }
-    input{
+    input {
       margin-right: 10px;
     }
-    button{
+    button {
       margin-top: 20px;
     }
   }
-  .card2{
-     /deep/ .ant-card-body {
+  .card2 {
+    /deep/ .ant-card-body {
       padding: 0;
     }
     .title {
@@ -758,10 +777,10 @@ export default {
       font-size: 16px;
       color: rgba(0, 0, 0, 0.847058823529412);
     }
-     input{
+    input {
       margin-right: 10px;
     }
-    button{
+    button {
       margin-top: 20px;
     }
   }

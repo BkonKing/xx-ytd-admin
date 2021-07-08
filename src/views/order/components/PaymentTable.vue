@@ -9,8 +9,8 @@
         <template v-else>--</template>
       </span>
       <span class="table-action" slot="action" slot-scope="text, recode">
-        <a @click="OpenEdit(recode)">编辑</a>
-        <a @click="handleRemove(recode)">删除</a>
+        <a v-if="permissions.UpdatePermission" @click="OpenEdit(recode)">编辑</a>
+        <a v-if="permissions.RemovePermission" @click="handleRemove(recode)">删除</a>
       </span>
       <template v-if="data.allMoney" slot="footer">
         <span> 总计({{ `${data.unKpNum + data.kpNum}` }}) </span>
@@ -24,6 +24,7 @@
       </template>
     </s-table>
     <a-button
+    v-if="permissions.CreatePermission"
       style="width: 100%; margin-top: 16px; margin-bottom: 8px"
       type="dashed"
       icon="plus"
@@ -48,7 +49,7 @@
 <script>
 import { STable } from '@/components'
 import PaymentEditForm from './PaymentEditForm'
-// import cloneDeep from 'lodash.clonedeep'
+import clonedeep from 'lodash.clonedeep'
 import {
   getOrderPayByOrderId,
   addOrderPay,
@@ -138,7 +139,7 @@ export default {
       this.showModal()
       this.$refs.PaymentForm && this.$refs.PaymentForm.resetFields()
       this.$nextTick(() => {
-        this.$refs.PaymentForm.setFieldsValue(obj)
+        this.$refs.PaymentForm.setFieldsValue(clonedeep(obj))
       })
     },
     showModal () {

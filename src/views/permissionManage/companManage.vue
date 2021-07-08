@@ -45,7 +45,7 @@
         <a-list-item slot="renderItem" slot-scope="item, index">
           <a-card
             class="add-project-card"
-            v-if="index === 0"
+            v-if="index === 0 && permissions.CreatePermission"
             :body-style="{ paddingBottom: 20 }"
             @click="openAddCompany"
           >
@@ -53,6 +53,7 @@
           </a-card>
           <a-card
             v-else
+            class="project-card"
             :body-style="{ paddingBottom: 20 }"
             hoverable
             @click="goProjectDetail(item)"
@@ -185,7 +186,8 @@ export default {
         companyIds: this.companyIds.join(','),
         serachText: this.serachText
       }).then(({ data }) => {
-        this.companyList = [{}, ...data]
+        const companyList = this.permissions.CreatePermission ? [{}] : []
+        this.companyList = companyList.concat(data)
         this.loading = false
         console.log('获取公司列表', data)
       })
@@ -310,6 +312,9 @@ export default {
   height: 201px;
   background: none;
   border: 1px dashed #ccc;
+}
+.project-card {
+  height: 201px;
 }
 /deep/
   .antd-pro-components-standard-form-row-index-standardFormRow

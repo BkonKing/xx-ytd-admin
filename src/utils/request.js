@@ -9,6 +9,7 @@ import {
 } from '@/store/mutation-types'
 import qs from 'qs'
 import Vue from 'vue'
+import router from '@/router'
 
 // 创建 axios 实例
 const request = axios.create({
@@ -35,7 +36,7 @@ const errorHandler = (error) => {
         description: data.message
       })
     }
-    if (error.response.status === 201 && !(data.result && data.result.isLogin)) {
+    if (error.response.status === 401 && !(data.result && data.result.isLogin)) {
       notification.error({
         message: 'Unauthorized',
         description: 'Authorization verification failed'
@@ -83,16 +84,10 @@ request.interceptors.response.use((response) => {
     code,
     message
   } = data
-  // if (code == '201') {
-  //   if (token) {
-  //     store.dispatch('Logout').then(() => {
-  //       setTimeout(() => {
-  //         window.location.reload()
-  //       }, 1500)
-  //     })
-  //   }
-  // } else
-  if (code != '200') {
+  if (+code === 401) {
+    Message.error(message)
+    router.push({ name: 'login' })
+  } else if (code != '200') {
     if (!config.headers.noToast) {
       Message.error(message)
     }

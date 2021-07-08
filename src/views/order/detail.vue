@@ -39,9 +39,9 @@
     </template>
 
     <!-- actions -->
-    <template v-if="!isPass" v-slot:extra>
-      <a-button @click="goEdit">编辑</a-button>
-      <a-button type="primary" @click="openCheck">审核</a-button>
+    <template v-slot:extra>
+      <a-button v-if="UpdatePermission" @click="goEdit">编辑</a-button>
+      <a-button v-if="!isPass && info.auditPermission" type="primary" @click="openCheck">审核</a-button>
     </template>
 
     <template v-slot:extraContent>
@@ -124,6 +124,8 @@ import PaymentTable from './components/PaymentTable'
 import Info from '../project/components/Info'
 import { LogList, CheckForm } from '@/components'
 import { getOrderInfo, auditOrder } from '@/api/order'
+import { getAllots } from '@/api/user'
+
 export default {
   name: 'OrderDetail',
   mixins: [appMixin],
@@ -139,6 +141,7 @@ export default {
   data () {
     return {
       id: '',
+      UpdatePermission: 0,
       tabList: [],
       tabActiveKey: '0',
       info: {},
@@ -154,6 +157,7 @@ export default {
   created () {
     this.id = this.$route.query.id
     this.getOrderInfo()
+    this.getAllots()
   },
   methods: {
     getOrderInfo () {
@@ -170,6 +174,14 @@ export default {
             { key: '1', tab: '审批' }
           ]
         }
+      })
+    },
+    // 获取编辑权限
+    getAllots () {
+      getAllots({
+        limitsPath: '/order/index'
+      }).then(({ data }) => {
+        this.UpdatePermission = data.UpdatePermission || data.UpdatePartPermission
       })
     },
     handleTabChange (key) {

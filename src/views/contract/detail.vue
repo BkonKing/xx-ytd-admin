@@ -23,9 +23,9 @@
     </template>
 
     <!-- actions -->
-    <template v-if="!isPass" v-slot:extra>
-      <a-button @click="goEdit">编辑</a-button>
-      <a-button v-if="+info.status === 0" type="primary" @click="openCheck"
+    <template v-slot:extra>
+      <a-button v-if="UpdatePermission" @click="goEdit">编辑</a-button>
+      <a-button v-if="!isPass && info.auditPermission" type="primary" @click="openCheck"
         >审核</a-button
       >
     </template>
@@ -135,6 +135,7 @@ import cStepsInfo from '../order/components/Info.vue'
 import { CheckForm, LogList } from '@/components'
 import { appMixin } from '@/store/mixin'
 import { getContractInfo, auditCont } from '@/api/contract'
+import { getAllots } from '@/api/user'
 
 export default {
   name: 'ContractDetail',
@@ -151,6 +152,7 @@ export default {
   data () {
     return {
       id: '',
+      UpdatePermission: 0,
       tabList: [],
       tabActiveKey: '0',
       info: {},
@@ -166,6 +168,7 @@ export default {
   created () {
     this.id = this.$route.query.id
     this.getContractInfo()
+    this.getAllots()
   },
   methods: {
     // 获取合同详情
@@ -184,6 +187,14 @@ export default {
             { key: '2', tab: '审批' }
           ]
         }
+      })
+    },
+    // 获取编辑权限
+    getAllots () {
+      getAllots({
+        limitsPath: '/contract/index'
+      }).then(({ data }) => {
+        this.UpdatePermission = data.UpdatePermission || data.UpdatePartPermission
       })
     },
     handleTabChange (key) {

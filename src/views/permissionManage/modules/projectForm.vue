@@ -6,7 +6,7 @@
     :label-col="labelCol"
     :wrapper-col="wrapperCol"
   >
-    <div class="form-title">项目信息</div>
+    <div class="form-title">公司信息</div>
       <a-form-model-item label="公司logo" >
       <upload-image v-model="form.companyLogo" maxLength="1"></upload-image>
       <div class="logoText">支持扩展名.png .jpg; 建议比例1:1</div>
@@ -43,8 +43,8 @@
       </a-row>
     </a-form-model-item>
     <a-form-model-item label="参与项目" prop="projectIds">
-
-      <a-checkbox-group v-model="form.projectIds" :options="options" />
+      <a-checkbox-group v-if="options && options.length" v-model="form.projectIds" :options="options" />
+      <template v-else>暂无项目</template>
       <div class="joinProject">参与项目，才有对项目有相关处理权限</div>
     </a-form-model-item>
        <a-form-model-item label="负责人" >
@@ -90,7 +90,7 @@
         placeholder="请输入2~20个中文、英文或数字"
       />
     </a-form-model-item>
-   <a-form-model-item label="登录密码" prop="adminPassword" required>
+   <a-form-model-item label="登录密码" prop="adminPassword">
       <a-input
         v-model="form.adminPassword"
         :maxLength="20"
@@ -171,7 +171,7 @@ export default {
       rules: {
         companyName: [{ required: true, message: '请输入公司名称' }],
         adminAccount: [{ required: true, message: '请输入管理员登录账号' }],
-        adminPassword: [{ required: true, message: '请输入管理员登录密码' }],
+        // adminPassword: [{ required: true, message: '请输入管理员登录密码' }],
         adminRealname: [{ required: true, message: '请输入管理员真实姓名' }],
         adminMobile: [{ required: true, message: '请输入管理员手机号' }],
         shortName: [{ required: true, message: '请输入公司简称' }],

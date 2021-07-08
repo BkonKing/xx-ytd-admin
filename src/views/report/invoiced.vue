@@ -9,12 +9,12 @@
                 <project-select v-model="queryParam.projectId"></project-select>
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
+            <a-col v-if="isParentCompany" :md="8" :sm="24">
               <a-form-item label="所属公司">
                 <company-select v-model="queryParam.companyId"></company-select>
               </a-form-item>
             </a-col>
-            <template v-if="advanced">
+            <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="合同">
                   <a-input
@@ -23,6 +23,8 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="开票情况">
                   <kp-status-select
@@ -39,34 +41,21 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="8" :sm="24">
-              <span
-                class="table-page-search-submitButtons"
-                :style="
-                  (advanced && { float: 'right', overflow: 'hidden' }) || {}
-                "
-              >
-                <a-button type="primary" @click="$refs.table.refresh(true)"
-                  >查询</a-button
-                >
-                <a-button
-                  style="margin-left: 8px"
-                  @click="() => (this.queryParam = {})"
-                  >重置</a-button
-                >
-                <a @click="toggleAdvanced" style="margin-left: 8px">
-                  {{ advanced ? "收起" : "展开" }}
-                  <a-icon :type="advanced ? 'up' : 'down'" />
-                </a>
-              </span>
-            </a-col>
+            <advanced-form
+              v-model="advanced"
+              :md="isParentCompany ? 8 : 16"
+              @reset="this.queryParam = {}"
+              @search="$refs.table.refresh(true)"
+            ></advanced-form>
           </a-row>
         </a-form>
       </div>
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button @click="openExport">导出</a-button>
+        <a-button v-if="permissions.ExportPermission" @click="openExport"
+          >导出</a-button
+        >
       </div>
 
       <s-table
@@ -104,7 +93,9 @@
             </a-popconfirm>
           </span>
           <span class="table-action" v-else>
-            <a @click="handleEdit(index)">备注</a>
+            <a v-if="permissions.UpdatePermission" @click="handleEdit(index)"
+              >备注</a
+            >
           </span>
         </template>
       </s-table>
@@ -121,7 +112,8 @@ import {
   STable,
   ProjectSelect,
   CompanySelect,
-  KpStatusSelect
+  KpStatusSelect,
+  AdvancedForm
 } from '@/components'
 import exportTypeModal from './components/exportTypeModal'
 import { getInvoicedReport, updateInvoicedRepBz } from '@/api/report'
@@ -179,7 +171,8 @@ export default {
     ProjectSelect,
     CompanySelect,
     KpStatusSelect,
-    exportTypeModal
+    exportTypeModal,
+    AdvancedForm
   },
   data () {
     this.columns = columns

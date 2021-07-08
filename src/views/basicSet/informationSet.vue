@@ -2,27 +2,36 @@
   <div class="infomationSet">
     <a-card>
       <a-table :columns="columns" :data-source="tableData" :pagination="false">
-        <template slot="opera" slot-scope="text,record">
+        <template slot="opera" slot-scope="text, record">
           <div>
-            <a-button type="link" @click="toEditContent(record)" >编辑内容</a-button>
+            <a-button type="link" :disabled="!permissions.UpdatePermission" @click="toEditContent(record)"
+              >编辑内容</a-button
+            >
           </div>
         </template>
-        <template slot="webSend" slot-scope="text,record">
+        <template slot="webSend" slot-scope="text, record">
           <div>
-            <a-checkbox :checked="record.webSend == 1 ? true : false" @change="sendWeb(record)">
+            <a-checkbox
+              :checked="record.webSend == 1 ? true : false"
+              :disabled="!permissions.webSendSet"
+              @change="sendWeb(record)"
+            >
               是否发送
             </a-checkbox>
           </div>
         </template>
-        <template slot="wxSend" slot-scope="text,record">
+        <template slot="wxSend" slot-scope="text, record">
           <div>
-            <a-checkbox :checked="record.wxSend == 1 ? true : false" @change="sendWx(record)">
+            <a-checkbox
+              :checked="record.wxSend == 1 ? true : false"
+              :disabled="!permissions.wxSendSet"
+              @change="sendWx(record)"
+            >
               是否发送
             </a-checkbox>
           </div>
         </template>
       </a-table>
-
     </a-card>
   </div>
 </template>

@@ -14,6 +14,30 @@
         placeholder="请输入"
       />
     </a-form-model-item>
+    <a-form-model-item label="项目简称" required>
+      <a-row type="flex">
+        <a-col flex="1">
+          <a-form-model-item prop="projectShortName">
+            <a-input
+              v-model="form.projectShortName"
+              placeholder="中文简称"
+              :maxLength="20"
+            ></a-input>
+          </a-form-model-item>
+        </a-col>
+        <a-col flex="30px" style="text-align: center;">--</a-col>
+        <a-col flex="1">
+          <a-form-model-item prop="projectShortEn">
+            <a-input
+              v-model="form.projectShortEn"
+              placeholder="英文简称"
+              oninput="value=value.replace(/[^\A-\Z]/g,'')"
+              :maxLength="11"
+            ></a-input>
+          </a-form-model-item>
+        </a-col>
+      </a-row>
+    </a-form-model-item>
     <a-form-model-item label="项目阶段" prop="stage">
       <a-select v-model="form.stage" placeholder="请选择">
         <a-select-option
@@ -129,6 +153,8 @@ import { UploadImage } from '@/components'
 import clonedeep from 'lodash.clonedeep'
 const initialForm = {
   projectName: '',
+  projectShortName: '',
+  projectShortEn: '',
   stage: '',
   companyIds: [],
   buildTime: [],
@@ -168,6 +194,8 @@ export default {
       form: clonedeep(initialForm),
       rules: {
         projectName: [{ required: true, message: '请输入项目名称' }],
+        projectShortName: [{ required: true, message: '请输入项目简称' }],
+        projectShortEn: [{ required: true, message: '请输入项目英文简称' }],
         manage: [{ required: true, message: '请输入项目负责人姓名' }],
         manageMobile: [{ required: true, message: '请输入项目负责人手机号' }]
       },

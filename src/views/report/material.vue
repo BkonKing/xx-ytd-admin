@@ -9,12 +9,12 @@
                 <project-select v-model="queryParam.projectId"></project-select>
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
+            <a-col v-if="isParentCompany" :md="8" :sm="24">
               <a-form-item label="所属公司">
                 <company-select v-model="queryParam.companyId"></company-select>
               </a-form-item>
             </a-col>
-            <template v-if="advanced">
+            <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="创建时间">
                   <a-range-picker
@@ -23,6 +23,8 @@
                   />
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="订单">
                   <a-input
@@ -70,34 +72,23 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="(!advanced && 8) || 24" :sm="24">
-              <span
-                class="table-page-search-submitButtons"
-                :style="
-                  (advanced && { float: 'right', overflow: 'hidden' }) || {}
-                "
-              >
-                <a-button type="primary" @click="$refs.table.refresh(true)"
-                  >查询</a-button
-                >
-                <a-button
-                  style="margin-left: 8px"
-                  @click="() => (this.queryParam = {})"
-                  >重置</a-button
-                >
-                <a @click="toggleAdvanced" style="margin-left: 8px">
-                  {{ advanced ? "收起" : "展开" }}
-                  <a-icon :type="advanced ? 'up' : 'down'" />
-                </a>
-              </span>
-            </a-col>
+            <advanced-form
+              v-model="advanced"
+              :md="isParentCompany ? 24 : 8"
+              @reset="this.queryParam = {}"
+              @search="$refs.table.refresh(true)"
+            ></advanced-form>
           </a-row>
         </a-form>
       </div>
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button :disabled="!selectedRowKeys.length" @click="openExport">
+        <a-button
+          v-if="permissions.ExportPermission"
+          :disabled="!selectedRowKeys.length"
+          @click="openExport"
+        >
           导出
         </a-button>
       </div>
@@ -132,7 +123,8 @@ import {
   ProjectSelect,
   CompanySelect,
   PayStatusSelect,
-  KpStatusSelect
+  KpStatusSelect,
+  AdvancedForm
 } from '@/components'
 import { getMaterialReport } from '@/api/report'
 import exportTypeModal from './components/exportTypeModal'
@@ -188,7 +180,8 @@ export default {
     CompanySelect,
     PayStatusSelect,
     KpStatusSelect,
-    exportTypeModal
+    exportTypeModal,
+    AdvancedForm
   },
   data () {
     this.columns = columns
@@ -217,6 +210,9 @@ export default {
   },
   computed: {
     rowSelection () {
+      if (!this.permissions.AuditPermission) {
+        return null
+      }
       return {
         selectedRowKeys: this.selectedRowKeys,
         onChange: this.onSelectChange

@@ -13,6 +13,11 @@ export default {
     return {
       locale: zhCn
     }
+  },
+  created () {
+    if (localStorage.getItem('access_token')) {
+      this.$store.dispatch('GetInfo')
+    }
   }
 }
 </script>

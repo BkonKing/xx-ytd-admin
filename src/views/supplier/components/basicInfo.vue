@@ -2,7 +2,7 @@
   <a-card :bordered="false" title="基础信息" style="margin-top: 24px">
     <a-descriptions :column="3">
       <a-descriptions-item label="供应商ID">
-        {{ data.id }}
+        {{ data.idv }}
       </a-descriptions-item>
       <a-descriptions-item label="供应商名称">
         {{ data.supplierName }}

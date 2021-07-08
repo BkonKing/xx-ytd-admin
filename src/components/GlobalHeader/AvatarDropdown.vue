@@ -74,7 +74,7 @@ export default {
   },
   methods: {
     handleToSettings () {
-      this.$router.push({ path: '/account/base' })
+      this.$route.path !== '/account/base' && (this.$router.push({ path: '/account/base' }))
     },
     handleLogout (e) {
       Modal.confirm({

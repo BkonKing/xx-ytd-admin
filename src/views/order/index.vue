@@ -10,7 +10,7 @@
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="审核状态">
-                <a-select v-model="queryParam.status" placeholder="请选择">
+                <a-select v-model="queryParam.status" :disabled="tabActiveKey !== '0'" placeholder="请选择">
                   <a-select-option
                     v-for="option in tabList"
                     :value="option.key"
@@ -27,7 +27,7 @@
               </a-form-item>
             </a-col>
             <template v-if="advanced">
-              <a-col :md="8" :sm="24">
+              <a-col v-if="isParentCompany" :md="8" :sm="24">
                 <a-form-item label="所属公司">
                   <company-select
                     v-model="queryParam.companyId"
@@ -91,7 +91,7 @@
             </template>
             <advanced-form
               v-model="advanced"
-              :md="16"
+              :md="isParentCompany ? 16 : 24"
               @reset="() => (this.queryParam = {})"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
@@ -102,12 +102,13 @@
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
         <a-button
+          v-if="permissions.AuditPermission"
           type="primary"
           :disabled="!selectedRowKeys.length"
           @click="openCheck"
           >审核</a-button
         >
-        <a-button @click="goEdit">新增</a-button>
+        <a-button v-if="permissions.CreatePermission" @click="goEdit">新增</a-button>
       </div>
 
       <s-table
@@ -138,11 +139,11 @@
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
-            <a @click="goEdit(record)">编辑</a>
+            <a v-if="permissions.UpdatePermission || permissions.UpdatePartPermission" @click="goEdit(record)">编辑</a>
             <a v-if="+record.status !== 1 && permissions.RemovePermission" @click="handleRemove(record)"
               >删除</a
             >
-            <a v-if="+record.status === 0 && permissions.AuditPermission" @click="openCheck(record)">审核</a>
+            <a v-if="+record.status === 0 && permissions.AuditPermission && record.auditPermission" @click="openCheck(record)">审核</a>
           </template>
         </span>
       </s-table>
@@ -286,11 +287,14 @@ export default {
   },
   computed: {
     rowSelection () {
+      if (!this.permissions.AuditPermission) {
+        return null
+      }
       return {
         selectedRowKeys: this.selectedRowKeys,
         getCheckboxProps: record => ({
           props: {
-            disabled: +record.status !== 0
+            disabled: +record.status !== 0 || record.auditPermission === 0
           }
         }),
         onChange: this.onSelectChange
@@ -301,9 +305,11 @@ export default {
     handleTabChange (key) {
       this.tabActiveKey = key
       this.queryParam.status = key
-      if (+key < 2 && this.columns[0].dataIndex !== 'auditTime') {
+      // 看第一个是否为审核时间
+      const isAudit = this.columns[0].dataIndex === 'auditTime'
+      if (+key < 2 && !isAudit) {
         this.columns.unshift(...checkColumn)
-      } else if (+key > 1 && this.columns[0].dataIndex !== 'id') {
+      } else if (+key > 1 && isAudit) {
         this.columns.shift()
         this.columns.shift()
       }

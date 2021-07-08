@@ -9,6 +9,7 @@
         <search-form
           v-model="queryParam"
           ref="contractSearchForm"
+          :statusAble="tabActiveKey !== '0' && +tabActiveKey > 10"
           @search="$refs.table.refresh(true)"
         ></search-form>
       </div>
@@ -16,12 +17,15 @@
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
         <a-button
+          v-if="permissions.AuditPermission"
           type="primary"
           :disabled="!selectedRowKeys.length"
           @click="openCheck"
           >审核</a-button
         >
-        <a-button @click="goEdit">新增</a-button>
+        <a-button v-if="permissions.CreatePermission" @click="goEdit"
+          >新增</a-button
+        >
       </div>
 
       <s-table
@@ -46,11 +50,23 @@
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
-            <a @click="goEdit(record)">编辑</a>
-            <a v-if="+record.status !== 1" @click="handleRemove(record)"
+            <a
+              v-if="
+                permissions.UpdatePermission || permissions.UpdatePartPermission
+              "
+              @click="goEdit(record)"
+              >编辑</a
+            >
+            <a
+              v-if="+record.status !== 1 && permissions.RemovePermission"
+              @click="handleRemove(record)"
               >删除</a
             >
-            <a v-if="+record.status === 0" @click="openCheck(record)">审核</a>
+            <a
+              v-if="+record.status === 0 && permissions.AuditPermission && record.auditPermission"
+              @click="openCheck(record)"
+              >审核</a
+            >
           </template>
         </span>
       </s-table>
@@ -114,7 +130,7 @@ const columns = [
   },
   {
     title: '金额',
-    dataIndex: 'orderMoney',
+    dataIndex: 'contractMoney',
     sorter: true
   },
   {
@@ -141,14 +157,14 @@ export default {
     this.columns = columns
     return {
       tabList: [
-        { key: '1', tab: '全部' },
-        { key: '2', tab: '待审核' },
-        { key: '3', tab: '正常' },
-        { key: '4', tab: '延期' },
-        { key: '5', tab: '终止' },
-        { key: '6', tab: '未通过' }
+        { key: '0', tab: '全部' },
+        { key: '1', tab: '待审核' },
+        { key: '11', tab: '正常' },
+        { key: '12', tab: '延期' },
+        { key: '13', tab: '终止' },
+        { key: '3', tab: '未通过' }
       ],
-      tabActiveKey: '1',
+      tabActiveKey: '0',
       // 审核弹窗
       visible: false,
       confirmLoading: false,
@@ -182,11 +198,14 @@ export default {
   },
   computed: {
     rowSelection () {
+      if (!this.permissions.AuditPermission) {
+        return null
+      }
       return {
         selectedRowKeys: this.selectedRowKeys,
         getCheckboxProps: record => ({
           props: {
-            disabled: +record.status !== 0
+            disabled: +record.status !== 0 || record.auditPermission === 0
           }
         }),
         onChange: this.onSelectChange
@@ -196,10 +215,21 @@ export default {
   methods: {
     handleTabChange (key) {
       this.tabActiveKey = key
+      const index = +key
+      if (index === 0) {
+        this.queryParam.contractStatus = 0
+        this.queryParam.status = 0
+      } else if (index < 10) {
+        this.queryParam.status = key
+      } else {
+        this.queryParam.contractStatus = index - 10
+      }
       this.queryParam.status = key
-      if (+key < 2 && this.columns[0].dataIndex !== 'auditTime') {
+      // 看第一个是否为审核时间
+      const isAudit = this.columns[0].dataIndex === 'auditTime'
+      if (index < 2 && !isAudit) {
         this.columns.unshift(...checkColumn)
-      } else if (+key > 1 && this.columns[0].dataIndex !== 'id') {
+      } else if (index > 1 && isAudit) {
         this.columns.shift()
       }
       this.$refs.table.refresh()

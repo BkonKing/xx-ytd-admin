@@ -10,7 +10,9 @@
         </a-descriptions-item>
         <a-descriptions-item label="备注">
           {{ info.remarks
-          }}<a-button type="link" @click="openEditInfo">编辑</a-button>
+          }}<a-button v-if="UpdatePermission" type="link" @click="openEditInfo"
+            >编辑</a-button
+          >
         </a-descriptions-item>
       </a-descriptions>
     </template>
@@ -26,6 +28,7 @@
         <a-col :sm="6" :xs="24">
           <info title="期初库存" :bordered="true">
             {{ info.originalNum || 0 }}件<a-button
+               v-if="UpdatePermission"
               type="link"
               @click="openEditInfo"
               >调整</a-button
@@ -180,6 +183,7 @@ import { STable, LogList, AdvancedForm } from '@/components'
 import { getStockInfo, updateStock, getAllStockClkList } from '@/api/stock'
 import Info from '../project/components/Info.vue'
 import RecordDetailModal from './components/RecordDetail'
+import { getAllots } from '@/api/user'
 export default {
   name: 'projectDetail',
   components: {
@@ -192,6 +196,7 @@ export default {
   data () {
     return {
       id: '',
+      UpdatePermission: 0,
       info: {
         materialNo: '',
         materialName: '',
@@ -267,6 +272,7 @@ export default {
   created () {
     this.id = this.$route.query.id
     this.getStockInfo()
+    this.getAllots()
   },
   methods: {
     getStockInfo () {
@@ -274,6 +280,14 @@ export default {
         id: this.id
       }).then(({ data }) => {
         this.info = data
+      })
+    },
+    // 获取编辑权限
+    getAllots () {
+      getAllots({
+        limitsPath: '/stock/index'
+      }).then(({ data }) => {
+        this.UpdatePermission = data.UpdatePermission
       })
     },
     toggleAdvanced () {

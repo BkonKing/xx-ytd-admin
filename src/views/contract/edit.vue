@@ -84,6 +84,7 @@
             v-number-input
             placeholder="请输入"
             :maxLength="20"
+            :disabled="isDisabled"
           >
             <a-tooltip slot="suffix">
               元
@@ -96,6 +97,7 @@
             v-number-input
             placeholder="请输入"
             :maxLength="20"
+            :disabled="isDisabled"
           >
             <a-tooltip slot="suffix">
               件
@@ -170,6 +172,7 @@ import {
   getPayType,
   getContractInfo
 } from '@/api/contract'
+import { getAllots } from '@/api/user'
 const form = {
   projectId: '',
   contractNo: '',
@@ -202,6 +205,7 @@ export default {
   data () {
     return {
       id: '',
+      UpdatePermission: 0,
       title: '新增合同',
       loading: false,
       memberLoading: false,
@@ -243,6 +247,11 @@ export default {
       }
     }
   },
+  computed: {
+    isDisabled () {
+      return this.UpdatePermission !== 1 && this.form.status === '1'
+    }
+  },
   created () {
     this.id = this.$route.query.id
     this.getSettleType()
@@ -250,6 +259,7 @@ export default {
     if (this.id) {
       this.title = '编辑合同'
       this.getContractInfo()
+      this.getAllots()
     }
   },
   methods: {
@@ -262,6 +272,14 @@ export default {
           data.rtime = [data.startDate, data.endDate]
         }
         this.form = data
+      })
+    },
+    // 获取编辑权限
+    getAllots () {
+      getAllots({
+        limitsPath: '/contract/index'
+      }).then(({ data }) => {
+        this.UpdatePermission = data.UpdatePermission
       })
     },
     getSettleType () {

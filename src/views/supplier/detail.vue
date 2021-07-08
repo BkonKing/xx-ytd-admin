@@ -35,8 +35,8 @@
 
     <!-- actions -->
     <template v-slot:extra>
-      <a-button @click="goEdit">编辑</a-button>
-      <a-button v-if="!isPass" type="primary" @click="openCheck">审核</a-button>
+      <a-button v-if="UpdatePermission" @click="goEdit">编辑</a-button>
+      <a-button v-if="!isPass && info.auditPermission" type="primary" @click="openCheck">审核</a-button>
     </template>
 
     <template v-slot:extraContent>
@@ -53,6 +53,7 @@
     </template>
 
     <order-steps
+      v-if="info.auditLeveArr && info.auditLeveArr.length"
       v-show="!isPass || tabActiveKey === '2'"
       :data="info.auditLeveArr"
     ></order-steps>
@@ -97,6 +98,8 @@ import MaterialTable from './components/material.vue'
 import BasicInfo from './components/basicInfo.vue'
 import { CheckForm, LogList } from '@/components'
 import { getSuppInfo, auditSupp } from '@/api/supplier'
+import { getAllots } from '@/api/user'
+
 export default {
   name: 'OrderDetail',
   mixins: [appMixin],
@@ -111,6 +114,7 @@ export default {
   data () {
     return {
       id: '',
+      UpdatePermission: 0,
       tabList: [],
       tabActiveKey: '0',
       info: {
@@ -128,6 +132,7 @@ export default {
   created () {
     this.id = this.$route.query.id
     this.getSuppInfo()
+    this.getAllots()
   },
   methods: {
     getSuppInfo () {
@@ -145,6 +150,14 @@ export default {
             { key: '2', tab: '审批' }
           ]
         }
+      })
+    },
+    // 获取编辑权限
+    getAllots () {
+      getAllots({
+        limitsPath: '/supplier/index'
+      }).then(({ data }) => {
+        this.UpdatePermission = data.UpdatePermission
       })
     },
     handleTabChange (key) {

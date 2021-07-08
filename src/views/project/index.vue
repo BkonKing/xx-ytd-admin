@@ -2,8 +2,8 @@
   <page-header-wrapper>
     <a-card :bordered="false" class="ant-pro-components-tag-select">
       <a-form layout="inline">
-        <standard-form-row title="参与公司" block style="padding-bottom: 11px;">
-          <a-form-item v-if="companyList && companyList.length">
+        <standard-form-row v-if="companyList && companyList.length && isParentCompany" title="参与公司" block style="padding-bottom: 11px;">
+          <a-form-item>
             <tag-select v-model="companyIds" @change="getProjectList">
               <tag-select-option
                 v-for="tag in companyList"
@@ -66,7 +66,7 @@
         <a-list-item slot="renderItem" slot-scope="item, index">
           <a-card
             class="add-project-card"
-            v-if="index === 0"
+            v-if="index === 0 && permissions.CreatePermission && isParentCompany"
             :body-style="{ paddingBottom: 20 }"
             @click="openAddProject"
           >
@@ -74,6 +74,7 @@
           </a-card>
           <a-card
             v-else
+            class="project-card"
             :body-style="{ paddingBottom: 20 }"
             hoverable
             @click="goProjectDetail(item)"
@@ -92,10 +93,10 @@
               </template>
             </a-card-meta>
             <template slot="actions">
-              <div class="actions-span" @click.stop="openEditProject(item)">
+              <div v-if="permissions.UpdatePermission && isParentCompany" class="actions-span" @click.stop="openEditProject(item)">
                 编辑
               </div>
-              <div class="actions-span" @click.stop="removeProject(item)">
+              <div v-if="permissions.RemovePermission && isParentCompany" class="actions-span" @click.stop="removeProject(item)">
                 删除
               </div>
             </template>
@@ -203,15 +204,13 @@ export default {
         serachText: this.serachText,
         stage: this.stage
       }).then(({ data }) => {
-        this.data = [{}, ...data]
+        const list = this.permissions.CreatePermission && this.isParentCompany ? [{}] : []
+        this.data = list.concat(data)
         this.loading = false
       })
     },
     // 打开新增项目弹窗
     openAddProject () {
-      if (!this.Permissions.CreatePermissions) {
-        this.$message.warning('对不起，您没有这个权限')
-      }
       this.title = '新增项目'
       this.showModal()
       this.$refs.projectForm && this.$refs.projectForm.resetFields()
@@ -318,6 +317,9 @@ export default {
   height: 201px;
   background: none;
   border: 1px dashed #ccc;
+}
+.project-card {
+  height: 201px;
 }
 /deep/
   .antd-pro-components-standard-form-row-index-standardFormRow

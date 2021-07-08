@@ -21,7 +21,7 @@
       </template>
     </page-header-wrapper>
     <sort v-if="currentIndex===0"></sort>
-    <other v-else></other>
+    <other v-if="currentIndex===1"></other>
   </div>
 </template>
 

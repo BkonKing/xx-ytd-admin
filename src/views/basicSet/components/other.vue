@@ -76,7 +76,7 @@
             >
             <a-input
               v-model="item.categoryName"
-              placeholder="结算方式"
+              placeholder="付款方式"
             ></a-input>
              </a-form-model-item>
                <a-form-model-item
@@ -98,7 +98,7 @@
           <div class="item2" v-for="item in arr2" :key="item.id">
             <a-input
               v-model="item.categoryName"
-              placeholder="结算方式"
+              placeholder="付款方式"
             ></a-input>
             <a-input v-model="item.listOrder" placeholder="排序"></a-input>
             <a-icon type="minus-circle" class="circle" @click="remove2" />
@@ -109,7 +109,7 @@
         </div>
       </a-form-model-item>
     </a-form-model>
-    <div class="btn">
+    <div v-if="permissions.SettleType && permissions.PayType" class="btn">
       <a-button type="primary" @click="save" :disabled="bol">保存</a-button>
     </div>
   </a-card>

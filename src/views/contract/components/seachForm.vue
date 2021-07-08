@@ -3,7 +3,7 @@
     <a-row :gutter="48">
       <a-col :md="8" :sm="24">
         <a-form-item label="合同状态">
-          <a-select v-model="queryParam.contractStatus" placeholder="请选择">
+          <a-select v-model="queryParam.contractStatus" placeholder="请选择" :disabled="statusAble">
             <a-select-option
               v-for="option in contractStatusOptions"
               :value="option.value"
@@ -20,7 +20,7 @@
         </a-form-item>
       </a-col>
       <template v-if="advanced">
-        <a-col :md="8" :sm="24">
+        <a-col v-if="isParentCompany" :md="8" :sm="24">
           <a-form-item label="所属公司">
             <company-select v-model="queryParam.companyId"></company-select>
           </a-form-item>
@@ -71,7 +71,7 @@
       </template>
       <advanced-form
         v-model="advanced"
-        :md="24"
+        :md="isParentCompany ? 24 : 8"
         @search="search"
         @reset="reset"
       ></advanced-form>
@@ -100,6 +100,10 @@ export default {
     value: {
       type: Object,
       default: () => ({})
+    },
+    statusAble: {
+      type: Boolean,
+      default: false
     }
   },
   data () {

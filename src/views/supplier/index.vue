@@ -26,7 +26,7 @@
               </a-form-item>
             </a-col>
             <template v-if="advanced">
-              <a-col :md="8" :sm="24">
+              <a-col v-if="isParentCompany" :md="8" :sm="24">
                 <a-form-item label="所属公司">
                   <company-select
                     v-model="queryParam.companyId"
@@ -64,7 +64,7 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="(!advanced && 8) || 16" :sm="24">
+            <a-col :md="(!advanced && 8) || (isParentCompany ? 16 : 24)" :sm="24">
               <span
                 class="table-page-search-submitButtons"
                 :style="
@@ -92,12 +92,13 @@
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
         <a-button
+         v-if="permissions.AuditPermission"
           type="primary"
           :disabled="!selectedRowKeys.length"
           @click="openCheck"
           >审核</a-button
         >
-        <a-button @click="handleAdd">新增</a-button>
+        <a-button v-if="permissions.CreatePermission" @click="handleAdd">新增</a-button>
       </div>
 
       <s-table
@@ -123,9 +124,9 @@
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
-            <a @click="goEdit(record)">编辑</a>
-            <a @click="handleRemove(record)">删除</a>
-            <a v-if="+record.status === 0" @click="openCheck(record)">审核</a>
+            <a v-if="permissions.UpdatePermission" @click="goEdit(record)">编辑</a>
+            <a v-if="permissions.RemovePermission" @click="handleRemove(record)">删除</a>
+            <a v-if="+record.status === 0 && permissions.AuditPermission && record.auditPermission" @click="openCheck(record)">审核</a>
           </template>
         </span>
       </s-table>
@@ -190,7 +191,7 @@ const columns = [
   },
   {
     title: '供应商ID',
-    dataIndex: 'id'
+    dataIndex: 'idv'
   },
   {
     title: '供应商',
@@ -271,11 +272,14 @@ export default {
   },
   computed: {
     rowSelection () {
+      if (!this.permissions.AuditPermission) {
+        return null
+      }
       return {
         selectedRowKeys: this.selectedRowKeys,
         getCheckboxProps: record => ({
           props: {
-            disabled: +record.status !== 0
+            disabled: +record.status !== 0 || record.auditPermission === 0
           }
         }),
         onChange: this.onSelectChange
@@ -286,9 +290,11 @@ export default {
     handleTabChange (key) {
       this.tabActiveKey = key
       this.queryParam.status = key
-      if (+key < 2 && this.columns[0].dataIndex !== 'auditTime') {
+      // 看第一个是否为审核时间
+      const isAudit = this.columns[0].dataIndex === 'auditTime'
+      if (+key < 2 && !isAudit) {
         this.columns.unshift(...checkColumn)
-      } else if (+key > 1 && this.columns[0].dataIndex !== 'id') {
+      } else if (+key > 1 && isAudit) {
         this.columns.shift()
         this.columns.shift()
       }

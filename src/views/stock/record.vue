@@ -13,12 +13,12 @@
                 <project-select v-model="queryParam.projectId"></project-select>
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
+            <a-col v-if="isParentCompany" :md="8" :sm="24">
               <a-form-item label="所属公司">
                 <company-select v-model="queryParam.companyId"></company-select>
               </a-form-item>
             </a-col>
-            <template v-if="advanced">
+            <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="出入库时间">
                   <a-range-picker
@@ -28,9 +28,11 @@
                   />
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="类型">
-                  <a-select v-model="queryParam.stockType" placeholder="请选择">
+                  <a-select v-model="queryParam.stockType" placeholder="请选择" :disabled="tabActiveKey !== '0'">
                     <a-select-option
                       v-for="item in tabList"
                       :value="item.key"
@@ -100,7 +102,7 @@
             </template>
             <advanced-form
               v-model="advanced"
-              :md="8"
+              :md="isParentCompany ? 8 : 16"
               @search="$refs.table.refresh(true)"
               @reset="() => (this.queryParam = {})"
             ></advanced-form>
@@ -110,8 +112,15 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button type="primary" @click="goAdd">新增出库单</a-button>
-        <a-button @click="print">打印出库单</a-button>
+        <a-button
+          v-if="permissions.CreatePermission"
+          type="primary"
+          @click="goAdd"
+          >新增出库单</a-button
+        >
+        <a-button v-if="permissions.PrintPermission" @click="print"
+          >打印出库单</a-button
+        >
       </div>
 
       <s-table
@@ -130,8 +139,16 @@
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
-            <a v-if="record.stockType !== '1'" @click="goEdit(record)">编辑</a>
-            <a v-if="record.stockType !== '1'" @click="handleRemove(record)">删除</a>
+            <a
+              v-if="record.stockType !== '1' && permissions.UpdatePermission"
+              @click="goEdit(record)"
+              >编辑</a
+            >
+            <a
+              v-if="record.stockType !== '1' && permissions.RemovePermission"
+              @click="handleRemove(record)"
+              >删除</a
+            >
           </template>
         </span>
       </s-table>
@@ -145,7 +162,12 @@
 
 <script>
 // import moment from 'moment'
-import { STable, ProjectSelect, CompanySelect, AdvancedForm } from '@/components'
+import {
+  STable,
+  ProjectSelect,
+  CompanySelect,
+  AdvancedForm
+} from '@/components'
 import { getStockClkList, removeStockCk } from '@/api/stock'
 import RecordDetailModal from './components/RecordDetail'
 
@@ -237,6 +259,9 @@ export default {
   },
   computed: {
     rowSelection () {
+      if (!this.permissions.PrintPermission) {
+        return null
+      }
       return {
         selectedRowKeys: this.selectedRowKeys,
         getCheckboxProps: record => ({

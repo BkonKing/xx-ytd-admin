@@ -209,7 +209,7 @@ export default {
         brand: '',
         model: '',
         unit: this.unitOptions[0].unit,
-        originalNum: '',
+        originalNum: 0,
         remarks: ''
       })
     },

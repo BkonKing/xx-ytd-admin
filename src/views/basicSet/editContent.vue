@@ -280,12 +280,13 @@ export default {
         this.webTagArr = res.data.webIds
         this.wxTagArr = res.data.wxIds
         this.form.webTitle = res.data.webTitle
-        this.form.webMessageTemp = res.data.webMessageTemp
-        this.form.fqsj = res.data.wxMessageTemp.fqsj
-        this.form.lcbh = res.data.wxMessageTemp.lcbh
-        this.form.lcbz = res.data.wxMessageTemp.lcbz
-        this.form.lcmc = res.data.wxMessageTemp.lcmc
-        this.form.lczy = res.data.wxMessageTemp.lczy
+        this.form.webMessageTemp = res.data.webMessageTemp || ''
+        const wxMessageTemp = res.data.wxMessageTemp || {}
+        this.form.fqsj = wxMessageTemp.fqsj
+        this.form.lcbh = wxMessageTemp.lcbh
+        this.form.lcbz = wxMessageTemp.lcbz
+        this.form.lcmc = wxMessageTemp.lcmc
+        this.form.lczy = wxMessageTemp.lczy
         this.webIds = res.data.webIds.map(item => {
           return item.adminId
         })

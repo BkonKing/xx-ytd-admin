@@ -10,7 +10,7 @@
                 style="width: 100%"
                 :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                 placeholder="请选择"
-                allow-clear
+                :allow-clear="allowClear"
                 tree-default-expand-all
                 :show-checked-strategy="SHOW_PARENT"
               >
@@ -91,11 +91,7 @@
               <a-button type="primary" @click="$refs.table.refresh(true)"
                 >查询</a-button
               >
-              <a-button
-                style="margin-left: 8px"
-                @click="() => (this.queryParam = {})"
-                >重置</a-button
-              >
+              <a-button style="margin-left: 8px" @click="reset">重置</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? "收起" : "展开" }}
                 <a-icon :type="advanced ? 'up' : 'down'" />
@@ -167,7 +163,9 @@ export default {
   },
   data () {
     return {
-      queryParam: {},
+      queryParam: {
+        logType: ''
+      },
       advanced: false,
       typeOptions: [],
       adminOptions: [],
@@ -180,6 +178,17 @@ export default {
         }
         return getLogsList(Object.assign(parameter, this.queryParam))
       }
+    }
+  },
+  computed: {
+    allowClear () {
+      return Boolean(
+        (this.typeOptions && this.typeOptions.length > 1) ||
+          (this.typeOptions &&
+            this.typeOptions[0] &&
+            this.typeOptions[0].children &&
+            this.typeOptions[0].children.length > 1)
+      )
     }
   },
   created () {
@@ -204,6 +213,12 @@ export default {
       getLogAdmin().then(({ data }) => {
         this.adminOptions = data
       })
+    },
+    reset () {
+      this.queryParam = {}
+      if (!this.allowClear) {
+        this.queryParam.logType = parseInt(this.typeId)
+      }
     }
   }
 }

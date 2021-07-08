@@ -13,7 +13,7 @@ export default {
   name: 'Exception403',
   methods: {
     goback () {
-      this.$router.go(-2)
+      this.$router.go(-1)
     }
   }
 }

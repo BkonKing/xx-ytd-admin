@@ -12,6 +12,7 @@
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
         <a-button
+         v-if="permissions.ExportPermission"
           type="primary"
           :disabled="!selectedRowKeys.length"
           @click="openExport"
@@ -129,6 +130,9 @@ export default {
   },
   computed: {
     rowSelection () {
+      if (!this.permissions.ExportPermission) {
+        return null
+      }
       return {
         selectedRowKeys: this.selectedRowKeys,
         onChange: this.onSelectChange

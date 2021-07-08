@@ -29,7 +29,9 @@ export default {
   },
   computed: {
     current () {
-      return this.data.findIndex(obj => obj.status === 0) - 1
+      let index = this.data.findIndex(obj => obj.status === 0)
+      index = index === -1 ? this.data.length : index
+      return index - 1
     }
   }
   // data () {

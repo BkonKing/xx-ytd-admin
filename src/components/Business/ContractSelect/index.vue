@@ -46,19 +46,16 @@ export default {
           .indexOf(input.toLowerCase()) >= 0
       )
     },
-    handleChange (value, option) {
-      console.log(value)
-      const index = this.options.findIndex(obj => obj.contractId === value)
-      this.$emit('change', value, this.options[index])
+    handleChange (value) {
+      this.$nextTick(() => {
+        const index = this.options.findIndex(obj => obj.contractId === value)
+        this.$emit('change', value, this.options[index])
+      })
     }
   },
   watch: {
     value (val) {
       this.data = val
-      // this.$nextTick(() => {
-      //   const index = this.options.findIndex(obj => obj.contractId === val)
-      //   this.$emit('change', val, this.options[index])
-      // })
     },
     data (val) {
       this.$emit('input', val)

@@ -4,7 +4,7 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
-            <a-col :md="8" :sm="24">
+            <a-col v-if="isParentCompany" :md="8" :sm="24">
               <a-form-item label="所属公司">
                 <company-select v-model="queryParam.companyId"></company-select>
               </a-form-item>
@@ -17,7 +17,7 @@
                 ></a-input>
               </a-form-item>
             </a-col>
-            <template v-if="advanced">
+            <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="合同">
                   <a-input
@@ -26,6 +26,8 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="供应商">
                   <a-input
@@ -59,7 +61,7 @@
             </template>
             <advanced-form
               v-model="advanced"
-              :md="16"
+              :md="isParentCompany ? 16 : 24"
               @reset="this.queryParam = {}"
               @search="$refs.orderTable.refresh(true)"
             ></advanced-form>
@@ -90,7 +92,7 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
-            <a-col :md="8" :sm="24">
+            <a-col v-if="isParentCompany" :md="8" :sm="24">
               <a-form-item label="所属公司">
                 <company-select v-model="payParams.companyId"></company-select>
               </a-form-item>
@@ -103,7 +105,7 @@
                 ></a-input>
               </a-form-item>
             </a-col>
-            <template v-if="payAdvanced">
+            <template v-if="!isParentCompany || payAdvanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="供应商">
                   <a-input
@@ -112,6 +114,8 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="payAdvanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="开票情况">
                   <kp-status-select
@@ -122,7 +126,7 @@
             </template>
             <advanced-form
               v-model="payAdvanced"
-              :md="16"
+              :md="isParentCompany ? 16 : 24"
               @reset="this.payParams = {}"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
@@ -138,15 +142,22 @@
         <a-col flex="1"> 总计({{ payData.total }}) </a-col>
         <a-col flex="1">￥{{ payData.paidMoneys }}</a-col>
         <a-col flex="1">
-          已开{{ payData.kptotal }} (￥{{
-            payData.kpMoneys
-          }}) 未开{{ payData.wkptotal }} (￥{{ payData.wkpMoneys }})
+          已开{{ payData.kptotal }} (￥{{ payData.kpMoneys }}) 未开{{
+            payData.wkptotal
+          }}
+          (￥{{ payData.wkpMoneys }})
         </a-col>
       </a-row>
-      <s-table ref="table" size="default" rowKey="id" :columns="columns" :data="loadData">
+      <s-table
+        ref="table"
+        size="default"
+        rowKey="id"
+        :columns="columns"
+        :data="loadData"
+      >
         <span slot="index" slot-scope="text, record, index">
-          {{payData.records.length}}
-          {{ (payData.records && (payData.records.length - index)) || 0 }}
+          {{ payData.records.length }}
+          {{ (payData.records && payData.records.length - index) || 0 }}
         </span>
         <span slot="orderIdv" slot-scope="text, record">
           <router-link

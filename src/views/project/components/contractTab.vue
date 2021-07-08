@@ -20,12 +20,12 @@
                 </a-select>
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
+            <a-col v-if="isParentCompany" :md="8" :sm="24">
               <a-form-item label="所属公司">
                 <company-select v-model="queryParam.companyId"></company-select>
               </a-form-item>
             </a-col>
-            <template v-if="advanced">
+            <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="合同类型">
                   <contract-type-select
@@ -33,6 +33,8 @@
                   ></contract-type-select>
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="合同">
                   <a-input
@@ -57,7 +59,7 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="(!advanced && 8) || 24" :sm="24">
+            <a-col :md="(!advanced && 8) || (isParentCompany ? 24 : 8)" :sm="24">
               <span
                 class="table-page-search-submitButtons"
                 :style="
@@ -86,7 +88,10 @@
         :data="loadData"
       >
         <span slot="contractNo" slot-scope="text, record">
-          <router-link :to="{name: 'ContractDetail', query: {id: record.id}}">{{text}}</router-link>
+          <router-link
+            :to="{ name: 'ContractDetail', query: { id: record.id } }"
+            >{{ text }}</router-link
+          >
         </span>
       </s-table>
     </a-card>

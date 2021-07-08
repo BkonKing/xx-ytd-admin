@@ -15,17 +15,29 @@
               <template slot="custom" slot-scope="item">
                 {{ item.roleName }}
                 <a-icon
+                  v-if="+permissions.AllotsPermission === 1"
                   class="icon"
                   type="tool"
                   @click="showPermiasionMenu(item)"
                 />
-                <a-icon class="icon" type="edit" @click="edit(item, 'edit')" />
                 <a-icon
+                  v-if="+permissions.CreatePermission === 1"
+                  class="icon"
+                  type="edit"
+                  @click="edit(item, 'edit')"
+                />
+                <a-icon
+                  v-if="+permissions.CreatePermission === 1"
                   class="icon"
                   type="apartment"
                   @click="selectItem(item, 'create')"
                 />
-                <a-icon class="icon" type="delete" @click="del(item.id)" />
+                <a-icon
+                  v-if="+permissions.RemovePermission === 1"
+                  class="icon"
+                  type="delete"
+                  @click="del(item.id)"
+                />
               </template>
             </a-tree>
           </div>
@@ -36,7 +48,7 @@
       </a-col>
       <a-col :span="14">
         <div class="rightCard">
-          <a-card class="card2"  v-if="showInit">
+          <a-card class="card2" v-if="showInit && permissions.CreatePermission">
             <div class="title">新增</div>
             <div class="content">
               <div class="left">
@@ -69,7 +81,9 @@
                   />
                 </div>
                 <div class="addArea" @click="add3">+ <span>添加</span></div>
-                <a-button type="primary" :disabled='initBol' @click="initSave">保存</a-button>
+                <a-button type="primary" :disabled="initBol" @click="initSave"
+                  >保存</a-button
+                >
               </div>
             </div>
           </a-card>
@@ -133,7 +147,12 @@
                   />
                 </div>
                 <div class="addArea" @click="add">+ <span>添加</span></div>
-                <a-button type="primary" :disabled="createBol" @click="Createsave">保存</a-button>
+                <a-button
+                  type="primary"
+                  :disabled="createBol"
+                  @click="Createsave"
+                  >保存</a-button
+                >
               </div>
             </div>
           </a-card>
@@ -199,12 +218,16 @@
                   />
                 </div>
                 <div class="addArea" @click="add2">+ <span>添加</span></div>
-                <a-button type="primary" :disabled="editBol" @click="saveEditData">保存</a-button>
+                <a-button
+                  type="primary"
+                  :disabled="editBol"
+                  @click="saveEditData"
+                  >保存</a-button
+                >
               </div>
             </div>
           </a-card>
           <a-card v-if="permissionShow && treeData.length > 0" class="card3">
-
             <div class="title">
               <div>
                 权限
@@ -225,7 +248,7 @@
                 :replaceFields="{ key: 'id' }"
                 @select="onSelect"
                 :default-expanded-keys="openArr"
-                @check='onCheck'
+                @check="onCheck"
               >
                 <template slot="custom" slot-scope="item">
                   {{ item.menuText }}
@@ -233,7 +256,12 @@
               </a-tree>
             </div>
             <div class="btn">
-              <a-button type="primary" :disabled="selectMenuBol" @click="setRoleMenus">保存</a-button>
+              <a-button
+                type="primary"
+                :disabled="selectMenuBol"
+                @click="setRoleMenus"
+                >保存</a-button
+              >
             </div>
           </a-card>
         </div>
@@ -343,7 +371,6 @@ export default {
     }
   },
   watch: {
-
     inputArr: {
       handler () {
         this.createBol = false
@@ -820,7 +847,7 @@ export default {
     }
   }
   .card3 {
-    /deep/ .ant-card-body{
+    /deep/ .ant-card-body {
       padding: 0;
     }
     // .left {
@@ -830,7 +857,7 @@ export default {
     //     margin: 0 10px;
     //   }
     // }
-    .title{
+    .title {
       height: 55px;
       line-height: 55px;
       padding-left: 24px;
@@ -879,7 +906,7 @@ export default {
       margin-left: 24px;
       margin-top: 24px;
     }
-    .srcollBox{
+    .srcollBox {
       width: 100%;
       height: 400px;
       overflow: auto;

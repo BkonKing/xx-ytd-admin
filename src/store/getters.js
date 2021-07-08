@@ -9,6 +9,7 @@ const getters = {
   welcome: state => state.user.welcome,
   roles: state => state.user.roles,
   userInfo: state => state.user.info,
+  isParentCompany: state => !+state.user.info.companyId,
   multiTab: state => state.app.multiTab
 }
 
