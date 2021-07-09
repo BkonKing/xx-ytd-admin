@@ -76,7 +76,7 @@
             v-model="webIds"
             mode="multiple"
             style="width:440px"
-            placeholder="select one country"
+            placeholder="请选择"
             option-label-prop="label"
           >
             <a-select-option
@@ -175,7 +175,7 @@
             v-model="wxIds"
             mode="multiple"
             style="width:440px"
-            placeholder="select one country"
+            placeholder="请选择"
             option-label-prop="label"
           >
             <a-select-option

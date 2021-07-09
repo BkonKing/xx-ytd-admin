@@ -26,7 +26,7 @@
                 v-model="item.level"
                 mode="multiple"
                 style="width:330px"
-                placeholder="select one country"
+                placeholder="请选择"
                 option-label-prop="label"
               >
                 <a-select-option
@@ -81,7 +81,7 @@
                 v-model="item.level"
                 mode="multiple"
                 style="width:330px"
-                placeholder="select one country"
+                placeholder="请选择"
                 option-label-prop="label"
               >
                 <a-select-option
@@ -135,7 +135,7 @@
                 v-model="item.level"
                 mode="multiple"
                 style="width:330px"
-                placeholder="select one country"
+                placeholder="请选择"
                 option-label-prop="label"
               >
                 <a-select-option

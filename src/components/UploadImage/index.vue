@@ -1,7 +1,7 @@
 <template>
   <a-upload
     v-bind="$attrs"
-    action="/api/file/uploads/uImages"
+    :action="`${action}/file/uploads/uImages`"
     list-type="picture-card"
     name="imgFile"
     :file-list="fileList"
@@ -34,7 +34,8 @@ export default {
   },
   data () {
     return {
-      fileList: this.format(this.value)
+      fileList: this.format(this.value),
+      action: process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
     }
   },
   methods: {

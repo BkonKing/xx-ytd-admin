@@ -3,7 +3,7 @@ const webpack = require('webpack')
 const buildDate = JSON.stringify(new Date().toLocaleString())
 const createThemeColorReplacerPlugin = require('./config/plugin.config')
 const WebpackBundleAnalyzer = require('webpack-bundle-analyzer')
-const CompressionPlugin = require('compression-webpack-plugin')
+// const CompressionPlugin = require('compression-webpack-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -31,7 +31,7 @@ const assetsCDN = {
 
 // vue.config.js
 const vueConfig = {
-  // publicPath: process.env.NODE_ENV === 'production' ? '/dist' : './',
+  publicPath: process.env.NODE_ENV === 'production' ? '/wzgl' : '/',
   configureWebpack: {
     // webpack plugins
     plugins: [
@@ -85,12 +85,12 @@ const vueConfig = {
         .use(WebpackBundleAnalyzer.BundleAnalyzerPlugin)
     }
 
-    if (process.env.NODE_ENV === 'production') {
-      // gzip开启
-      config
-        .plugin('CompressionPlugin')
-        .use(CompressionPlugin, [])
-    }
+    // if (process.env.NODE_ENV === 'production') {
+    //   // gzip开启
+    //   config
+    //     .plugin('CompressionPlugin')
+    //     .use(CompressionPlugin, [])
+    // }
   },
 
   css: {
