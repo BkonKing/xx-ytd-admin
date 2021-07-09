@@ -30,7 +30,7 @@
           <a-form-model-item prop="projectShortEn">
             <a-input
               v-model="form.projectShortEn"
-              placeholder="英文简称"
+              placeholder="英文简称(大写字母)"
               oninput="value=value.replace(/[^\A-\Z]/g,'')"
               :maxLength="11"
             ></a-input>
@@ -212,6 +212,9 @@ export default {
       })
     }
   },
+  mounted () {
+    this.stageList[0] && (this.form.stage = this.stageList[0].stageId)
+  },
   methods: {
     handleSubmit () {
       return new Promise((resolve, reject) => {
@@ -231,6 +234,7 @@ export default {
     resetFields () {
       this.$refs.projectForm.resetFields()
       this.form = clonedeep(initialForm)
+      this.stageList[0] && (this.form.stage = this.stageList[0].stageId)
     }
   }
 }

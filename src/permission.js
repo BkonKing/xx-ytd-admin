@@ -17,7 +17,7 @@ NProgress.configure({
 }) // NProgress Configuration
 
 const allowList = ['login'] // 免登录路由name
-const allotWhiteList = ['login', '403', '404']
+const allotWhiteList = ['Workplace', 'login', '403', '404']
 const loginRoutePath = '/user/login'
 // const defaultRoutePath = '/dashboard/workplace'
 

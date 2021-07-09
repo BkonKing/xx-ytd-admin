@@ -213,7 +213,7 @@ export default {
             // 这里用于判断接口是否有返回 r.total 且 this.showPagination = true 且 pageindex 和 pagesize 存在 且 total 小于等于 pageindex * pagesize 的大小
             // 当情况满足时，表示数据不满足分页大小，关闭 table 分页功能
             try {
-              if ((['auto', true].includes(this.showPagination) && r.total <= (r.current * this.localPagination.pagesize))) {
+              if ((['auto'].includes(this.showPagination) && r.total <= (r.current * this.localPagination.pagesize))) {
                 this.localPagination.hideOnSinglePage = true
               }
             } catch (e) {
@@ -318,7 +318,9 @@ export default {
   },
 
   render () {
-    const props = {}
+    const props = {
+      showHeader: this.$props.showHeader
+    }
     const localKeys = Object.keys(this.$data)
     const showAlert = (typeof this.alert === 'object' && this.alert !== null && this.alert.show) && typeof this.rowSelection.selectedRowKeys !== 'undefined' || this.alert
 

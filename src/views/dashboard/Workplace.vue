@@ -3,7 +3,7 @@
     <template v-slot:content>
       <div class="page-header-content">
         <div class="avatar">
-          <a-avatar v-if="info" size="large" :src="info.adminInfo.avatar" />
+          <a-avatar v-if="info && info.adminInfo.avatar" size="large" :src="info.adminInfo.avatar" />
         </div>
         <div class="content">
           <div class="content-title">

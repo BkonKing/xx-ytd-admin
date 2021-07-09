@@ -286,6 +286,10 @@ export default {
       }
     }
   },
+  created () {
+    const tab = this.$route.query.tabActiveKey
+    tab && (this.tabActiveKey = tab)
+  },
   methods: {
     handleTabChange (key) {
       this.tabActiveKey = key
