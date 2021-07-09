@@ -4,7 +4,7 @@
       <a-form layout="inline">
         <standard-form-row title="参与项目" block style="padding-bottom: 11px;">
           <a-form-item v-if="projectList && projectList.length">
-            <tag-select v-model="companyIds" @change="search">
+            <tag-select v-model="projectIds" @change="search">
               <tag-select-option
                 v-for="tag in projectList"
                 :key="tag.projectId"
@@ -146,7 +146,7 @@ export default {
   data () {
     return {
       data: [],
-      companyIds: [],
+      projectIds: [],
       serachText: '',
       stage: '',
       projectList: [], // 所有项目列表
@@ -183,7 +183,7 @@ export default {
     // 获取公司列表
     getData () {
       toCompanyList({
-        companyIds: this.companyIds.join(','),
+        projectIds: this.projectIds.join(','),
         serachText: this.serachText
       }).then(({ data }) => {
         const companyList = this.permissions.CreatePermission ? [{}] : []
