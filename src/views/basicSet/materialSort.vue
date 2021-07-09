@@ -452,8 +452,9 @@ export default {
       if (this.idArr.length > 0) {
         await toRemoveBatchMaterial({ ids: this.idArr })
       }
-      console.log('删除的数组', this.idArr)
+
       if (this.parentId === 0) {
+        console.log('执行了11')
         let menus = this.itemInfo.children.map(item => {
           return {
             parentId: item.parentId,
@@ -484,16 +485,20 @@ export default {
           this.$message.info(res.message)
         }
       } else {
-        let menus = this.itemInfo.children.map(item => {
-          return {
-            parentId: item.parentId,
-            id: item.id,
-            categoryNo: item.categoryNo,
-            categoryName: item.categoryName,
-            unit: item.unit,
-            listOrder: item.listOrder
-          }
-        })
+        console.log('执行了22')
+        let menus = []
+        if (this.itemInfo.children) {
+          menus = this.itemInfo.children.map(item => {
+            return {
+              parentId: item.parentId,
+              id: item.id,
+              categoryNo: item.categoryNo,
+              categoryName: item.categoryName,
+              unit: item.unit,
+              listOrder: item.listOrder
+            }
+          })
+        }
         const arr = this.inputArr.filter(item => {
           return item.categoryName !== ''
         })
@@ -517,7 +522,9 @@ export default {
 
       this.getData()
 
-      this.createBol = true
+      this.$nextTick(() => {
+        this.createBol = true
+      })
     },
     // 获取材料分类数据
     async getData () {

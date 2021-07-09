@@ -15,14 +15,15 @@ export const basicSetApi = {
   updateBatchContract: '/set/category/updateBatchContract',
   removeBatchContract: '/set/category/removeBatchContract',
   removeContract: '/set/category/removeContract',
-  getAllAdminList: '/public/common/getAllAdminList',
+  getAllAuditAdminList: '/public/common/getAllAuditAdminList',
   updateSetData: '/set/auditset/updateSetData',
   settleType: '/set/category/settleType',
   updateBatchSettleType: '/set/category/updateBatchSettleType',
   removeBatchSettleType: '/set/category/removeBatchSettleType',
   payType: '/set/category/payType',
   updateBatchPayType: '/set/category/updateBatchPayType',
-  removeBatchPayType: '/set/category/removeBatchPayType'
+  removeBatchPayType: '/set/category/removeBatchPayType',
+  getAllAdminList: '/public/common/getAllAdminList'
 }
 
 // 消息设置数据接口(已验证)
@@ -132,9 +133,10 @@ export function toRemoveContract (data) {
   })
 }
 // 获取审核人员列表接口(已验证)
-export function toGetAllAdminList () {
+export function toGetAllAuditAdminList (params) {
   return request({
-    url: basicSetApi.getAllAdminList
+    url: basicSetApi.getAllAuditAdminList,
+    params
 
   })
 }
@@ -189,5 +191,11 @@ export function toRemoveBatchPayType (data) {
     url: basicSetApi.removeBatchPayType,
     method: 'post',
     data
+  })
+}
+// 获取额外通知人员列表接口(已验证)
+export function toGetAllAdminList () {
+  return request({
+    url: basicSetApi.getAllAdminList
   })
 }

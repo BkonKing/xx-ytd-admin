@@ -30,7 +30,7 @@
                 option-label-prop="label"
               >
                 <a-select-option
-                  v-for="(item, index) in checkPeoPleList"
+                  v-for="(item, index) in orderPeoPleList"
                   :key="index"
                   :value="item.id"
                   :label="item.realName"
@@ -85,7 +85,7 @@
                 option-label-prop="label"
               >
                 <a-select-option
-                  v-for="(item, index) in checkPeoPleList"
+                  v-for="(item, index) in contractPeoPleList"
                   :key="index"
                   :value="item.id"
                   :label="item.realName"
@@ -139,7 +139,7 @@
                 option-label-prop="label"
               >
                 <a-select-option
-                  v-for="(item, index) in checkPeoPleList"
+                  v-for="(item, index) in supplierPeoPleList"
                   :key="index"
                   :value="item.id"
                   :label="item.realName"
@@ -173,7 +173,7 @@
 <script>
 import {
   toSetCheckData,
-  toGetAllAdminList,
+  toGetAllAuditAdminList,
   toUpdateSetData
 } from '@/api/basicSet'
 export default {
@@ -218,7 +218,10 @@ export default {
         }]
       },
       checkPeoPleList: [],
-      bol: true
+      bol: true,
+      orderPeoPleList: [], // 订单审核人员
+      contractPeoPleList: [], // 合同审核人员
+      supplierPeoPleList: [] // 供应商审核人员
     }
   },
   watch: {
@@ -248,6 +251,27 @@ export default {
     }
   },
   methods: {
+    // 获取订单审核人员
+    getOrderCheck () {
+      toGetAllAuditAdminList({ auditType: 1 }).then(({ data }) => {
+        this.orderPeoPleList = data
+        console.log('获取订单人员', data)
+      })
+    },
+    // 获取合同审核人员
+    getContractCheck () {
+      toGetAllAuditAdminList({ auditType: 2 }).then(({ data }) => {
+        this.contractPeoPleList = data
+        console.log('获取合同人员', data)
+      })
+    },
+    // 获取供应商审核人员
+    getSupplierCheck () {
+      toGetAllAuditAdminList({ auditType: 3 }).then(({ data }) => {
+        this.supplierPeoPleList = data
+        console.log('获取供应商人员', data)
+      })
+    },
     // 保存
     save () {
       this.$refs.form.validate(result => {
@@ -528,10 +552,9 @@ export default {
   },
   created () {
     this.getData()
-    toGetAllAdminList().then(({ data }) => {
-      this.checkPeoPleList = data
-      console.log('获取审核人员', data)
-    })
+    this.getOrderCheck()
+    this.getContractCheck()
+    this.getSupplierCheck()
   }
 }
 </script>

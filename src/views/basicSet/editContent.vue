@@ -80,12 +80,12 @@
             option-label-prop="label"
           >
             <a-select-option
-              v-for="(item, index) in webTagArr"
+              v-for="(item, index) in tzList"
               :key="index"
-              :value="item.adminId"
-              :label="item.account"
+              :value="item.id"
+              :label="item.realName"
             >
-              {{ item.account }}
+              {{ item.realName }}
             </a-select-option>
           </a-select>
         </a-form-model-item>
@@ -179,12 +179,12 @@
             option-label-prop="label"
           >
             <a-select-option
-              v-for="(item, index) in wxTagArr"
+              v-for="(item, index) in tzList"
               :key="index"
-              :value="item.adminId"
-              :label="item.account"
+              :value="item.id"
+              :label="item.realName"
             >
-              {{ item.account }}
+              {{ item.realName }}
             </a-select-option>
           </a-select>
         </a-form-model-item>
@@ -197,15 +197,16 @@
 </template>
 
 <script>
-import { toSetInfo, toTemplateSet } from '@/api/basicSet'
+import { toSetInfo, toTemplateSet, toGetAllAdminList } from '@/api/basicSet'
 export default {
   data () {
     return {
       info: {},
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
-      webTagArr: [], // 站内消息通知用户
-      wxTagArr: [], // 微信消息通知用户
+      // webTagArr: [], // 站内消息通知用户
+      // wxTagArr: [], // 微信消息通知用户
+      tzList: [],
       id: '', // 是intID
       form: {
         webTitle: '', // 是varchar站内消息标题
@@ -277,8 +278,8 @@ export default {
     getDetail () {
       toSetInfo({ id: this.id }).then(res => {
         this.info = res.data
-        this.webTagArr = res.data.webIds
-        this.wxTagArr = res.data.wxIds
+        // this.webTagArr = res.data.webIds
+        // this.wxTagArr = res.data.wxIds
         this.form.webTitle = res.data.webTitle
         this.form.webMessageTemp = res.data.webMessageTemp || ''
         const wxMessageTemp = res.data.wxMessageTemp || {}
@@ -306,6 +307,10 @@ export default {
     if (this.id) {
       this.getDetail()
     }
+    toGetAllAdminList().then(({ data }) => {
+      this.tzList = data
+      console.log('获取额外通知列表', data)
+    })
   }
 }
 </script>

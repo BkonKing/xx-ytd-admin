@@ -17,13 +17,13 @@
     <template v-slot:extraContent>
       <div class="extra-content">
         <div class="stat-item">
-          <a-statistic title="待审核订单" :value="info.dsOrderNum" />
+          <a-statistic title="待审核订单" :style="{cursor: info.dsOrderNum>0?'pointer':''}" @click="toCheck(1,info.dsOrderNum)" :value="info.dsOrderNum>0?info.dsOrderNum:'--'" />
         </div>
         <div class="stat-item">
-          <a-statistic title="待审核合同" :value="info.dsContractNum" />
+          <a-statistic title="待审核合同" :style="{cursor: info.dsContractNum>0?'pointer':''}" @click="toCheck(2,info.dsContractNum)" :value="info.dsContractNum>0?info.dsContractNum:'--'" />
         </div>
         <div class="stat-item">
-          <a-statistic title="待审核供应商" :value="info.dsSupplierNum" />
+          <a-statistic title="待审核供应商" :style="{cursor: info.dsSupplierNum>0?'pointer':''}" @click="toCheck(3,info.dsSupplierNum)" :value="info.dsSupplierNum>0?info.dsSupplierNum:'--'" />
         </div>
       </div>
     </template>
@@ -77,16 +77,13 @@
 
           <a-card :loading="loading" title="动态" :bordered="false">
             <a-list>
-              <a-list-item :key="index" v-for="(item, index) in 3">
+              <a-list-item :key="index" v-for="(item, index) in info.dynamic">
                 <a-list-item-meta>
                   <a-avatar slot="avatar" :src="item.dyAvatar" />
-                  <div slot="title">
-                    <span>林冬冬在</span
-                    >&nbsp; 在&nbsp;<a href="#">项目名称</a
-                    >&nbsp; 审核了&nbsp;
-                    <a href="#">合同名称</a>
+                  <div slot="title" v-html="item.dyContent">
+
                   </div>
-                  <div slot="description">5分钟</div>
+                  <div slot="description">{{item.dyCtime}}</div>
                 </a-list-item-meta>
               </a-list-item>
             </a-list>
@@ -119,8 +116,8 @@
               </div>
             </template>
             <div class="members">
-              <div class="item" v-for="(item,index) in 5" :key='index'>
-                [通知] 内容内容内容内容内容
+              <div class="item" v-for="(item,index) in info.message" :key='index'>
+                [通知] {{item.content}}
               </div>
             </div>
           </a-card>
@@ -236,6 +233,18 @@ export default {
     // this.getTeams()
   },
   methods: {
+    toCheck (type, num) {
+      if (num > 0) {
+        if (type === 1) {
+          this.$router.push('/order/index?tabActiveKey=' + 1)
+        } else if (type === 2) {
+          this.$router.push('/contract/index?tabActiveKey=' + 1)
+        } else {
+          this.$router.push('/supplier/index?tabActiveKey=' + 1)
+        }
+      }
+    },
+    // 便捷导航
     openTab (item) {
       if (item === '新增订单') {
         this.$router.push('/order/edit')
@@ -243,6 +252,14 @@ export default {
         this.$router.push('/contract/edit')
       } else if (item === '新增供应商') {
         this.$router.push('/supplier/edit')
+      } else if (item === '新增项目') {
+        this.$router.push('/project/index')
+      } else if (item === '审核订单') {
+        this.$router.push('/order/index?tabActiveKey=' + 1)
+      } else if (item === '审核合同') {
+        this.$router.push('/contract/index?tabActiveKey=' + 1)
+      } else {
+        this.$router.push('/supplier/index?tabActiveKey=' + 1)
       }
     },
     getProjects () {
@@ -405,6 +422,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
   }
 }
 .mobile {

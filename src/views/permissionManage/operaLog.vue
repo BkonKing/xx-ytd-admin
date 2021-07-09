@@ -138,14 +138,14 @@ export default {
           title: '操作类型',
           dataIndex: 'operationType',
           key: 'operationType',
-          width: '10%'
+          width: '6%'
           // ellipsis: true
         },
         {
           title: '操作说明',
           dataIndex: 'content',
           key: 'content',
-          width: '35%'
+          width: '40%'
           // ellipsis: true
         }
       ],

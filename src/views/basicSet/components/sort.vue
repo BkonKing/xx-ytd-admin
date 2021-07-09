@@ -433,14 +433,17 @@ export default {
           this.$message.info(res.message)
         }
       } else {
-        let menus = this.itemInfo.children.map(item => {
-          return {
-            id: item.id,
-            parentId: item.parentId,
-            categoryName: item.categoryName,
-            listOrder: item.listOrder
-          }
-        })
+        let menus = []
+        if (this.itemInfo.children) {
+          menus = this.itemInfo.children.map(item => {
+            return {
+              id: item.id,
+              parentId: item.parentId,
+              categoryName: item.categoryName,
+              listOrder: item.listOrder
+            }
+          })
+        }
         const arr = this.inputArr.filter(item => {
           return item.categoryName !== ''
         })
@@ -464,7 +467,9 @@ export default {
 
       this.getData()
 
-      this.createBol = true
+      this.$nextTick(() => {
+        this.createBol = true
+      })
     },
     // 获取合同分类数据
     async getData () {
