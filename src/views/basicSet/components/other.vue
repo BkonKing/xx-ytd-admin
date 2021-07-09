@@ -222,11 +222,13 @@ export default {
           }
           let arrSum = []
           const newArr1 = this.arr1.map(item => {
-            return {
-              id: 0,
-              categoryName: item.categoryName,
-              listOrder: item.listOrder,
-              parentId: 0
+            if (item.categoryName) {
+              return {
+                id: 0,
+                categoryName: item.categoryName,
+                listOrder: item.listOrder,
+                parentId: 0
+              }
             }
           })
           let newArr2 = []
@@ -254,11 +256,13 @@ export default {
           }
           let arrSum2 = []
           const twoArr1 = this.arr2.map(item => {
-            return {
-              id: 0,
-              categoryName: item.categoryName,
-              listOrder: item.listOrder,
-              parentId: 0
+            if (item.categoryName) {
+              return {
+                id: 0,
+                categoryName: item.categoryName,
+                listOrder: item.listOrder,
+                parentId: 0
+              }
             }
           })
           console.log('twoArr1', twoArr1)
