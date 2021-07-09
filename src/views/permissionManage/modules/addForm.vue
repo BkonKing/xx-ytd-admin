@@ -8,7 +8,16 @@
         placeholder="请输入2~20个中文、英文或数字"
       ></a-input>
     </a-form-model-item>
-    <a-form-model-item label="登录密码" prop="password">
+    <a-form-model-item label="登录密码" v-if="mode==='add'" prop="password">
+      <a-input
+      type="password"
+        v-model="form.password"
+        @blur="setPasswd"
+        :maxLength="18"
+        placeholder="请输入6~18个英文、数字，区分大小写"
+      ></a-input>
+    </a-form-model-item>
+        <a-form-model-item label="登录密码" v-else >
       <a-input
       type="password"
         v-model="form.password"

@@ -3,7 +3,7 @@
     <template v-slot:content>
       <div class="page-header-content">
         <div class="avatar">
-          <a-avatar v-if="info && info.adminInfo.avatar" size="large" :src="info.adminInfo.avatar" />
+          <a-avatar  size="large" :src="(info && info.adminInfo.avatar)? info.adminInfo.avatar:'https://ytdwz.tosolomo.com/library/img/user-avatar.png'" />
         </div>
         <div class="content">
           <div class="content-title">
@@ -17,13 +17,13 @@
     <template v-slot:extraContent>
       <div class="extra-content">
         <div class="stat-item">
-          <a-statistic title="待审核订单" :style="{cursor: info.dsOrderNum>0?'pointer':''}" @click="toCheck(1,info.dsOrderNum)" :value="info.dsOrderNum>0?info.dsOrderNum:'--'" />
+          <a-statistic title="待审核订单" v-if="info.dsOrderPermission===1" :style="{cursor: info.dsOrderNum>0?'pointer':''}" @click="toCheck(1,info.dsOrderNum)" :value="info.dsOrderNum>0?info.dsOrderNum:'--'" />
         </div>
         <div class="stat-item">
-          <a-statistic title="待审核合同" :style="{cursor: info.dsContractNum>0?'pointer':''}" @click="toCheck(2,info.dsContractNum)" :value="info.dsContractNum>0?info.dsContractNum:'--'" />
+          <a-statistic title="待审核合同" v-if="info.dsContractPermission===1" :style="{cursor: info.dsContractNum>0?'pointer':''}" @click="toCheck(2,info.dsContractNum)" :value="info.dsContractNum>0?info.dsContractNum:'--'" />
         </div>
         <div class="stat-item">
-          <a-statistic title="待审核供应商" :style="{cursor: info.dsSupplierNum>0?'pointer':''}" @click="toCheck(3,info.dsSupplierNum)" :value="info.dsSupplierNum>0?info.dsSupplierNum:'--'" />
+          <a-statistic title="待审核供应商" v-if="info.dsSupplierPermission===1" :style="{cursor: info.dsSupplierNum>0?'pointer':''}" @click="toCheck(3,info.dsSupplierNum)" :value="info.dsSupplierNum>0?info.dsSupplierNum:'--'" />
         </div>
       </div>
     </template>

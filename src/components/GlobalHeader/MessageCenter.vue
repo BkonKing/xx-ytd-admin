@@ -90,6 +90,13 @@ export default {
       shortInfo: ''
     }
   },
+  watch: {
+    visible (newVal) {
+      if (newVal) {
+        this.getData()
+      }
+    }
+  },
   mounted () {},
   methods: {
     // 获取弹窗消息接口
