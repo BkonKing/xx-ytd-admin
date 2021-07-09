@@ -408,7 +408,9 @@ export default {
           this.contractCheck.arr.push({
             id: Math.random() * 999,
             jibie: '三级审核',
-            level: data[1].threeLevel
+            level: data[1].threeLevel.map(item => {
+              return item.adminId
+            })
           })
         data[1].fourLevel.length > 0 &&
           this.contractCheck.arr.push({
@@ -432,9 +434,7 @@ export default {
             id: Math.random() * 999,
             jibie: '一级审核',
             level: data[2].oneLevel.map(item => {
-              return item.adminId.map(item => {
-                return item.adminId
-              })
+              return item.adminId
             })
           })
         data[2].twoLevel.length > 0 &&
