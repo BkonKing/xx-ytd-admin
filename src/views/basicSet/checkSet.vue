@@ -359,25 +359,33 @@ export default {
           this.orderCheck.arr.push({
             id: Math.random() * 999,
             jibie: '二级审核',
-            level: data[0].twoLevel
+            level: data[0].twoLevel.map(item => {
+              return item.adminId
+            })
           })
         data[0].threeLevel.length > 0 &&
           this.orderCheck.arr.push({
             id: Math.random() * 999,
             jibie: '三级审核',
-            level: data[0].threeLevel
+            level: data[0].threeLevel.map(item => {
+              return item.adminId
+            })
           })
         data[0].fourLevel.length > 0 &&
           this.orderCheck.arr.push({
             id: Math.random() * 999,
             jibie: '四级审核',
-            level: data[0].fourLevel
+            level: data[0].fourLevel.map(item => {
+              return item.adminId
+            })
           })
         data[0].fiveLevel.length > 0 &&
           this.orderCheck.arr.push({
             id: Math.random() * 999,
             jibie: '五级审核',
-            level: data[0].fiveLevel
+            level: data[0].fiveLevel.map(item => {
+              return item.adminId
+            })
           })
         this.form.auditHours2 = data[1].auditHours
         data[1].oneLevel.length > 0 &&
@@ -392,7 +400,9 @@ export default {
           this.contractCheck.arr.push({
             id: Math.random() * 999,
             jibie: '二级审核',
-            level: data[1].twoLevel
+            level: data[1].twoLevel.map(item => {
+              return item.adminId
+            })
           })
         data[1].threeLevel.length > 0 &&
           this.contractCheck.arr.push({
@@ -404,13 +414,17 @@ export default {
           this.contractCheck.arr.push({
             id: Math.random() * 999,
             jibie: '四级审核',
-            level: data[1].fourLevel
+            level: data[1].fourLevel.map(item => {
+              return item.adminId
+            })
           })
         data[1].fiveLevel.length > 0 &&
           this.contractCheck.arr.push({
             id: Math.random() * 999,
             jibie: '五级审核',
-            level: data[1].fiveLevel
+            level: data[1].fiveLevel.map(item => {
+              return item.adminId
+            })
           })
         this.form.auditHours3 = data[2].auditHours
         data[2].oneLevel.length > 0 &&
@@ -418,32 +432,42 @@ export default {
             id: Math.random() * 999,
             jibie: '一级审核',
             level: data[2].oneLevel.map(item => {
-              return item.adminId
+              return item.adminId.map(item => {
+                return item.adminId
+              })
             })
           })
         data[2].twoLevel.length > 0 &&
           this.supplierCheck.arr.push({
             id: Math.random() * 999,
             jibie: '二级审核',
-            level: data[2].twoLevel
+            level: data[2].twoLevel.map(item => {
+              return item.adminId
+            })
           })
         data[2].threeLevel.length > 0 &&
           this.supplierCheck.arr.push({
             id: Math.random() * 999,
             jibie: '三级审核',
-            level: data[2].threeLevel
+            level: data[2].threeLevel.map(item => {
+              return item.adminId
+            })
           })
         data[2].fourLevel.length > 0 &&
           this.supplierCheck.arr.push({
             id: Math.random() * 999,
             jibie: '四级审核',
-            level: data[2].fourLevel
+            level: data[2].fourLevel.map(item => {
+              return item.adminId
+            })
           })
         data[2].fiveLevel.length > 0 &&
           this.supplierCheck.arr.push({
             id: Math.random() * 999,
             jibie: '五级审核',
-            level: data[2].fiveLevel
+            level: data[2].fiveLevel.map(item => {
+              return item.adminId
+            })
           })
         this.$nextTick(() => {
           this.bol = true

@@ -216,13 +216,14 @@ export default {
       this.$refs.projectForm && this.$refs.projectForm.resetFields()
       this.$nextTick(() => {
         const data = clonedeep(obj)
+        data.companyLogo = []
         if (obj.companyLogo) {
-          data.companyLogo = []
           data.companyLogo.push(obj.companyLogo)
         }
         if (obj.provinceId) {
           data.area = [obj.provinceId, obj.cityId, obj.areaId]
         }
+        data.adminPassword = ''
         this.$refs.projectForm.setFieldsValue(data)
       })
     },

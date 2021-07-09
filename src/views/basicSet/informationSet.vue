@@ -1,7 +1,7 @@
 <template>
   <div class="infomationSet">
     <a-card>
-      <a-table :columns="columns" :data-source="tableData" :pagination="false">
+      <a-table rowKey="id" :columns="columns" :data-source="tableData" :pagination="false">
         <template slot="opera" slot-scope="text, record">
           <div>
             <a-button type="link" :disabled="!permissions.UpdatePermission" @click="toEditContent(record)"
