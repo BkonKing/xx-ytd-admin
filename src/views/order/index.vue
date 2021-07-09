@@ -10,7 +10,11 @@
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="审核状态">
-                <a-select v-model="queryParam.status" :disabled="tabActiveKey !== '0'" placeholder="请选择">
+                <a-select
+                  v-model="queryParam.status"
+                  :disabled="tabActiveKey !== '0'"
+                  placeholder="请选择"
+                >
                   <a-select-option
                     v-for="option in tabList"
                     :value="option.key"
@@ -108,7 +112,9 @@
           @click="openCheck"
           >审核</a-button
         >
-        <a-button v-if="permissions.CreatePermission" @click="goEdit">新增</a-button>
+        <a-button v-if="permissions.CreatePermission" @click="goEdit"
+          >新增</a-button
+        >
       </div>
 
       <s-table
@@ -139,11 +145,27 @@
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
-            <a v-if="permissions.UpdatePermission || permissions.UpdatePartPermission" @click="goEdit(record)">编辑</a>
-            <a v-if="+record.status !== 1 && permissions.RemovePermission" @click="handleRemove(record)"
+            <a
+              v-if="
+                permissions.UpdatePermission || permissions.UpdatePartPermission
+              "
+              @click="goEdit(record)"
+              >编辑</a
+            >
+            <a
+              v-if="+record.status !== 1 && permissions.RemovePermission"
+              @click="handleRemove(record)"
               >删除</a
             >
-            <a v-if="+record.status === 0 && permissions.AuditPermission && record.auditPermission" @click="openCheck(record)">审核</a>
+            <a
+              v-if="
+                +record.status === 0 &&
+                  permissions.AuditPermission &&
+                  record.auditPermission
+              "
+              @click="openCheck(record)"
+              >审核</a
+            >
           </template>
         </span>
       </s-table>
@@ -184,60 +206,18 @@ import {
   auditBatchOrder
 } from '@/api/order'
 
-const checkColumn = [
+const checkTimec = [
   {
     title: '审核时间',
     dataIndex: 'auditTime',
     scopedSlots: { customRender: 'auditTime' }
-  },
-  {
-    title: '审核状态',
-    dataIndex: 'statusv'
   }
 ]
 
-const columns = [
-  {
-    title: '审核时间',
-    dataIndex: 'auditTime',
-    scopedSlots: { customRender: 'auditTime' }
-  },
+const checkStatusC = [
   {
     title: '审核状态',
     dataIndex: 'statusv'
-  },
-  {
-    title: '所属项目',
-    dataIndex: 'projectName'
-  },
-  {
-    title: '订单ID',
-    dataIndex: 'idv'
-  },
-  {
-    title: '物料数量',
-    dataIndex: 'materialNum',
-    sorter: true
-  },
-  {
-    title: '金额',
-    dataIndex: 'orderPrice',
-    sorter: true
-  },
-  {
-    title: '付款情况',
-    dataIndex: 'paid',
-    scopedSlots: { customRender: 'paid' }
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'ctime'
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    width: '180px',
-    scopedSlots: { customRender: 'action' }
   }
 ]
 
@@ -254,7 +234,6 @@ export default {
     TimeWait
   },
   data () {
-    this.columns = columns
     return {
       // 审核状态：0=全部、1=待审核、2=已通过、3=未通过
       tabList: [
@@ -270,6 +249,45 @@ export default {
       advanced: false,
       // 查询参数
       queryParam: {},
+      columns: [
+        {
+          title: '审核状态',
+          dataIndex: 'statusv'
+        },
+        {
+          title: '所属项目',
+          dataIndex: 'projectName'
+        },
+        {
+          title: '订单ID',
+          dataIndex: 'idv'
+        },
+        {
+          title: '物料数量',
+          dataIndex: 'materialNum',
+          sorter: true
+        },
+        {
+          title: '金额',
+          dataIndex: 'orderPrice',
+          sorter: true
+        },
+        {
+          title: '付款情况',
+          dataIndex: 'paid',
+          scopedSlots: { customRender: 'paid' }
+        },
+        {
+          title: '创建时间',
+          dataIndex: 'ctime'
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          width: '180px',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
@@ -303,21 +321,38 @@ export default {
   },
   created () {
     const tab = this.$route.query.tabActiveKey
-    tab && (this.tabActiveKey = tab)
+    if (tab) {
+      this.tabActiveKey = tab
+      this.changeColumns(tab)
+    }
   },
   methods: {
     handleTabChange (key) {
       this.tabActiveKey = key
       this.queryParam.status = key
-      // 看第一个是否为审核时间
-      const isAudit = this.columns[0].dataIndex === 'auditTime'
-      if (+key < 2 && !isAudit) {
-        this.columns.unshift(...checkColumn)
-      } else if (+key > 1 && isAudit) {
-        this.columns.shift()
-        this.columns.shift()
-      }
+      this.changeColumns(key)
       this.$refs.table.refresh()
+    },
+    changeColumns (key) {
+      // 第一个为审核时间，则上一个key为1
+      const isAudit = this.columns[0].dataIndex === 'auditTime'
+      // 第一个为审核状态，则上一个key为0
+      const isStatus = this.columns[0].dataIndex === 'statusv'
+      if (key === '1') {
+        if (isStatus) {
+          this.columns.shift()
+        }
+        this.columns.unshift(...checkTimec)
+      } else if (key === '0') {
+        if (isAudit) {
+          this.columns.shift()
+        }
+        this.columns.unshift(...checkStatusC)
+      } else {
+        if (isAudit || isStatus) {
+          this.columns.shift()
+        }
+      }
     },
     toggleAdvanced () {
       this.advanced = !this.advanced

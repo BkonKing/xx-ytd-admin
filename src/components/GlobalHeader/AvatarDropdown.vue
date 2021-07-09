@@ -7,7 +7,7 @@
     <span class="ant-pro-account-avatar">
       <a-avatar
         size="small"
-        :src="currentUser.avatar"
+        :src="currentUser.avatar || 'https://ytdwz.tosolomo.com/library/img/user-avatar.png'"
         class="antd-pro-global-header-index-avatar"
       />
       <span>{{ currentUser.name }}</span>

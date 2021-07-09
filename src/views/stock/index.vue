@@ -131,7 +131,7 @@
             <a v-if="permissions.UpdatePermission" @click="handleEdit(index)"
               >编辑</a
             >
-            <a v-if="permissions.RemovePermission" @click="handleRemove(record)"
+            <a v-if="permissions.RemovePermission && ((+record.totalLknum) + (+record.totalCknum) <= 0)" @click="handleRemove(record)"
               >删除</a
             >
           </span>

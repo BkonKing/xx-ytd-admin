@@ -63,7 +63,11 @@
               >删除</a
             >
             <a
-              v-if="+record.status === 0 && permissions.AuditPermission && record.auditPermission"
+              v-if="
+                +record.status === 0 &&
+                  permissions.AuditPermission &&
+                  record.auditPermission
+              "
               @click="openCheck(record)"
               >审核</a
             >
@@ -105,46 +109,6 @@ const checkColumn = [
   }
 ]
 
-const columns = [
-  {
-    title: '审核时间',
-    dataIndex: 'auditTime',
-    scopedSlots: { customRender: 'auditTime' }
-  },
-  {
-    title: '合同状态',
-    dataIndex: 'contractStatusv'
-  },
-  {
-    title: '所属项目',
-    dataIndex: 'projectName'
-  },
-  {
-    title: '合同编号',
-    dataIndex: 'contractNo'
-  },
-  {
-    title: '订单',
-    dataIndex: 'orderNum',
-    sorter: true
-  },
-  {
-    title: '金额',
-    dataIndex: 'contractMoney',
-    sorter: true
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'ctime'
-  },
-  {
-    title: '操作',
-    dataIndex: 'id',
-    width: '180px',
-    scopedSlots: { customRender: 'action' }
-  }
-]
-
 export default {
   name: 'TableList',
   components: {
@@ -154,7 +118,6 @@ export default {
     TimeWait
   },
   data () {
-    this.columns = columns
     return {
       tabList: [
         { key: '0', tab: '全部' },
@@ -182,12 +145,49 @@ export default {
         payStatus: '',
         time: []
       },
+      columns: [
+        {
+          title: '合同状态',
+          dataIndex: 'contractStatusv'
+        },
+        {
+          title: '所属项目',
+          dataIndex: 'projectName'
+        },
+        {
+          title: '合同编号',
+          dataIndex: 'contractNo'
+        },
+        {
+          title: '订单',
+          dataIndex: 'orderNum',
+          sorter: true
+        },
+        {
+          title: '金额',
+          dataIndex: 'contractMoney',
+          sorter: true
+        },
+        {
+          title: '创建时间',
+          dataIndex: 'ctime'
+        },
+        {
+          title: '操作',
+          dataIndex: 'id',
+          width: '180px',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
         if (time && time.length) {
           this.queryParam.startDate = time[0]
           this.queryParam.endDate = time[1]
+        }
+        if (this.tabActiveKey !== '0') {
+          this.queryParam.status = +this.tabActiveKey
         }
         return getContractList(Object.assign(parameter, this.queryParam))
       },
@@ -214,7 +214,10 @@ export default {
   },
   created () {
     const tab = this.$route.query.tabActiveKey
-    tab && (this.tabActiveKey = tab)
+    if (tab) {
+      this.tabActiveKey = tab
+      this.changeColumns(+tab)
+    }
   },
   methods: {
     handleTabChange (key) {
@@ -228,15 +231,17 @@ export default {
       } else {
         this.queryParam.contractStatus = index - 10
       }
-      this.queryParam.status = key
-      // 看第一个是否为审核时间
+      this.changeColumns(index)
+      this.$refs.table.refresh()
+    },
+    changeColumns (index) {
+      // 第一个为审核时间，则上一个key为1
       const isAudit = this.columns[0].dataIndex === 'auditTime'
-      if (index < 2 && !isAudit) {
+      if (index === 1 && !isAudit) {
         this.columns.unshift(...checkColumn)
       } else if (index > 1 && isAudit) {
         this.columns.shift()
       }
-      this.$refs.table.refresh()
     },
     toggleAdvanced () {
       this.advanced = !this.advanced

@@ -36,7 +36,7 @@
     <!-- actions -->
     <template v-slot:extra>
       <a-button v-if="UpdatePermission" @click="goEdit">编辑</a-button>
-      <a-button v-if="!isPass && info.auditPermission" type="primary" @click="openCheck">审核</a-button>
+      <a-button v-if="info.status === '0' &&  info.auditPermission" type="primary" @click="openCheck">审核</a-button>
     </template>
 
     <template v-slot:extraContent>
@@ -141,7 +141,7 @@ export default {
       }).then(({ data }) => {
         this.info = data
         this.info.id = this.id
-        if (data.status === '0') {
+        if (data.status !== '1') {
           this.tabList = []
         } else {
           this.tabList = [
