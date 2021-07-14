@@ -102,3 +102,8 @@ export function getBase64 (file) {
     reader.onerror = error => reject(error)
   })
 }
+
+export function changeJSON2QueryString (params) {
+  const temp = Object.keys(params).map(key => `${key}=${params[key]}`)
+  return temp.join('&')
+}

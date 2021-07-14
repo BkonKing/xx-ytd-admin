@@ -52,7 +52,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 24 : 8"
-              @reset="this.queryParam = {}"
+              @reset="() => this.queryParam = {}"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -65,7 +65,7 @@
           v-if="permissions.ExportPermission"
           type="primary"
           :disabled="!selectedRowKeys.length"
-          @click="openExport"
+          @click="exportReport"
           >导出</a-button
         >
       </div>
@@ -78,6 +78,7 @@
         :data="loadData"
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
+        :rowSelectionPaging="true"
         showPagination="auto"
       >
         <span class="table-action" slot="action" slot-scope="text, record">
@@ -87,10 +88,6 @@
         </span>
       </s-table>
     </a-card>
-    <export-type-modal
-      v-model="visible"
-      @select="exportReport"
-    ></export-type-modal>
   </page-header-wrapper>
 </template>
 
@@ -103,7 +100,7 @@ import {
   MaterialTypeSelect,
   AdvancedForm
 } from '@/components'
-import exportTypeModal from './components/exportTypeModal'
+import { changeJSON2QueryString } from '@/utils/util'
 import { getSuppReport } from '@/api/report'
 
 const columns = [
@@ -150,14 +147,11 @@ export default {
     CompanySelect,
     SupplierTypeSelect,
     MaterialTypeSelect,
-    exportTypeModal,
     AdvancedForm
   },
   data () {
     this.columns = columns
     return {
-      // create model
-      visible: false,
       confirmLoading: false,
       // 高级搜索 展开/关闭
       advanced: false,
@@ -173,6 +167,15 @@ export default {
       },
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
+        const time = this.queryParam.ctime
+        let startDate = ''
+        let endDate = ''
+        if (time && time.length) {
+          startDate = time[0]
+          endDate = time[1]
+        }
+        this.queryParam.startDate = startDate
+        this.queryParam.endDate = endDate
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         return getSuppReport(requestParameters)
       },
@@ -201,16 +204,19 @@ export default {
       this.queryParam.endDate = value[1]
     },
     // 导出
-    openExport () {
+    exportReport () {
       if (!this.queryParam.projectId) {
         this.$message.warning('请选择项目')
-      } else if (!this.tableData || !this.tableData.length) {
-        this.$message.warning('当前项目有没有数据')
       } else {
-        this.visible = true
+        const baseUrl = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
+        const params = {
+          projectId: this.queryParam.projectId,
+          ids: this.selectedRowKeys.join(',')
+        }
+        console.log(params)
+        location.href = `${baseUrl}/operate/report/suppReportExcel?${changeJSON2QueryString(params)}`
       }
     },
-    exportReport () {},
     goDetail ({ id }) {
       this.$router.push({
         name: 'SupplierDetail',

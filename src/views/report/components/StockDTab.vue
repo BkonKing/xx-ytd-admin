@@ -45,7 +45,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 8 : 16"
-              @reset="this.queryParam = {}"
+              @reset="() => this.queryParam = {}"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -54,7 +54,7 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button v-if="permissions.ExportPermission" @click="openExport"
+        <a-button v-if="permissions.ExportPermission" @click="exportReport"
           >导出</a-button
         >
       </div>
@@ -72,10 +72,6 @@
         </span>
       </s-table>
     </a-card>
-    <export-type-modal
-      v-model="visible"
-      @select="exportReport"
-    ></export-type-modal>
   </div>
 </template>
 
@@ -86,7 +82,7 @@ import {
   CompanySelect,
   AdvancedForm
 } from '@/components'
-import exportTypeModal from './exportTypeModal'
+import { changeJSON2QueryString } from '@/utils/util'
 import { getStockReport } from '@/api/report'
 
 const columns = [
@@ -153,7 +149,6 @@ export default {
     STable,
     ProjectSelect,
     CompanySelect,
-    exportTypeModal,
     AdvancedForm
   },
   data () {
@@ -161,8 +156,6 @@ export default {
     return {
       labelCol: { span: 7 },
       wrapperCol: { span: 14 },
-      // 弹窗
-      visible: false,
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
@@ -179,14 +172,14 @@ export default {
       this.advanced = !this.advanced
     },
     // 导出
-    openExport () {
+    exportReport () {
       if (!this.queryParam.projectId) {
         this.$message.warning('请选择项目')
       } else {
-        this.visible = true
+        const baseUrl = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
+        location.href = `${baseUrl}/operate/report/stockReportExcel?${changeJSON2QueryString(this.queryParam)}`
       }
     },
-    exportReport () {},
     goDetail ({ id }) {
       this.$router.push({
         name: 'stockDetail',

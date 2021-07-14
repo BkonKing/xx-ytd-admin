@@ -53,6 +53,10 @@ export default {
           dataIndex: 'model'
         },
         {
+          title: '税率',
+          dataIndex: 'taxRate'
+        },
+        {
           title: '采购单价（元）',
           dataIndex: 'unitPrice'
         },

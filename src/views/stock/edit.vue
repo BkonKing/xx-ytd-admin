@@ -63,6 +63,7 @@
                     <a-select
                       v-model="record.unit"
                       style="width: 100%;"
+                      :dropdownMatchSelectWidth="false"
                       @change="
                         value => {
                           unitChange(value, index);
@@ -99,7 +100,7 @@
               </a-row>
             </a-col>
             <a-col flex="1">
-              <a-form-model-item prop="remarks" required>
+              <a-form-model-item prop="remarks">
                 <a-input
                   v-model="record.remarks"
                   placeholder="请输入"
@@ -276,6 +277,7 @@ export default {
         })
       })
     },
+    // 获取项目-物料-品牌-规格，对应的单位和库存
     handleChange (value, index) {
       // console.log(value)
       if (value && value.length < 3) {
@@ -321,6 +323,12 @@ export default {
         const ref = this.$refs[`tableForm${index}`][0]
         return this.handleSubmit(ref)
       })
+
+      if (!this.tableData || this.tableData.length === 0) {
+        this.$message.error('请添加物料信息')
+        this.loading = false
+        return
+      }
 
       Promise.all([basic, ...material])
         .then(() => {

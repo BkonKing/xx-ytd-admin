@@ -246,10 +246,14 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
+        let startDate = ''
+        let endDate = ''
         if (time && time.length) {
-          this.queryParam.startDate = time[0]
-          this.queryParam.endDate = time[1]
+          startDate = time[0]
+          endDate = time[1]
         }
+        this.queryParam.startDate = startDate
+        this.queryParam.endDate = endDate
         return getStockClkList(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],

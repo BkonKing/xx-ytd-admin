@@ -116,6 +116,7 @@ const vueConfig = {
     // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
     proxy: {
       '/api': {
+        // target: 'https://ytdwz.tosolomo.com/nsolid/spi/v2',
         target: 'https://ytdwz.test.tosolomo.com/nsolid/spi/v2',
         ws: false,
         changeOrigin: true,

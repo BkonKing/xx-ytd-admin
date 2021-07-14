@@ -28,7 +28,8 @@
           <a-col flex="2">物料</a-col>
           <a-col flex="2">物料品牌</a-col>
           <a-col flex="2">规格型号</a-col>
-          <a-col flex="180px">采购单价（元）</a-col>
+          <a-col flex="110px">税率</a-col>
+          <a-col flex="120px">采购单价(元)</a-col>
           <a-col flex="180px">数量</a-col>
           <a-col flex="1">金额</a-col>
           <a-col flex="100px">排序</a-col>
@@ -69,36 +70,28 @@
                 />
               </a-form-model-item>
             </a-col>
-            <a-col flex="180px">
-              <a-row type="flex">
-                <a-col flex="50px">
-                  <a-form-model-item prop="taxRate" required>
-                    <a-select
-                      v-model="record.taxRate"
-                      @change="handleTaxChange"
-                      style="width: 100%;"
-                    >
-                      <a-select-option value="1">
-                        含税
-                      </a-select-option>
-                      <a-select-option value="0">
-                        不含税
-                      </a-select-option>
-                    </a-select>
-                  </a-form-model-item>
-                </a-col>
-                <a-col flex="1">
-                  <a-form-model-item prop="unitPrice" required>
-                    <a-input
-                      v-model="record.unitPrice"
-                      placeholder="请输入"
-                      :maxLength="15"
-                      v-number-input
-                      :disabled="isDisabled"
-                    />
-                  </a-form-model-item>
-                </a-col>
-              </a-row>
+            <a-col flex="110px">
+              <a-form-model-item prop="taxRate" required>
+                <a-input
+                  v-model="record.taxRate"
+                  v-number-input="{decimal: 2,min: 0, max: 100}"
+                  placeholder="请输入"
+                  suffix="%"
+                  :disabled="isDisabled"
+                />
+              </a-form-model-item>
+            </a-col>
+            <a-col flex="120px">
+              <a-form-model-item prop="unitPrice" required>
+                <a-input
+                  v-model="record.unitPrice"
+                  v-number-input
+                  placeholder="请输入"
+                  prefix="￥"
+                  :maxLength="15"
+                  :disabled="isDisabled"
+                />
+              </a-form-model-item>
             </a-col>
             <a-col flex="180px">
               <a-row type="flex">
@@ -107,6 +100,7 @@
                     <unit-select
                       v-model="record.unit"
                       :options="unitOptions"
+                      :dropdownMatchSelectWidth="false"
                       style="width: 100%;"
                     ></unit-select>
                   </a-form-model-item>
@@ -115,9 +109,9 @@
                   <a-form-model-item prop="total" required>
                     <a-input-number
                       v-model="record.total"
+                      v-number-input
                       placeholder="请输入"
                       :min="0"
-                      :maxLength="15"
                       :disabled="isDisabled"
                     />
                   </a-form-model-item>
@@ -126,7 +120,9 @@
             </a-col>
             <a-col flex="1">
               <span style="word-break: break-all;"
-                >￥{{ NPTimes(record.unitPrice, record.total) }}</span
+                >￥{{
+                  NPTimes(record.unitPrice, parseFloat(record.total) || 0)
+                }}</span
               >
             </a-col>
             <a-col flex="100px">
@@ -154,7 +150,7 @@
           type="flex"
         >
           <a-col flex="6">总计</a-col>
-          <a-col flex="180px"></a-col>
+          <a-col flex="254px"></a-col>
           <a-col flex="180px">{{ totalNum }}</a-col>
           <a-col flex="1" style="word-break: break-all;"
             >￥{{ totalMoney }}</a-col
@@ -293,17 +289,11 @@ export default {
         materialId: '',
         brand: '',
         model: '',
-        taxRate: (this.tableData[0] && this.tableData[0].taxRate) || '1',
+        taxRate: (this.tableData[0] && this.tableData[0].taxRate) || 0,
         unitPrice: '',
         unit: this.unitOptions[0].unit,
         total: 0,
         listOrder: ''
-      })
-    },
-    // 是否含税
-    handleTaxChange (value) {
-      this.tableData.forEach(obj => {
-        obj.taxRate = value
       })
     },
     // 排序实时更改
@@ -378,7 +368,7 @@ export default {
     background: #fafafa;
     border-bottom: 1px solid #e8e8e8;
     > .ant-col {
-      padding: 16px;
+      padding: 12px 8px;
     }
   }
   &-body {

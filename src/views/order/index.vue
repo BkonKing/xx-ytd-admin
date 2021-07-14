@@ -153,7 +153,7 @@
               >编辑</a
             >
             <a
-              v-if="+record.status !== 1 && permissions.RemovePermission"
+              v-if="permissions.RemovePermission"
               @click="handleRemove(record)"
               >删除</a
             >
@@ -291,11 +291,19 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
+        let startDate = ''
+        let endDate = ''
         if (time && time.length) {
-          this.queryParam.startDate = time[0]
-          this.queryParam.endDate = time[1]
+          startDate = time[0]
+          endDate = time[1]
         }
-        return getOrderList(Object.assign(parameter, this.queryParam))
+        this.queryParam.startDate = startDate
+        this.queryParam.endDate = endDate
+        const queryParam = {}
+        if (this.tabActiveKey !== '0') {
+          queryParam.status = this.tabActiveKey
+        }
+        return getOrderList(Object.assign(parameter, this.queryParam, queryParam))
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -329,29 +337,23 @@ export default {
   methods: {
     handleTabChange (key) {
       this.tabActiveKey = key
-      this.queryParam.status = key
       this.changeColumns(key)
       this.$refs.table.refresh()
     },
     changeColumns (key) {
-      // 第一个为审核时间，则上一个key为1
-      const isAudit = this.columns[0].dataIndex === 'auditTime'
-      // 第一个为审核状态，则上一个key为0
-      const isStatus = this.columns[0].dataIndex === 'statusv'
+      // 是否有审核时间
+      const isAudit = this.columns.findIndex(column => column.dataIndex === 'auditTime') > -1
+      // 是否有审核状态
+      const isStatus = this.columns.findIndex(column => column.dataIndex === 'statusv') > -1
       if (key === '1') {
-        if (isStatus) {
-          this.columns.shift()
-        }
-        this.columns.unshift(...checkTimec)
+        isStatus && this.columns.shift()
+        !isAudit && this.columns.unshift(...checkTimec)
       } else if (key === '0') {
-        if (isAudit) {
-          this.columns.shift()
-        }
-        this.columns.unshift(...checkStatusC)
+        isAudit && this.columns.shift()
+        !isStatus && this.columns.unshift(...checkStatusC)
       } else {
-        if (isAudit || isStatus) {
-          this.columns.shift()
-        }
+        isAudit && this.columns.shift()
+        isStatus && this.columns.shift()
       }
     },
     toggleAdvanced () {

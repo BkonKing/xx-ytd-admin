@@ -54,7 +54,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 24 : 8"
-              @reset="this.queryParam = {}"
+              @reset="() => this.queryParam = {}"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -63,7 +63,7 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button v-if="permissions.ExportPermission" @click="print"
+        <a-button v-if="permissions.ExportPermission" @click="exportReport"
           >导出</a-button
         >
       </div>
@@ -74,7 +74,9 @@
         rowKey="id"
         :columns="columns"
         :data="loadData"
+        :alert="{ clear: true }"
         :rowSelection="rowSelection"
+        :rowSelectionPaging="true"
         showPagination="auto"
       >
         <span class="table-action" slot="action" slot-scope="text, record">
@@ -88,10 +90,6 @@
       v-model="visible"
       :data="activeRecord"
     ></record-detail-modal>
-    <export-type-modal
-      v-model="exportVisible"
-      @select="exportReport"
-    ></export-type-modal>
   </div>
 </template>
 
@@ -104,7 +102,7 @@ import {
 } from '@/components'
 import { getStockLkReport, getStockCkReport } from '@/api/report'
 import RecordDetailModal from '../../stock/components/RecordDetail'
-import exportTypeModal from './exportTypeModal'
+import { changeJSON2QueryString } from '@/utils/util'
 
 const columns = [
   {
@@ -157,10 +155,10 @@ export default {
     RecordDetailModal,
     ProjectSelect,
     CompanySelect,
-    exportTypeModal,
     AdvancedForm
   },
   props: {
+    // 1:入库
     type: {
       type: String,
       default: '1'
@@ -171,7 +169,6 @@ export default {
     return {
       // 审核弹窗
       visible: false,
-      exportVisible: false,
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
@@ -200,20 +197,29 @@ export default {
         selectedRowKeys: this.selectedRowKeys,
         onChange: this.onSelectChange
       }
+    },
+    eUrl () {
+      return this.type === '1' ? '/operate/report/stocklkReportExcel' : '/operate/report/stockCkReportExcel'
     }
   },
   methods: {
     toggleAdvanced () {
       this.advanced = !this.advanced
     },
-    print () {
-      if (this.selectedRowKeys.length) {
-        this.exportVisible = true
+    // 导出
+    exportReport () {
+      if (!this.queryParam.projectId) {
+        this.$message.warning('请选择项目')
       } else {
-        this.$message.warning('请选择')
+        const baseUrl = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
+        const params = {
+          projectId: this.queryParam.projectId,
+          ids: this.selectedRowKeys.join(',')
+        }
+        console.log(params)
+        location.href = `${baseUrl}${this.eUrl}?${changeJSON2QueryString(params)}`
       }
     },
-    exportReport () {},
     goDetail (record) {
       this.activeRecord = record
       this.visible = true

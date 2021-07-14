@@ -106,6 +106,10 @@ export default {
     pageInfo: {
       type: Object,
       default: null
+    },
+    rowSelectionPaging: {
+      type: Boolean,
+      default: false
     }
   }),
   watch: {
@@ -119,8 +123,10 @@ export default {
       })
       // change pagination, reset total data
       this.needTotalList = this.initTotalList(this.columns)
-      this.selectedRowKeys = []
-      this.selectedRows = []
+      if (!this.rowSelectionPaging) {
+        this.selectedRowKeys = []
+        this.selectedRows = []
+      }
     },
     pageNum (val) {
       Object.assign(this.localPagination, {
@@ -147,7 +153,7 @@ export default {
       showSizeChanger: this.showSizeChanger
     }) || false
     this.needTotalList = this.initTotalList(this.columns)
-    console.log('this.localPagination', this.pagination)
+    // console.log('this.localPagination', this.pagination)
     this.loadData()
   },
   methods: {
@@ -301,11 +307,11 @@ export default {
       ) : null
 
       // 绘制 alert 组件
-      if (this.selectedRows.length) {
+      if (this.selectedRowKeys.length) {
         return (
           <a-alert showIcon={true} style="margin-bottom: 16px">
             <template slot="message">
-              <span style="margin-right: 12px">已选择: <a style="font-weight: 600">{this.selectedRows.length} </a>项</span>
+              <span style="margin-right: 12px">已选择: <a style="font-weight: 600">{this.selectedRowKeys.length} </a>项</span>
               {needTotalItems}
               {clearItem}
             </template>

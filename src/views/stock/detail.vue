@@ -242,12 +242,14 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
+        let startDate = ''
+        let endDate = ''
         if (time && time.length) {
-          this.queryParam.startDate = time[0]
-          this.queryParam.endDate = time[1]
+          startDate = time[0]
+          endDate = time[1]
         }
-        // this.queryParam.projectId = this.info.projectId
-        // this.queryParam.companyId = this.info.companyId
+        this.queryParam.startDate = startDate
+        this.queryParam.endDate = endDate
         this.queryParam.stockId = this.id
         return getAllStockClkList(Object.assign(parameter, this.queryParam))
       },

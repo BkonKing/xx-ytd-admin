@@ -47,7 +47,7 @@
             <advanced-form
               v-model="advanced"
               :md="8"
-              @reset="this.queryParam = {}"
+              @reset="() => this.queryParam = {}"
               @search="$refs.orderTable.refresh(true)"
             ></advanced-form>
           </a-row>

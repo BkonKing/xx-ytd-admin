@@ -75,7 +75,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 24 : 8"
-              @reset="this.queryParam = {}"
+              @reset="() => this.queryParam = {}"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -87,7 +87,7 @@
         <a-button
           v-if="permissions.ExportPermission"
           :disabled="!selectedRowKeys.length"
-          @click="openExport"
+          @click="exportReport"
         >
           导出
         </a-button>
@@ -96,11 +96,12 @@
       <s-table
         ref="table"
         size="default"
-        :rowKey="rowKey"
+        rowKey="id"
         :columns="columns"
         :data="loadData"
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
+        :rowSelectionPaging="true"
         showPagination="auto"
       >
         <span class="table-action" slot="action" slot-scope="text, record">
@@ -110,10 +111,6 @@
         </span>
       </s-table>
     </a-card>
-    <export-type-modal
-      v-model="visible"
-      @select="exportReport"
-    ></export-type-modal>
   </page-header-wrapper>
 </template>
 
@@ -127,7 +124,7 @@ import {
   AdvancedForm
 } from '@/components'
 import { getMaterialReport } from '@/api/report'
-import exportTypeModal from './components/exportTypeModal'
+import { changeJSON2QueryString } from '@/utils/util'
 
 const columns = [
   {
@@ -155,6 +152,10 @@ const columns = [
     dataIndex: 'model'
   },
   {
+    title: '税率',
+    dataIndex: 'taxRate'
+  },
+  {
     title: '单价',
     dataIndex: 'unitPrice',
     sorter: true
@@ -180,13 +181,11 @@ export default {
     CompanySelect,
     PayStatusSelect,
     KpStatusSelect,
-    exportTypeModal,
     AdvancedForm
   },
   data () {
     this.columns = columns
     return {
-      visible: false,
       confirmLoading: false,
       // 高级搜索 展开/关闭
       advanced: false,
@@ -195,22 +194,23 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
+        let startDate = ''
+        let endDate = ''
         if (time && time.length) {
-          this.queryParam.startDate = time[0]
-          this.queryParam.endDate = time[1]
+          startDate = time[0]
+          endDate = time[1]
         }
+        this.queryParam.startDate = startDate
+        this.queryParam.endDate = endDate
         return getMaterialReport(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],
-      selectedRows: [],
-      rowKey ({ orderId, materialName, brand, model }) {
-        return `${orderId}-${materialName}-${brand}-${model}`
-      }
+      selectedRows: []
     }
   },
   computed: {
     rowSelection () {
-      if (!this.permissions.AuditPermission) {
+      if (!this.permissions.ExportPermission) {
         return null
       }
       return {
@@ -223,10 +223,20 @@ export default {
     toggleAdvanced () {
       this.advanced = !this.advanced
     },
-    openExport () {
-      this.visible = true
+    // 导出
+    exportReport () {
+      if (!this.queryParam.projectId) {
+        this.$message.warning('请选择项目')
+      } else {
+        const baseUrl = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
+        const params = {
+          projectId: this.queryParam.projectId,
+          ids: this.selectedRowKeys.join(',')
+        }
+        console.log(params)
+        location.href = `${baseUrl}/operate/report/materialReportExcel?${changeJSON2QueryString(params)}`
+      }
     },
-    exportReport () {},
     goDetail ({ orderId: id }) {
       this.$router.push({
         name: 'OrderDetail',

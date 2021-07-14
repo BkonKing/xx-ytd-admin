@@ -59,7 +59,7 @@
                 <a-form-item label="创建时间">
                   <a-range-picker
                     v-model="queryParam.ctime"
-                    @change="changeCreationTime"
+                    valueFormat="YYYY-MM-DD"
                   />
                 </a-form-item>
               </a-col>
@@ -150,7 +150,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import {
   STable,
   CheckForm,
@@ -221,7 +220,7 @@ export default {
         },
         {
           title: '供应物料',
-          dataIndex: 'materialCount',
+          dataIndex: 'materialName',
           sorter: true
         },
         {
@@ -257,7 +256,20 @@ export default {
       },
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        const requestParameters = Object.assign({}, parameter, this.queryParam)
+        const time = this.queryParam.ctime
+        let startDate = ''
+        let endDate = ''
+        if (time && time.length) {
+          startDate = time[0]
+          endDate = time[1]
+        }
+        this.queryParam.startDate = startDate
+        this.queryParam.endDate = endDate
+        const queryParam = {}
+        if (this.tabActiveKey !== '0') {
+          queryParam.status = this.tabActiveKey
+        }
+        const requestParameters = Object.assign({}, parameter, this.queryParam, queryParam)
         return getSupplierList(requestParameters)
       },
       selectedRowKeys: [],
@@ -292,38 +304,27 @@ export default {
   methods: {
     handleTabChange (key) {
       this.tabActiveKey = key
-      this.queryParam.status = key
       this.changeColumns(key)
       this.$refs.table.refresh()
     },
     changeColumns (key) {
-      // 第一个为审核时间，则上一个key为1
-      const isAudit = this.columns[0].dataIndex === 'auditTime'
-      // 第一个为审核状态，则上一个key为0
-      const isStatus = this.columns[0].dataIndex === 'statusv'
+      // 是否有审核时间
+      const isAudit = this.columns.findIndex(column => column.dataIndex === 'auditTime') > -1
+      // 是否有审核状态
+      const isStatus = this.columns.findIndex(column => column.dataIndex === 'statusv') > -1
       if (key === '1') {
-        if (isStatus) {
-          this.columns.shift()
-        }
-        this.columns.unshift(...checkTimec)
+        isStatus && this.columns.shift()
+        !isAudit && this.columns.unshift(...checkTimec)
       } else if (key === '0') {
-        if (isAudit) {
-          this.columns.shift()
-        }
-        this.columns.unshift(...checkStatusC)
+        isAudit && this.columns.shift()
+        !isStatus && this.columns.unshift(...checkStatusC)
       } else {
-        if (isAudit || isStatus) {
-          this.columns.shift()
-        }
+        isAudit && this.columns.shift()
+        isStatus && this.columns.shift()
       }
     },
     toggleAdvanced () {
       this.advanced = !this.advanced
-    },
-    // 创建时间更改事件
-    changeCreationTime (value) {
-      this.queryParam.startDate = moment(value[0]).format('YYYY-MM-DD')
-      this.queryParam.endDate = moment(value[1]).format('YYYY-MM-DD')
     },
     openCheck ({ id, supplierName }) {
       if (id) {

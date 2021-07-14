@@ -25,7 +25,10 @@
     <!-- actions -->
     <template v-slot:extra>
       <a-button v-if="UpdatePermission" @click="goEdit">编辑</a-button>
-      <a-button v-if="info.status === '0' && info.auditPermission" type="primary" @click="openCheck"
+      <a-button
+        v-if="info.status === '0' && info.auditPermission"
+        type="primary"
+        @click="openCheck"
         >审核</a-button
       >
     </template>
@@ -33,10 +36,14 @@
     <template v-slot:extraContent>
       <a-row class="status-list" type="flex">
         <a-col flex="1">
-          <div class="text">状态</div>
+          <div class="text">审核状态</div>
           <div class="heading">{{ info.statusv }}</div>
         </a-col>
         <a-col flex="1">
+          <div class="text">合同状态</div>
+          <div class="heading">{{ info.contractStatusv }}</div>
+        </a-col>
+        <a-col flex="2">
           <div class="text">合同金额</div>
           <div class="heading">￥{{ info.contractMoney }}</div>
         </a-col>
@@ -194,7 +201,8 @@ export default {
       getAllots({
         limitsPath: '/contract/index'
       }).then(({ data }) => {
-        this.UpdatePermission = data.UpdatePermission || data.UpdatePartPermission
+        this.UpdatePermission =
+          data.UpdatePermission || data.UpdatePartPermission
       })
     },
     handleTabChange (key) {

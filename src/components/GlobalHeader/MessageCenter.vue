@@ -6,57 +6,82 @@
     placement="bottomRight"
     overlayClassName="message-popover"
   >
-    <template v-slot:content v-if="shortInfo !==''">
+    <template v-slot:content v-if="shortInfo !== ''">
       <div class="message-container">
         <div class="message-list">
           <a-tabs default-active-key="1">
-            <a-tab-pane key="1" >
+            <a-tab-pane key="1">
               <template slot="tab">
                 <div>
-                  通知 <span v-if="+shortInfo.tz.count>0">({{shortInfo.tz.count}})</span>
-                  <span v-else-if="+shortInfo.tz.count>99">99+</span>
+                  通知
+                  <span v-if="+shortInfo.tz.count > 0"
+                    >({{ shortInfo.tz.count }})</span
+                  >
+                  <span v-else-if="+shortInfo.tz.count > 99">99+</span>
                 </div>
               </template>
-              <a-row v-for="(item,index) in shortInfo.tz.list" :key="index" class="message-item" type="flex">
+              <a-row
+                v-for="(item, index) in shortInfo.tz.list"
+                :key="index"
+                class="message-item"
+                type="flex"
+                :class="{ 'is-read-message-item': item.isRead === '1' }"
+              >
+                <a-col flex="1" @click="openPage(item)">
+                  <div class="message-item-title">{{ item.title }}</div>
+                  <div class="message-item-content">{{ item.content }}</div>
+                </a-col>
+              </a-row>
+            </a-tab-pane>
+            <a-tab-pane key="2">
+              <template slot="tab">
+                <div>
+                  消息
+                  <span v-if="+shortInfo.xx.count > 0"
+                    >({{ shortInfo.xx.count }})</span
+                  >
+                  <span v-else-if="+shortInfo.xx.count > 99">99+</span>
+                </div>
+              </template>
+              <a-row
+                v-for="(item, index) in shortInfo.xx.list"
+                :key="index"
+                class="message-item"
+                type="flex"
+                :class="{ 'is-read-message-item': item.isRead === '1' }"
+              >
                 <a-col
                   v-if="false"
                   flex="32px"
                   style="margin-right: 10px;"
+                  @click="openPage(item)"
                 ></a-col>
-                <a-col flex="1">
-                  <div class="message-item-title">{{item.title}}</div>
-                  <div class="message-item-content">{{item.content}}</div>
+                <a-col flex="1" @click="openPage(item)">
+                  <div class="message-item-title">{{ item.title }}</div>
+                  <div class="message-item-content">{{ item.content }}</div>
                 </a-col>
               </a-row>
             </a-tab-pane>
-            <a-tab-pane key="2" >
+            <a-tab-pane key="3">
               <template slot="tab">
                 <div>
-                  消息 <span v-if="+shortInfo.xx.count>0">({{shortInfo.xx.count}})</span>
-                  <span v-else-if="+shortInfo.xx.count>99">99+</span>
-
+                  代办
+                  <span v-if="+shortInfo.db.count > 0"
+                    >({{ shortInfo.db.count }})</span
+                  >
+                  <span v-else-if="+shortInfo.db.count > 99">99+</span>
                 </div>
               </template>
-              <a-row v-for="(item,index) in shortInfo.xx.list" :key="index" class="message-item" type="flex">
-                <a-col  v-if="false" flex="32px" style="margin-right: 10px;"></a-col>
-                <a-col flex="1">
-                  <div class="message-item-title">{{item.title}}</div>
-                  <div class="message-item-content">{{item.content}}</div>
-                </a-col>
-              </a-row>
-            </a-tab-pane>
-            <a-tab-pane key="3" >
-              <template slot="tab">
-                <div>
-                  代办 <span v-if="+shortInfo.db.count>0">({{shortInfo.db.count}})</span>
-                  <span v-else-if="+shortInfo.db.count>99">99+</span>
-                </div>
-              </template>
-                 <a-row v-for="(item,index) in shortInfo.db.list" :key="index" class="message-item" type="flex">
-                <a-col  v-if="false" flex="32px" style="margin-right: 10px;"></a-col>
-                <a-col flex="1">
-                  <div class="message-item-title">{{item.title}}</div>
-                  <div class="message-item-content">{{item.content}}</div>
+              <a-row
+                v-for="(item, index) in shortInfo.db.list"
+                :key="index"
+                class="message-item"
+                type="flex"
+                :class="{ 'is-read-message-item': item.isRead === '1' }"
+              >
+                <a-col flex="1" @click="openPage(item)">
+                  <div class="message-item-title">{{ item.title }}</div>
+                  <div class="message-item-content">{{ item.content }}</div>
                 </a-col>
               </a-row>
             </a-tab-pane>
@@ -75,7 +100,11 @@
 </template>
 
 <script>
-import { toGetShortMessage, toClearMessage } from '@/api/user'
+import {
+  toGetShortMessage,
+  toClearMessage,
+  toReadMessageById
+} from '@/api/user'
 export default {
   name: 'AvatarDropdown',
   props: {
@@ -114,9 +143,28 @@ export default {
     viewMore () {
       this.visible = false
       const status = this.$route.name !== 'MessageCenterIndex'
-      status && this.$router.push({
-        name: 'MessageCenterIndex'
-      })
+      status &&
+        this.$router.push({
+          name: 'MessageCenterIndex'
+        })
+    },
+    // 打开新窗口
+    openPage (item) {
+      toReadMessageById({ messageId: item.id })
+      this.visible = false
+      const paths = {
+        1: '/project/detail',
+        2: '/contract/detail',
+        3: '/supplier/detail',
+        4: '/order/detail'
+      }
+      const path = `${paths[item.sourceType]}?id=${item.sourceId}`
+      if (path !== this.$route.fullPath) {
+        const href = this.$router.resolve({
+          path
+        }).href
+        window.open(href, '_blank')
+      }
     }
   },
   created () {
@@ -133,7 +181,7 @@ export default {
     margin-right: 0;
   }
   .message-list {
-   width: 338px;
+    width: 338px;
   }
   .message-btn-box {
     height: 46px;
@@ -142,6 +190,7 @@ export default {
     padding: 10px 24px;
     min-height: 72px;
     border-bottom: 1px solid #e8e8e8;
+    cursor: pointer;
     .message-item-title {
       font-size: 14px;
       color: #000000a5;
@@ -149,6 +198,16 @@ export default {
     .message-item-content {
       font-size: 12px;
       color: #00000072;
+    }
+  }
+  .is-read-message-item {
+    .message-item-title {
+      font-size: 14px;
+      color: #00000072;
+    }
+    .message-item-content {
+      font-size: 12px;
+      color: #0000004d;
     }
   }
   .message-btn {

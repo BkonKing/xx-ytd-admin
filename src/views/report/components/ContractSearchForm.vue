@@ -2,39 +2,21 @@
   <a-form layout="inline">
     <a-row :gutter="48">
       <a-col :md="8" :sm="24">
-      <a-form-item label="审核状态">
-        <a-select
-          v-model="queryParam.status"
-          placeholder="请选择"
-          :disabled="statusAble"
-        >
-          <a-select-option
-            v-for="option in statusOptions"
-            :value="option.value"
-            :key="option.value"
-          >
-            {{ option.text }}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
-      </a-col>
-      <a-col :md="8" :sm="24">
         <a-form-item label="所属项目">
           <project-select v-model="queryParam.projectId"></project-select>
         </a-form-item>
       </a-col>
-      <template v-if="advanced">
-        <a-col v-if="isParentCompany" :md="8" :sm="24">
-          <a-form-item label="所属公司">
-            <company-select v-model="queryParam.companyId"></company-select>
-          </a-form-item>
-        </a-col>
+      <a-col v-if="isParentCompany" :md="8" :sm="24">
+        <a-form-item label="所属公司">
+          <company-select v-model="queryParam.companyId"></company-select>
+        </a-form-item>
+      </a-col>
+      <template v-if="!isParentCompany || advanced">
         <a-col :md="8" :sm="24">
           <a-form-item label="合同状态">
             <a-select
               v-model="queryParam.contractStatus"
               placeholder="请选择"
-              :disabled="contractStatusAble"
             >
               <a-select-option
                 v-for="option in contractStatusOptions"
@@ -46,6 +28,8 @@
             </a-select>
           </a-form-item>
         </a-col>
+      </template>
+      <template v-if="advanced">
         <a-col :md="8" :sm="24">
           <a-form-item label="合同类型">
             <contract-type-select
@@ -92,7 +76,7 @@
       </template>
       <advanced-form
         v-model="advanced"
-        :md="isParentCompany ? 16 : 24"
+        :md="isParentCompany ? 24 : 8"
         @search="search"
         @reset="reset"
       ></advanced-form>
@@ -109,7 +93,7 @@ import {
   AdvancedForm
 } from '@/components'
 export default {
-  name: 'contractSearchForm',
+  name: 'ContractSearchForm',
   components: {
     ProjectSelect,
     CompanySelect,
@@ -121,27 +105,12 @@ export default {
     value: {
       type: Object,
       default: () => ({})
-    },
-    statusAble: {
-      type: Boolean,
-      default: false
-    },
-    contractStatusAble: {
-      type: Boolean,
-      default: false
     }
   },
   data () {
     return {
       queryParam: this.value,
       advanced: false,
-      // 审核状态：0=全部、1=待审核、2=已通过、3=未通过
-      statusOptions: [
-        { value: '0', text: '全部' },
-        { value: '1', text: '待审核' },
-        { value: '2', text: '已通过' },
-        { value: '3', text: '未通过' }
-      ],
       // 合同状态：0=全部、1=正常、2=延期、3=终止
       contractStatusOptions: [
         {

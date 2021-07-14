@@ -3,27 +3,59 @@
     <template v-slot:content>
       <div class="page-header-content">
         <div class="avatar">
-          <a-avatar  size="large" :src="(info && info.adminInfo.avatar)? info.adminInfo.avatar:'https://ytdwz.tosolomo.com/library/img/user-avatar.png'" />
+          <a-avatar
+            size="large"
+            :src="
+              info && info.adminInfo.avatar
+                ? info.adminInfo.avatar
+                : 'https://ytdwz.tosolomo.com/library/img/user-avatar.png'
+            "
+          />
         </div>
         <div class="content">
           <div class="content-title">
             <!-- {{ timeFix }}，{{ user.name }}<span class="welcome-text">，{{ welcome }}</span> -->
-            <span v-if="info">{{info.adminInfo.realName}}，</span>祝你开心每一天！
+            <span v-if="info">{{ info.adminInfo.realName }}，</span
+            >祝你开心每一天！
           </div>
-          <div>{{info.department}}</div>
+          <div>{{ info.department }}</div>
         </div>
       </div>
     </template>
     <template v-slot:extraContent>
       <div class="extra-content">
-        <div class="stat-item">
-          <a-statistic title="待审核订单" v-if="info.dsOrderPermission===1" :style="{cursor: info.dsOrderNum>0?'pointer':''}" @click="toCheck(1,info.dsOrderNum)" :value="info.dsOrderNum>0?info.dsOrderNum:'--'" />
+        <div
+          v-if="info.dsOrderPermission === 1"
+          class="stat-item"
+          @click="toCheck(1, info.dsOrderNum)"
+        >
+          <a-statistic
+            title="待审核订单"
+            :style="{ cursor: info.dsOrderNum > 0 ? 'pointer' : '' }"
+            :value="info.dsOrderNum > 0 ? info.dsOrderNum : '--'"
+          />
         </div>
-        <div class="stat-item">
-          <a-statistic title="待审核合同" v-if="info.dsContractPermission===1" :style="{cursor: info.dsContractNum>0?'pointer':''}" @click="toCheck(2,info.dsContractNum)" :value="info.dsContractNum>0?info.dsContractNum:'--'" />
+        <div
+          v-if="info.dsContractPermission === 1"
+          class="stat-item"
+          @click="toCheck(2, info.dsContractNum)"
+        >
+          <a-statistic
+            title="待审核合同"
+            :style="{ cursor: info.dsContractNum > 0 ? 'pointer' : '' }"
+            :value="info.dsContractNum > 0 ? info.dsContractNum : '--'"
+          />
         </div>
-        <div class="stat-item">
-          <a-statistic title="待审核供应商" v-if="info.dsSupplierPermission===1" :style="{cursor: info.dsSupplierNum>0?'pointer':''}" @click="toCheck(3,info.dsSupplierNum)" :value="info.dsSupplierNum>0?info.dsSupplierNum:'--'" />
+        <div
+          v-if="info.dsSupplierPermission === 1"
+          class="stat-item"
+          @click="toCheck(3, info.dsSupplierNum)"
+        >
+          <a-statistic
+            title="待审核供应商"
+            :style="{ cursor: info.dsSupplierNum > 0 ? 'pointer' : '' }"
+            :value="info.dsSupplierNum > 0 ? info.dsSupplierNum : '--'"
+          />
         </div>
       </div>
     </template>
@@ -46,7 +78,12 @@
                 :key="i"
                 v-for="(item, i) in info.project"
               >
-                <a-card :bordered="false" style="cursor: pointer;" :body-style="{ padding: 0 }" @click="$router.push('/project/detail?id='+item.projectId)">
+                <a-card
+                  :bordered="false"
+                  style="cursor: pointer;"
+                  :body-style="{ padding: 0 }"
+                  @click="$router.push('/project/detail?id=' + item.projectId)"
+                >
                   <a-card-meta>
                     <div slot="title" class="card-title">
                       <a-avatar size="small" :src="item.cover" />
@@ -59,15 +96,15 @@
                   <div class="project-item">
                     <div class="item">
                       <div class="title">公司</div>
-                      <div class="num">{{item.relationCompanyNum}}</div>
+                      <div class="num">{{ item.relationCompanyNum }}</div>
                     </div>
                     <div class="item">
                       <div class="title">合同</div>
-                      <div class="num">{{item.relationContractNum}}</div>
+                      <div class="num">{{ item.relationContractNum }}</div>
                     </div>
                     <div class="item">
                       <div class="title">订单</div>
-                      <div class="num">{{item.relationOrderNum}}</div>
+                      <div class="num">{{ item.relationOrderNum }}</div>
                     </div>
                   </div>
                 </a-card>
@@ -80,10 +117,8 @@
               <a-list-item :key="index" v-for="(item, index) in info.dynamic">
                 <a-list-item-meta>
                   <a-avatar slot="avatar" :src="item.dyAvatar" />
-                  <div slot="title" v-html="item.dyContent">
-
-                  </div>
-                  <div slot="description">{{item.dyCtime}}</div>
+                  <div slot="title" v-html="item.dyContent"></div>
+                  <div slot="description">{{ item.dyCtime }}</div>
                 </a-list-item-meta>
               </a-list-item>
             </a-list>
@@ -104,20 +139,32 @@
             :body-style="{ padding: 0 }"
           >
             <div class="item-group">
-              <a v-for="(item,index) in info.navigation" :key='index' @click="openTab(item)">{{item}}</a>
-
+              <a
+                v-for="(item, index) in info.navigation"
+                :key="index"
+                @click="openTab(item)"
+                >{{ item }}</a
+              >
             </div>
           </a-card>
-          <a-card class="card3" :loading="loading"  :bordered="false">
+          <a-card class="card3" :loading="loading" :bordered="false">
             <template #title>
               <div class="title">
-                <span class='txt'>待办通知</span>
-                <a-button type="link" @click="$router.push('/MessageCenter/index')">更多</a-button>
+                <span class="txt">待办通知</span>
+                <a-button
+                  type="link"
+                  @click="$router.push('/MessageCenter/index')"
+                  >更多</a-button
+                >
               </div>
             </template>
             <div class="members">
-              <div class="item" v-for="(item,index) in info.message" :key='index'>
-                [通知] {{item.content}}
+              <div
+                class="item"
+                v-for="(item, index) in info.message"
+                :key="index"
+              >
+                [通知] {{ item.content }}
               </div>
             </div>
           </a-card>
@@ -234,6 +281,7 @@ export default {
   },
   methods: {
     toCheck (type, num) {
+      console.log(111)
       if (num > 0) {
         if (type === 1) {
           this.$router.push('/order/index?tabActiveKey=' + 1)
@@ -311,8 +359,9 @@ export default {
     margin-left: 36px;
     overflow: hidden;
   }
-  .projectName{
-    font-family: 'Microsoft Tai Le Bold', 'Microsoft Tai Le Regular', 'Microsoft Tai Le';
+  .projectName {
+    font-family: "Microsoft Tai Le Bold", "Microsoft Tai Le Regular",
+      "Microsoft Tai Le";
     font-weight: 700;
     font-style: normal;
     font-size: 14px;
@@ -367,13 +416,13 @@ export default {
     overflow: hidden;
   }
 }
-/deep/ .ant-card-head-title{
-  font-family: 'PingFang SC Bold', 'PingFang SC';
-    font-weight: 650;
-    font-style: normal;
-    font-size: 16px;
-    text-align: left;
-    line-height: 24px;
+/deep/ .ant-card-head-title {
+  font-family: "PingFang SC Bold", "PingFang SC";
+  font-weight: 650;
+  font-style: normal;
+  font-size: 16px;
+  text-align: left;
+  line-height: 24px;
 }
 .item-group {
   padding: 20px 0 8px 24px;
@@ -385,7 +434,6 @@ export default {
     font-size: 14px;
     margin-bottom: 13px;
     width: 25%;
-
   }
 }
 
@@ -413,16 +461,15 @@ export default {
   //     }
   //   }
   // }
-  .item{
+  .item {
     margin-bottom: 18px;
   }
 }
-.card3{
-  .title{
+.card3 {
+  .title {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
   }
 }
 .mobile {
@@ -441,6 +488,5 @@ export default {
   .headerContent .title .welcome-text {
     display: none;
   }
-
 }
 </style>
