@@ -214,6 +214,7 @@ export default {
       this.title = '编辑项目'
       this.showModal()
       this.$refs.projectForm && this.$refs.projectForm.resetFields()
+      this.$refs.projectForm.mode = 'edit'
       this.$nextTick(() => {
         const data = clonedeep(obj)
         data.companyLogo = []

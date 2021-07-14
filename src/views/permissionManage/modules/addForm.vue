@@ -17,7 +17,8 @@
         :maxLength="18"
         placeholder="请输入6~18个英文、数字"
       ></a-input>
-      <div>如果未填，则默认密码为888888</div>
+      <div v-if="mode==='add'">如果未填，则默认密码为888888</div>
+      <div v-else>如果未填，则不修改密码</div>
     </a-form-model-item>
     <a-form-model-item label="选择角色" prop="roleId">
      <a-tree-select
@@ -104,11 +105,6 @@ export default {
     },
     // 设置账号
     setAccount (e) {
-      if (this.form.account !== '') {
-        if (this.form.account.length < 2) {
-          this.$message.error('请输入正确的账号')
-        }
-      }
       // console.log(e.target.value)
       e.target.value = e.target.value.replace(
         // eslint-disable-next-line no-useless-escape
@@ -117,11 +113,6 @@ export default {
     },
     // 设置密码
     setPasswd (e) {
-      if (this.form.password !== '') {
-        if (this.form.password.length < 6) {
-          this.$message.error('请输入正确的密码')
-        }
-      }
       // eslint-disable-next-line no-useless-escape
       e.target.value = e.target.value.replace(/[^\a-\z\A-\Z0-9]/g, '')
     },

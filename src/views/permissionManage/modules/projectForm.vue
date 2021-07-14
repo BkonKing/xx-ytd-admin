@@ -100,7 +100,8 @@
          oninput="value=value.replace(/[^\a-\z\A-\Z0-9]/g,'')"
         placeholder="请输入6~18个英文、数字"
       />
-      <div>如果未填，则默认密码为888888</div>
+      <div v-if="mode==='add'">如果未填，则默认密码为888888</div>
+      <div v-else>如果未填，则不修改密码</div>
     </a-form-model-item>
      <a-form-model-item label="真实姓名" required>
       <a-row type="flex">
@@ -180,7 +181,8 @@ export default {
         shortName: [{ required: true, message: '请输入公司简称' }],
         shortEng: [{ required: true, message: '请输入公司英文简称' }]
       },
-      area: chinaArea
+      area: chinaArea,
+      mode: 'add'
     }
   },
   computed: {
