@@ -34,6 +34,7 @@
                   :key="index"
                   :value="item.id"
                   :label="item.realName"
+
                 >
                   {{ item.realName }}
                 </a-select-option>
@@ -221,7 +222,8 @@ export default {
       bol: true,
       orderPeoPleList: [], // 订单审核人员
       contractPeoPleList: [], // 合同审核人员
-      supplierPeoPleList: [] // 供应商审核人员
+      supplierPeoPleList: [], // 供应商审核人员
+      orderIds: []
     }
   },
   watch: {
@@ -482,6 +484,8 @@ export default {
           jibie: '二级审核',
           level: []
         })
+        this.orderIds = this[item].arr[0].level
+        console.log('一级审核', this[item].arr[0].level)
       } else if (this[item].arr.length === 2) {
         this[item].arr.push({
           id: Math.random() * 999,

@@ -8,23 +8,16 @@
         placeholder="请输入2~20个中文、英文或数字"
       ></a-input>
     </a-form-model-item>
-    <a-form-model-item label="登录密码" v-if="mode==='add'" prop="password">
+
+      <a-form-model-item label="登录密码" >
       <a-input
       type="password"
         v-model="form.password"
         @blur="setPasswd"
         :maxLength="18"
-        placeholder="请输入6~18个英文、数字，区分大小写"
+        placeholder="请输入6~18个英文、数字"
       ></a-input>
-    </a-form-model-item>
-        <a-form-model-item label="登录密码" v-else >
-      <a-input
-      type="password"
-        v-model="form.password"
-        @blur="setPasswd"
-        :maxLength="18"
-        placeholder="请输入6~18个英文、数字，区分大小写"
-      ></a-input>
+      <div>如果未填，则默认密码为888888</div>
     </a-form-model-item>
     <a-form-model-item label="选择角色" prop="roleId">
      <a-tree-select
@@ -45,7 +38,7 @@
       <a-input v-model="form.realName" :maxLength="10"  @blur="setName" placeholder="请输入1~10个字符"></a-input>
     </a-form-model-item>
     <a-form-model-item label="手机号">
-      <a-input v-model="form.mobile" :maxLength="11" oninput="value=value.replace(/[^0-9]/g,'')"></a-input>
+      <a-input v-model="form.mobile" placeholder="请输入11位手机号" :maxLength="11" oninput="value=value.replace(/[^0-9]/g,'')"></a-input>
     </a-form-model-item>
   </a-form-model>
 </template>
@@ -74,10 +67,10 @@ export default {
       treeData: [],
       form: {
         account: '', // 是varchar人员登录账户
-        password: '', // 否varchar登录密码
+        password: undefined, // 否varchar登录密码
         realName: '', // 否varchar姓名
         mobile: '', // 否varchar手机号
-        roleId: '' // 是int权限角色ID
+        roleId: undefined // 是int权限角色ID
       },
       rules: {
         account: [{ required: true, message: '请输入登录账号', trigger: 'change' }],

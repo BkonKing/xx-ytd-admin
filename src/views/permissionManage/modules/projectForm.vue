@@ -86,18 +86,21 @@
       <a-input
         v-model="form.adminAccount"
         :maxLength="20"
+
          oninput="value=value.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"
         placeholder="请输入2~20个中文、英文或数字"
       />
     </a-form-model-item>
-   <a-form-model-item label="登录密码" prop="adminPassword">
+   <a-form-model-item label="登录密码" >
       <a-input
         v-model="form.adminPassword"
-        :maxLength="20"
+        :maxLength="18"
         type="password"
+
          oninput="value=value.replace(/[^\a-\z\A-\Z0-9]/g,'')"
-        placeholder="请输入6~18个英文、数字，区分大小写"
+        placeholder="请输入6~18个英文、数字"
       />
+      <div>如果未填，则默认密码为888888</div>
     </a-form-model-item>
      <a-form-model-item label="真实姓名" required>
       <a-row type="flex">
@@ -191,6 +194,7 @@ export default {
     }
   },
   methods: {
+
     handleSubmit () {
       return new Promise((resolve, reject) => {
         this.$refs.projectForm.validate(valid => {
