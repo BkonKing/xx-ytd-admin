@@ -131,6 +131,7 @@ import {
   toRemoveCompany
 } from '@/api/permissionManage'
 import companyPermiss from './modules/companyPermiss.vue'
+
 const TagSelectOption = TagSelect.Option
 // const AvatarListItem = AvatarList.AvatarItem
 
@@ -161,6 +162,13 @@ export default {
   filters: {
     fromNow (date) {
       return moment(date).fromNow()
+    }
+  },
+  watch: {
+    visible (newVal) {
+      if (newVal === false) {
+        this.$refs.projectForm.mode = 'add'
+      }
     }
   },
   created () {

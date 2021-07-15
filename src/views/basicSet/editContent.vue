@@ -125,7 +125,6 @@
             >
               <a-textarea
                 v-model="form.lczy"
-                :maxLength="25"
                 placeholder="请输入"
                 auto-size
               />

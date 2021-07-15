@@ -64,11 +64,22 @@
                   style="width:120px"
                   placeholder="名称"
                 ></a-input>
-                <a-input
-                  v-model="item.unit"
-                  style="width:120px"
-                  placeholder="单位"
-                ></a-input>
+                <a-select
+                   v-model="item.unit"
+                    mode="tags"
+                    style="width: 350px"
+                    :token-separators="[',']"
+
+                  >
+                    <a-select-option
+                      v-for="(item,index) in selectList"
+                      :key="item.id+''"
+                      :disabled='index===0'
+
+                    >
+                      {{item.dw}}
+                    </a-select-option>
+                  </a-select>
                 <a-input
                   v-model="item.listOrder"
                   style="width:120px"
@@ -121,11 +132,22 @@
                     style="width:120px"
                     placeholder="名称"
                   ></a-input>
-                  <a-input
-                    v-model="item.unit"
-                    style="width:120px"
-                    placeholder="单位"
-                  ></a-input>
+                  <a-select
+                   v-model="item.unit"
+                    mode="tags"
+                    style="width: 350px"
+                    :token-separators="[',']"
+
+                  >
+                    <a-select-option
+                      v-for="(item,index) in selectList"
+                      :key="item.id+''"
+                      :disabled='index===0'
+
+                    >
+                      {{item.dw}}
+                    </a-select-option>
+                  </a-select>
                   <a-input
                     v-model="item.listOrder"
                     style="width:120px"
@@ -153,11 +175,22 @@
                   style="width:120px"
                   placeholder="名称"
                 ></a-input>
-                <a-input
-                  v-model="item.unit"
-                  style="width:120px"
-                  placeholder="单位"
-                ></a-input>
+                <a-select
+                   v-model="item.unit"
+                    mode="tags"
+                    style="width: 350px"
+                    :token-separators="[',']"
+
+                  >
+                    <a-select-option
+                      v-for="(item,index) in selectList"
+                      :key="item.id+''"
+                      :disabled='index===0'
+
+                    >
+                      {{item.dw}}
+                    </a-select-option>
+                  </a-select>
                 <a-input
                   v-model="item.listOrder"
                   style="width:120px"
@@ -208,11 +241,22 @@
                     style="width:120px"
                     placeholder="名称"
                   ></a-input>
-                  <a-input
-                    v-model="item.unit"
-                    style="width:120px"
-                    placeholder="单位"
-                  ></a-input>
+                  <a-select
+                   v-model="item.unit"
+                    mode="tags"
+                    style="width: 350px"
+                    :token-separators="[',']"
+
+                  >
+                    <a-select-option
+                      v-for="(item,index) in selectList"
+                      :key="item.id+''"
+                      :disabled='index===0'
+
+                    >
+                      {{item.dw}}
+                    </a-select-option>
+                  </a-select>
                   <a-input
                     v-model="item.listOrder"
                     style="width:120px"
@@ -240,11 +284,22 @@
                   style="width:120px"
                   placeholder="名称"
                 ></a-input>
-                <a-input
-                  v-model="item.unit"
-                  style="width:120px"
-                  placeholder="单位"
-                ></a-input>
+               <a-select
+                   v-model="item.unit"
+                    mode="tags"
+                    style="width: 350px"
+                    :token-separators="[',']"
+
+                  >
+                    <a-select-option
+                      v-for="(item,index) in selectList"
+                      :key="item.id+''"
+                      :disabled='index===0'
+
+                    >
+                      {{item.dw}}
+                    </a-select-option>
+                  </a-select>
                 <a-input
                   v-model="item.listOrder"
                   style="width:120px"
@@ -311,7 +366,8 @@ export default {
       createBol: true,
       inputArr3: [],
       initBol: true,
-      showInit: true
+      showInit: true,
+      selectList: [{ id: Math.random() * 999, dw: '可输入单个词，结尾加enter键自动创建一个单位' }]
     }
   },
   watch: {
@@ -375,7 +431,7 @@ export default {
         categoryName: '',
         categoryNo: '',
         listOrder: '',
-        unit: ''
+        unit: []
       })
     },
     // 删除初始角色数据
@@ -430,7 +486,7 @@ export default {
         categoryName: '',
         categoryNo: '',
         listOrder: '',
-        unit: ''
+        unit: []
       })
     },
     // 删除初始化输入框
@@ -439,7 +495,7 @@ export default {
     },
     // 批量 编辑删除菜单
     removeMe2 (id, index) {
-      console.log('批量 编辑删除菜单', id)
+      // console.log('批量 编辑删除菜单', id)
       this.idArr2.push(id)
       this.itemInfo2.children.splice(index, 1)
     },
@@ -454,7 +510,7 @@ export default {
       }
 
       if (this.parentId === 0) {
-        console.log('执行了11')
+        // console.log('执行了11')
         let menus = this.itemInfo.children.map(item => {
           return {
             parentId: item.parentId,
@@ -485,7 +541,7 @@ export default {
           this.$message.info(res.message)
         }
       } else {
-        console.log('执行了22')
+        // console.log('执行了22')
         let menus = []
         if (this.itemInfo.children) {
           menus = this.itemInfo.children.map(item => {
@@ -558,7 +614,7 @@ export default {
               parentId: item.parentId,
               categoryNo: item.categoryNo,
               categoryName: item.categoryName,
-              unit: item.unit,
+              unit: item.unit ? item.unit : [],
               listOrder: item.listOrder
             }
           })
@@ -584,7 +640,7 @@ export default {
                 parentId: item.parentId,
                 categoryNo: item.categoryNo,
                 categoryName: item.categoryName,
-                unit: item.unit,
+                unit: item.unit ? item.unit : [],
                 listOrder: item.listOrder
               }
             })
@@ -639,7 +695,7 @@ export default {
         categoryName: '',
         categoryNo: '',
         listOrder: '',
-        unit: ''
+        unit: []
       })
     },
     // 删除创建分支输入框

@@ -185,6 +185,7 @@ export default {
       mode: 'add'
     }
   },
+
   computed: {
     options () {
       return this.projectList.map(option => {
