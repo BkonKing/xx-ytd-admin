@@ -62,7 +62,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 16 : 24"
-              @reset="this.queryParam = {}"
+              @reset="() => this.queryParam = {}"
               @search="$refs.orderTable.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -182,8 +182,7 @@ import {
   KpStatusSelect,
   AdvancedForm
 } from '@/components'
-import { getProOrderPayList } from '@/api/project'
-import { getOrderList } from '@/api/contract'
+import { getOrderPayByProjectId, getProjectOrderList } from '@/api/project'
 export default {
   name: 'contractTab',
   components: {
@@ -242,7 +241,11 @@ export default {
         }
       ],
       orderLoadData: parameter => {
-        return getOrderList(Object.assign(parameter, this.queryParam))
+        return getProjectOrderList(
+          Object.assign(parameter, this.queryParam, {
+            projectId: this.projectId
+          })
+        )
       },
       payData: {},
       columns: [
@@ -287,7 +290,7 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        return getProOrderPayList(
+        return getOrderPayByProjectId(
           Object.assign(parameter, {
             ...this.payParams,
             projectId: this.projectId

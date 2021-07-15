@@ -25,7 +25,7 @@
       </a-select>
     </a-form-model-item>
     <a-form-model-item label="付款金额" prop="paid" required>
-      <a-input v-model="form.paid" placeholder="请输入" addon-before="￥">
+      <a-input v-model="form.paid" placeholder="请输入" addon-before="￥" v-number-input>
       </a-input>
     </a-form-model-item>
     <a-form-model-item label="付款凭证" prop="payPz">
@@ -43,6 +43,7 @@
 <script>
 import { UploadImage } from '@/components'
 import { getPayType } from '@/api/contract'
+import { GreaterZero } from '@/utils/formValidator'
 export default {
   name: 'PaymentEditForm',
   components: {
@@ -56,7 +57,7 @@ export default {
       rules: {
         payTime: [{ required: true, message: '请输入项目名称' }],
         payType: [{ required: true, message: '请选择付款方式' }],
-        paid: [{ required: true, message: '请输入付款金额' }],
+        paid: [{ required: true, message: '请输入付款金额' }, { validator: GreaterZero, trigger: 'blur' }],
         isKp: [{ required: true, message: '请选择是否开票' }]
       },
       payTypeOptions: []

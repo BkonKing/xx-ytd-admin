@@ -32,6 +32,12 @@
             查看
           </a-button>
         </a-descriptions-item>
+        <a-descriptions-item label="合同名称">
+          <router-link
+            :to="{ name: 'ContractDetail', query: { id: info.contractId } }"
+            >{{ info.contractName || '--' }}</router-link
+          >
+        </a-descriptions-item>
         <a-descriptions-item label="创建人">
           {{ info.createAdmin }}
         </a-descriptions-item>

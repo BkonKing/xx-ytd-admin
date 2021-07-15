@@ -44,7 +44,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 8 : 16"
-              @reset="this.queryParam = {}"
+              @reset="() => this.queryParam = {}"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -102,7 +102,9 @@
     </a-card>
     <export-type-modal
       v-model="visible"
-      @select="exportReport"
+      eUrl="/operate/report/paidReportExcel"
+      wUrl="/operate/report/paidReportWord"
+      :params="queryParam"
     ></export-type-modal>
   </page-header-wrapper>
 </template>
@@ -211,7 +213,6 @@ export default {
         this.visible = true
       }
     },
-    exportReport () {},
     handleEdit (index) {
       const target = this.tableData[index]
       if (target) {

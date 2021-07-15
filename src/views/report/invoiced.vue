@@ -44,7 +44,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 8 : 16"
-              @reset="this.queryParam = {}"
+              @reset="() => this.queryParam = {}"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -102,7 +102,9 @@
     </a-card>
     <export-type-modal
       v-model="visible"
-      @select="exportReport"
+      eUrl="/operate/report/invoicedReportExcel"
+      wUrl="/operate/report/invoicedReportWord"
+      :params="queryParam"
     ></export-type-modal>
   </page-header-wrapper>
 </template>

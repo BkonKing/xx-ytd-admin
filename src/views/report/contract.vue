@@ -2,11 +2,11 @@
   <page-header-wrapper>
     <a-card class="search-card" style="margin-top: 24px" :bordered="false">
       <div class="table-page-search-wrapper">
-        <search-form
+        <contract-search-form
           v-model="queryParam"
           ref="contractSearchForm"
           @search="$refs.table.refresh(true)"
-        ></search-form>
+        ></contract-search-form>
       </div>
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
@@ -15,7 +15,7 @@
          v-if="permissions.ExportPermission"
           type="primary"
           :disabled="!selectedRowKeys.length"
-          @click="openExport"
+          @click="exportReport"
           >导出</a-button
         >
       </div>
@@ -28,6 +28,7 @@
         :data="loadData"
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
+        :rowSelectionPaging="true"
         showPagination="auto"
       >
         <span class="table-action" slot="action" slot-scope="text, record">
@@ -37,18 +38,14 @@
         </span>
       </s-table>
     </a-card>
-    <export-type-modal
-      v-model="visible"
-      @select="exportReport"
-    ></export-type-modal>
   </page-header-wrapper>
 </template>
 
 <script>
 import { STable } from '@/components'
 import { getContractReport } from '@/api/report'
-import SearchForm from '../contract/components/seachForm.vue'
-import exportTypeModal from './components/exportTypeModal'
+import { changeJSON2QueryString } from '@/utils/util'
+import ContractSearchForm from './components/ContractSearchForm'
 
 const columns = [
   {
@@ -74,7 +71,7 @@ const columns = [
   },
   {
     title: '金额',
-    dataIndex: 'orderMoney',
+    dataIndex: 'contractMoney',
     sorter: true
   },
   {
@@ -93,14 +90,11 @@ export default {
   name: 'reportContract',
   components: {
     STable,
-    SearchForm,
-    exportTypeModal
+    ContractSearchForm
   },
   data () {
     this.columns = columns
     return {
-      // 弹窗
-      visible: false,
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
@@ -118,10 +112,14 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
+        let startDate = ''
+        let endDate = ''
         if (time && time.length) {
-          this.queryParam.startDate = time[0]
-          this.queryParam.endDate = time[1]
+          startDate = time[0]
+          endDate = time[1]
         }
+        this.queryParam.startDate = startDate
+        this.queryParam.endDate = endDate
         return getContractReport(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],
@@ -140,18 +138,19 @@ export default {
     }
   },
   methods: {
-    toggleAdvanced () {
-      this.advanced = !this.advanced
-    },
     // 导出
-    openExport () {
+    exportReport () {
       if (!this.queryParam.projectId) {
         this.$message.warning('请选择项目')
       } else {
-        this.visible = true
+        const baseUrl = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
+        const params = {
+          projectId: this.queryParam.projectId,
+          ids: this.selectedRowKeys.join(',')
+        }
+        location.href = `${baseUrl}/operate/report/contractReportExcel?${changeJSON2QueryString(params)}`
       }
     },
-    exportReport () {},
     goDetail ({ id }) {
       this.$router.push({
         name: 'ContractDetail',

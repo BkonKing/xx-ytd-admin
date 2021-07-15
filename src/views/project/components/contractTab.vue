@@ -107,7 +107,7 @@ import {
   ContractTypeSelect,
   PayStatusSelect
 } from '@/components'
-import { getContractList } from '@/api/contract'
+import { getProjectContractList } from '@/api/project'
 export default {
   name: 'contractTab',
   components: {
@@ -171,7 +171,7 @@ export default {
         },
         {
           title: '金额',
-          dataIndex: 'orderMoney',
+          dataIndex: 'contractMoney',
           sorter: true
         },
         {
@@ -182,7 +182,7 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         this.queryParam.projectId = this.projectId
-        return getContractList(Object.assign(parameter, this.queryParam))
+        return getProjectContractList(Object.assign(parameter, this.queryParam))
       }
     }
   },

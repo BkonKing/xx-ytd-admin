@@ -10,7 +10,9 @@ export const report = {
   materialReport: '/operate/report/materialReport',
   stockReport: '/operate/report/stockReport',
   stockLkReport: '/operate/report/stockLkReport',
-  stockCkReport: '/operate/report/stockCkReport'
+  stockCkReport: '/operate/report/stockCkReport',
+  paidReportExcel: '/operate/report/paidReportExcel',
+  invoicedReportExcel: '/operate/report/invoicedReportExcel'
 }
 
 // 付款明细报表接口

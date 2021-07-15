@@ -1,9 +1,10 @@
-function onInput (el, ele, binding, vnode, e) {
+function onInput (el, ele, binding, vNode, e) {
   let val = ele.value
   // modifiers为修饰符对象，传入了int，则其int属性为true
   if (binding.modifiers.int) {
     val = ele.value.replace(/[^\d]/g, '')
   } else if (binding.modifiers.EnNum) {
+    // 只能输入英文数字
     val = ele.value.replace(/[^A-Za-z0-9]/g, '')
   } else {
     // 清除"数字"和"."以外的字符
@@ -12,15 +13,63 @@ function onInput (el, ele, binding, vnode, e) {
     val = val.replace(/\.{2,}/g, '.')
     // 第一个字符如果是.号，则补充前缀0
     val = val.replace(/^\./g, '0.')
+    if (typeof binding.value !== 'undefined') {
+      // 期望保留的最大小数位数
+      let pointKeep = 0
+      if (typeof binding.value === 'string' ||
+       typeof binding.value === 'number') {
+        pointKeep = parseInt(binding.value)
+      } else if (typeof binding.value === 'object') {
+        // 支持新的小数点保留位配置
+        pointKeep = binding.value.decimal
+      }
+      if (!isNaN(pointKeep)) {
+        if (!Number.isInteger(pointKeep) ||
+        pointKeep < 0) {
+          pointKeep = 0
+        }
+        const str = '^(\\d+)\\.(\\d{' + pointKeep + '}).*$'
+        const reg = new RegExp(str)
+        if (pointKeep === 0) {
+          // 不需要小数点
+          val = val.replace(reg, '$1')
+        } else {
+          // 通过正则保留小数点后指定的位数
+          val = val.replace(reg, '$1.$2')
+        }
+      }
+    }
+  }
+  // 支持输入的最大值和最小值的限制
+  if (val !== '' && typeof binding.value === 'object') {
+    let { min, max } = binding.value
+    min = parseFloat(min)
+    max = parseFloat(max)
+    if (!isNaN(min)) {
+      if (min >= 0) {
+        // 不能是负数
+        val = val.replace('-', '')
+      }
+      if (parseFloat(val) < min) {
+        val = min
+      }
+    }
+    if (!isNaN(max)) {
+      if (parseFloat(val) > max) {
+        val = max
+      }
+    }
   }
   ele.value = val
-  vnode.componentInstance.stateValue = val
-  vnode.componentInstance.$emit('change.value', val)
+  vNode.componentInstance.stateValue = val
+  vNode.componentInstance.$emit('change.value', val)
+  vNode.componentInstance.$emit('change', val)
+  vNode.componentInstance.$emit('input', val)
 }
 
 export default {
-  bind (el, binding, vnode) {
+  bind (el, binding, vNode) {
     const ele = el.tagName === 'INPUT' ? el : el.querySelector('input')
-    ele.addEventListener('input', (e) => onInput(el, ele, binding, vnode, e), false)
+    ele.addEventListener('input', (e) => onInput(el, ele, binding, vNode, e), false)
   }
 }

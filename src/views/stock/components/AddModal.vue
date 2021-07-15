@@ -87,6 +87,7 @@
                   <unit-select
                     v-model="record.unit"
                     :options="unitOptions"
+                    :dropdownMatchSelectWidth="false"
                     style="width: 100%;"
                     @change="changeError(index)"
                   ></unit-select>

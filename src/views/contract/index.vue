@@ -9,7 +9,8 @@
         <search-form
           v-model="queryParam"
           ref="contractSearchForm"
-          :statusAble="tabActiveKey !== '0' && +tabActiveKey > 10"
+          :statusAble="tabActiveKey !== '0' && +tabActiveKey < 10"
+          :contractStatusAble="tabActiveKey !== '0' && +tabActiveKey > 10"
           @search="$refs.table.refresh(true)"
         ></search-form>
       </div>
@@ -58,7 +59,7 @@
               >编辑</a
             >
             <a
-              v-if="+record.status !== 1 && permissions.RemovePermission"
+              v-if="permissions.RemovePermission"
               @click="handleRemove(record)"
               >删除</a
             >
@@ -101,11 +102,18 @@ import {
 } from '@/api/contract'
 import SearchForm from './components/seachForm.vue'
 
-const checkColumn = [
+const checkTimec = [
   {
     title: '审核时间',
     dataIndex: 'auditTime',
     scopedSlots: { customRender: 'auditTime' }
+  }
+]
+
+const checkStatusC = [
+  {
+    title: '审核状态',
+    dataIndex: 'statusv'
   }
 ]
 
@@ -122,10 +130,11 @@ export default {
       tabList: [
         { key: '0', tab: '全部' },
         { key: '1', tab: '待审核' },
+        { key: '2', tab: '已通过' },
+        { key: '3', tab: '未通过' },
         { key: '11', tab: '正常' },
         { key: '12', tab: '延期' },
-        { key: '13', tab: '终止' },
-        { key: '3', tab: '未通过' }
+        { key: '13', tab: '终止' }
       ],
       tabActiveKey: '0',
       // 审核弹窗
@@ -147,12 +156,20 @@ export default {
       },
       columns: [
         {
+          title: '审核状态',
+          dataIndex: 'statusv'
+        },
+        {
           title: '合同状态',
           dataIndex: 'contractStatusv'
         },
         {
           title: '所属项目',
           dataIndex: 'projectName'
+        },
+        {
+          title: '合同名称',
+          dataIndex: 'contractName'
         },
         {
           title: '合同编号',
@@ -182,14 +199,25 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
+        let startDate = ''
+        let endDate = ''
         if (time && time.length) {
-          this.queryParam.startDate = time[0]
-          this.queryParam.endDate = time[1]
+          startDate = time[0]
+          endDate = time[1]
         }
-        if (this.tabActiveKey !== '0') {
-          this.queryParam.status = +this.tabActiveKey
+        this.queryParam.startDate = startDate
+        this.queryParam.endDate = endDate
+        const index = +this.tabActiveKey
+        const queryParam = {}
+        if (index !== 0) {
+          if (index < 10) {
+            queryParam.status = this.tabActiveKey
+          } else {
+            queryParam.status = 0
+            queryParam.contractStatus = index - 10
+          }
         }
-        return getContractList(Object.assign(parameter, this.queryParam))
+        return getContractList(Object.assign(parameter, this.queryParam, queryParam))
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -222,25 +250,23 @@ export default {
   methods: {
     handleTabChange (key) {
       this.tabActiveKey = key
-      const index = +key
-      if (index === 0) {
-        this.queryParam.contractStatus = 0
-        this.queryParam.status = 0
-      } else if (index < 10) {
-        this.queryParam.status = key
-      } else {
-        this.queryParam.contractStatus = index - 10
-      }
-      this.changeColumns(index)
+      this.changeColumns(+key)
       this.$refs.table.refresh()
     },
     changeColumns (index) {
-      // 第一个为审核时间，则上一个key为1
-      const isAudit = this.columns[0].dataIndex === 'auditTime'
-      if (index === 1 && !isAudit) {
-        this.columns.unshift(...checkColumn)
-      } else if (index > 1 && isAudit) {
-        this.columns.shift()
+      // 是否有审核时间
+      const isAudit = this.columns.findIndex(column => column.dataIndex === 'auditTime') > -1
+      // 是否有审核状态
+      const isStatus = this.columns.findIndex(column => column.dataIndex === 'statusv') > -1
+      if (index === 1) {
+        isStatus && this.columns.shift()
+        !isAudit && this.columns.unshift(...checkTimec)
+      } else if (index === 0 || index > 10) {
+        isAudit && this.columns.shift()
+        !isStatus && this.columns.unshift(...checkStatusC)
+      } else {
+        isAudit && this.columns.shift()
+        isStatus && this.columns.shift()
       }
     },
     toggleAdvanced () {
