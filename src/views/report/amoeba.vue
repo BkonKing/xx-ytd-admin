@@ -98,6 +98,7 @@
                       v-model="tr.A"
                       v-number-input
                       placeholder="请输入"
+                      class="no-border-input"
                     ></a-input
                   ></template>
                 </td>
@@ -111,6 +112,7 @@
                       v-model="tr.C"
                       v-number-input
                       placeholder="请输入"
+                      class="no-border-input"
                     ></a-input
                   ></template>
                 </td>
@@ -133,6 +135,7 @@
                       v-model="trc.A"
                       v-number-input
                       placeholder="请输入"
+                      class="no-border-input"
                       @blur="changeA(tr)"
                     ></a-input>
                   </td>
@@ -142,6 +145,7 @@
                       v-model="trc.C"
                       v-number-input
                       placeholder="请输入"
+                      class="no-border-input"
                       @blur="changeC(tr)"
                     ></a-input>
                   </td>
@@ -159,6 +163,77 @@
               <td></td>
               <td>{{ totalC }}</td>
               <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <a-row style="margin: 20px 0 10px;">
+          <a-col :span="6">填报人：</a-col>
+          <a-col :span="6">审核人：</a-col>
+          <a-col :span="6">报送日期：</a-col>
+          <a-col :span="6">报表接收人：</a-col>
+        </a-row>
+      </div>
+    </a-card>
+
+        <a-card style="margin-top: 24px" :bordered="false">
+      <div class="print-page">
+        <div class="print-page-title">
+          {{ 1 }}建筑公司{{ 1 }}项目部（{{ 1 }}年{{ 1 }}月）收支计划执行情况表
+        </div>
+        <a-row style="margin: 20px 0 10px;">
+          <a-col :span="10">单位：</a-col>
+          <a-col :span="7">填报日期：</a-col>
+          <a-col :span="7" style="text-align: right;"
+            >单位：<span style="margin-left: 100px;">万元</span></a-col
+          >
+        </a-row>
+        <table class="print-table" id="print-table">
+          <thead>
+            <tr class="print-thead-tr-border">
+              <th rowspan="2" colspan="2" width="90px">收支项目</th>
+              <th>整体项目计划金额</th>
+              <th>至上月完成金额</th>
+              <th>本月计划数</th>
+              <th>本月完成金额</th>
+              <th>至本月完成金额</th>
+              <th>本月差异</th>
+              <th>完成情况与计划对比</th>
+              <th rowspan="2">备注</th>
+            </tr>
+            <tr class="print-thead-tr-border">
+              <th>(A)</th>
+              <th>(B)</th>
+              <th>(C)</th>
+              <th>(D)</th>
+              <th>(E)</th>
+              <th>(G)=(C)-(D)</th>
+              <th>(H)=(A)-(E)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template v-for="(tr, index) in completeData">
+              <tr class="print-tbody-tr-border" :key="index">
+                <td v-if="index === 0" :rowspan="completeData.length + 1">资<br>金<br>流<br>出</td>
+                <td>{{ tr.name }}</td>
+                <td>{{tr.A}}</td>
+                <td>{{ tr.B }}</td>
+                <td>{{ tr.C }}</td>
+                <td>{{ tr.D }}</td>
+                <td>{{ tr.E }}</td>
+                <td>{{ tr.C - tr.D || "--" }}</td>
+                <td>{{ tr.A - tr.E || "--" }}</td>
+                <td v-if="index === 0" :rowspan="completeData.length + 1"></td>
+              </tr>
+            </template>
+            <tr class="print-tbody-tr-border">
+              <td>支出合计</td>
+              <td>{{ totalA }}</td>
+              <td></td>
+              <td>{{ totalC }}</td>
               <td></td>
               <td></td>
               <td></td>
@@ -379,5 +454,13 @@ export default {
 }
 .print-table > tbody > tr > td {
   transition: background 0.3s;
+}
+.no-border-input {
+  padding: 0;
+    height: 22px;
+    border: none;
+    &:focus {
+      box-shadow: none;
+    }
 }
 </style>
