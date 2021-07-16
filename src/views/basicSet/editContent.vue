@@ -158,7 +158,7 @@
           </template>
             <div>{{info.wxSendName}}</div>
         </a-form-model-item>
-        <a-form-model-item >
+        <a-form-model-item>
             <template slot="label">
             <span>
               额外通知用户
