@@ -100,6 +100,8 @@
     <c-steps
       v-show="!isPass || tabActiveKey === '2'"
       :data="info.auditLeveArr"
+      :id="id"
+      type="2"
     ></c-steps>
     <basic-info
       v-show="!isPass || tabActiveKey === '0'"

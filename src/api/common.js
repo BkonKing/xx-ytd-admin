@@ -11,7 +11,10 @@ export const common = {
   getLogAdmin: '/public/common/getLogAdmin',
   getLogsList: '/public/common/getLogsList',
   getAllContract: '/public/common/getAllContract',
-  getAllUnit: '/public/common/getAllUnit'
+  getAllUnit: '/public/common/getAllUnit',
+  getMaterialUnit: '/public/common/getMaterialUnit',
+  messageSend: '/public/common/messageSend',
+  isAuditSet: '/public/common/isAuditSet'
 }
 
 // 获取所有项目接口
@@ -110,5 +113,32 @@ export function getAllUnit (data) {
     url: common.getAllUnit,
     method: 'post',
     data
+  })
+}
+
+// 获取物料对应的单位接口
+export function getMaterialUnit (params) {
+  return request({
+    url: common.getMaterialUnit,
+    method: 'get',
+    params
+  })
+}
+
+// 订单\合同\供应商待审催一下接口(已验证)
+export function promptMessage (params) {
+  return request({
+    url: common.messageSend,
+    method: 'get',
+    params
+  })
+}
+
+// 判断是否设置了审批配置接口(已验证)
+export function getIsAuditSet (params) {
+  return request({
+    url: common.isAuditSet,
+    method: 'get',
+    params
   })
 }

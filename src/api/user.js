@@ -15,7 +15,8 @@ export const userApi = {
   getShortMessage: '/public/common/getShortMessage',
   readMessageById: '/public/common/readMessageById',
   readAllMessage: '/public/common/readAllMessage',
-  clearMessage: '/public/common/clearMessage'
+  clearMessage: '/public/common/clearMessage',
+  getMessageCount: '/public/common/getMessageCount'
 }
 
 /**
@@ -141,5 +142,11 @@ export function toReadAllMessage () {
 export function toClearMessage () {
   return request({
     url: userApi.clearMessage
+  })
+}
+// 获取弹窗消息数量接口
+export function getMessageCount () {
+  return request({
+    url: userApi.getMessageCount
   })
 }

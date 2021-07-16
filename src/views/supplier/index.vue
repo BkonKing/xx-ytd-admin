@@ -98,7 +98,7 @@
           @click="openCheck"
           >审核</a-button
         >
-        <a-button v-if="permissions.CreatePermission" @click="handleAdd">新增</a-button>
+        <a-button v-if="permissions.CreatePermission" @click="goEdit">新增</a-button>
       </div>
 
       <s-table
@@ -165,6 +165,7 @@ import {
   auditSupp,
   auditBatchSupp
 } from '@/api/supplier'
+import { getIsAuditSet } from '@/api/common'
 
 const checkTimec = [
   {
@@ -379,11 +380,6 @@ export default {
       this.checkId = ''
       this.visible = false
     },
-    handleAdd () {
-      this.$router.push({
-        name: 'SupplierEdit'
-      })
-    },
     handleRemove ({ id, supplierName }) {
       const that = this
       this.$confirm({
@@ -400,11 +396,15 @@ export default {
       })
     },
     goEdit ({ id }) {
-      this.$router.push({
-        name: 'SupplierEdit',
-        query: {
-          id
-        }
+      getIsAuditSet({
+        auditType: 3
+      }).then(({ success }) => {
+        success && this.$router.push({
+          name: 'SupplierEdit',
+          query: {
+            id
+          }
+        })
       })
     },
     goDetail ({ id }) {

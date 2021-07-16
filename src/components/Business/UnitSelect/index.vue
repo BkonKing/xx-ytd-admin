@@ -30,9 +30,9 @@ export default {
       uOptions: this.options
     }
   },
-  created () {
-    !(this.uOptions && this.uOptions.length) && this.getAllUnit()
-  },
+  // created () {
+  //   !(this.uOptions && this.uOptions.length) && this.getAllUnit()
+  // },
   methods: {
     getAllUnit () {
       getAllUnit().then(({ data }) => {
@@ -46,6 +46,9 @@ export default {
     },
     data (val) {
       this.$emit('input', val)
+    },
+    options (val) {
+      this.uOptions = val
     }
   }
 }

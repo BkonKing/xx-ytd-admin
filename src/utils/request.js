@@ -85,8 +85,10 @@ request.interceptors.response.use((response) => {
     message
   } = data
   if (+code === 401) {
-    Message.error(message)
-    router.push({ name: 'login' })
+    if (router.currentRoute.name !== 'login') {
+      Message.error(message)
+      router.push({ name: 'login' })
+    }
   } else if (code != '200') {
     if (!config.headers.noToast) {
       Message.error(message)

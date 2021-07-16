@@ -54,7 +54,7 @@
                   <material-type-select
                     v-model="record.materialId"
                     :show-search="true"
-                    @change="changeError(index)"
+                    @change="value => getUnit(value, index)"
                   ></material-type-select>
                 </a-col>
               </a-row>
@@ -86,7 +86,7 @@
                 <a-form-model-item prop="unit">
                   <unit-select
                     v-model="record.unit"
-                    :options="unitOptions"
+                    :options="record.unitOptions"
                     :dropdownMatchSelectWidth="false"
                     style="width: 100%;"
                     @change="changeError(index)"
@@ -147,7 +147,7 @@
 <script>
 import { ProjectSelect, MaterialTypeSelect, UnitSelect } from '@/components'
 import { addStock } from '@/api/stock'
-import { getAllUnit } from '@/api/common'
+import { getMaterialUnit } from '@/api/common'
 import NP from 'number-precision'
 // import cloneDeep from 'lodash.clonedeep'
 
@@ -176,7 +176,6 @@ export default {
       rules: {
         projectId: [{ required: true, message: '请选择' }]
       },
-      unitOptions: [],
       tableRules: {
         materialId: [{ required: true, message: '请填写' }],
         brand: [{ required: true, message: '请填写' }],
@@ -196,20 +195,24 @@ export default {
     }
   },
   created () {
-    this.getAllUnit()
   },
   methods: {
-    getAllUnit () {
-      getAllUnit().then(({ data }) => {
-        this.unitOptions = data
+    getUnit (value, index) {
+      getMaterialUnit({
+        id: value
+      }).then(({ data }) => {
+        this.$set(this.tableData[index], 'unitOptions', data)
+        this.$set(this.tableData[index], 'unit', data[0].unit)
       })
+      this.changeError(index)
     },
     handleAdd () {
       this.tableData.push({
         materialId: '',
         brand: '',
         model: '',
-        unit: this.unitOptions[0].unit,
+        unit: '',
+        unitOptions: [],
         originalNum: 0,
         remarks: ''
       })
@@ -241,6 +244,12 @@ export default {
         const ref = this.$refs[`tableForm${index}`][0]
         return this.handleSubmit(ref)
       })
+
+      if (!this.tableData || this.tableData.length === 0) {
+        this.$message.error('请添加物料信息')
+        this.loading = false
+        return
+      }
 
       Promise.all([basic, ...material])
         .then(() => {

@@ -49,6 +49,7 @@
                 <material-type-select
                   v-model="record.materialId"
                   :show-search="true"
+                  @change="value => getUnit(value, index)"
                 ></material-type-select>
               </a-form-model-item>
             </a-col>
@@ -99,7 +100,7 @@
                   <a-form-model-item prop="unit">
                     <unit-select
                       v-model="record.unit"
-                      :options="unitOptions"
+                      :options="record.unitOptions"
                       :dropdownMatchSelectWidth="false"
                       style="width: 100%;"
                     ></unit-select>
@@ -187,7 +188,7 @@ import {
   UnitSelect
 } from '@/components'
 import { appMixin } from '@/store/mixin'
-import { getAllUnit } from '@/api/common'
+import { getMaterialUnit } from '@/api/common'
 import { addOrder, updateOrder, getOrderInfo } from '@/api/order'
 import { getAllots } from '@/api/user'
 export default {
@@ -213,7 +214,6 @@ export default {
         supplier: '',
         orderPz: []
       },
-      unitOptions: [],
       rules: {
         contractId: [{ required: true, message: '请选择关联合同' }]
       },
@@ -221,6 +221,7 @@ export default {
         materialId: [{ required: true, message: '请填写' }],
         brand: [{ required: true, message: '请填写' }],
         model: [{ required: true, message: '请填写' }],
+        taxRate: [{ required: true, message: '请填写' }],
         unitPrice: [{ required: true, message: '请填写' }],
         total: [{ required: true, message: '请填写' }]
       },
@@ -253,7 +254,6 @@ export default {
       this.getOrderInfo()
       this.getAllots()
     }
-    this.getAllUnit()
   },
   methods: {
     getOrderInfo () {
@@ -266,6 +266,9 @@ export default {
         this.form.orderPz = data.orderPz
         this.form.supplier = data.supplierName
         this.tableData = data.material
+        this.tableData.forEach((obj, index) => {
+          this.getUnit(obj.materialId, index)
+        })
       })
     },
     // 获取编辑权限
@@ -279,9 +282,12 @@ export default {
     getSupplier (value, option) {
       this.form.supplier = option.supplierName
     },
-    getAllUnit () {
-      getAllUnit().then(({ data }) => {
-        this.unitOptions = data
+    getUnit (value, index) {
+      getMaterialUnit({
+        id: value
+      }).then(({ data }) => {
+        this.$set(this.tableData[index], 'unitOptions', data)
+        this.$set(this.tableData[index], 'unit', data[0].unit)
       })
     },
     handleAdd () {
@@ -291,7 +297,8 @@ export default {
         model: '',
         taxRate: (this.tableData[0] && this.tableData[0].taxRate) || 0,
         unitPrice: '',
-        unit: this.unitOptions[0].unit,
+        unit: '',
+        unitOptions: [],
         total: 0,
         listOrder: ''
       })
@@ -340,6 +347,12 @@ export default {
         const ref = this.$refs[`tableForm${index}`][0]
         return this.handleSubmit(ref)
       })
+
+      if (!this.tableData || this.tableData.length === 0) {
+        this.$message.error('请添加物料信息')
+        this.loading = false
+        return
+      }
 
       Promise.all([basic, ...material])
         .then(() => {

@@ -1,6 +1,6 @@
 <template>
   <a-config-provider :locale="locale">
-    <div id="app">
+    <div id="app" :class="{'limit-width': !isMobile}">
       <router-view/>
     </div>
   </a-config-provider>
@@ -8,7 +8,9 @@
 
 <script>
 import zhCn from 'ant-design-vue/lib/locale-provider/zh_CN'
+import { appMixin } from '@/store/mixin'
 export default {
+  mixins: [appMixin],
   data () {
     return {
       locale: zhCn
@@ -21,3 +23,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.limit-width {
+  min-width: 1200px;
+  overflow-x: auto;
+}
+</style>

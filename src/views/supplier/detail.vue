@@ -56,6 +56,8 @@
       v-if="info.auditLeveArr && info.auditLeveArr.length"
       v-show="!isPass || tabActiveKey === '2'"
       :data="info.auditLeveArr"
+      :id="id"
+      type="3"
     ></order-steps>
     <basic-info
       v-show="!isPass || tabActiveKey === '0'"

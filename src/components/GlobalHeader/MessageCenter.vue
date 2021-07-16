@@ -65,7 +65,7 @@
             <a-tab-pane key="3">
               <template slot="tab">
                 <div>
-                  代办
+                  待办
                   <span v-if="+shortInfo.db.count > 0"
                     >({{ shortInfo.db.count }})</span
                   >
@@ -95,7 +95,9 @@
         </a-row>
       </div>
     </template>
-    <a-icon type="bell" style="font-size: 22px;" />
+    <a-badge :count="count">
+      <a-icon type="bell" style="font-size: 22px;" />
+    </a-badge>
   </a-popover>
 </template>
 
@@ -103,7 +105,8 @@
 import {
   toGetShortMessage,
   toClearMessage,
-  toReadMessageById
+  toReadMessageById,
+  getMessageCount
 } from '@/api/user'
 export default {
   name: 'AvatarDropdown',
@@ -116,7 +119,9 @@ export default {
   data () {
     return {
       visible: false,
-      shortInfo: ''
+      shortInfo: '',
+      count: 0,
+      timer: null
     }
   },
   watch: {
@@ -126,18 +131,28 @@ export default {
       }
     }
   },
-  mounted () {},
   methods: {
     // 获取弹窗消息接口
     getData () {
       toGetShortMessage().then(({ data }) => {
-        console.log('获取弹窗消息', data)
+        // console.log('获取弹窗消息', data)
         this.shortInfo = data
+      })
+    },
+    // 获取弹窗数量接口
+    getMessageCount () {
+      this.timer = clearTimeout(this.timer)
+      getMessageCount().then(({ data }) => {
+        this.count = data || 0
+        setTimeout(() => {
+          this.getMessageCount()
+        }, 60000)
       })
     },
     clear () {
       toClearMessage().then(() => {
         this.getData()
+        this.getMessageCount()
       })
     },
     viewMore () {
@@ -151,6 +166,7 @@ export default {
     // 打开新窗口
     openPage (item) {
       toReadMessageById({ messageId: item.id })
+      this.getMessageCount()
       this.visible = false
       const paths = {
         1: '/project/detail',
@@ -169,6 +185,10 @@ export default {
   },
   created () {
     this.getData()
+    this.getMessageCount()
+  },
+  beforeDestroy () {
+    this.timer = clearTimeout(this.timer)
   }
 }
 </script>

@@ -94,13 +94,14 @@
 <script>
 // import moment from 'moment'
 import { STable, CheckForm, TimeWait } from '@/components'
+import SearchForm from './components/seachForm'
 import {
   getContractList,
   removeCont,
   auditCont,
   auditBatchCont
 } from '@/api/contract'
-import SearchForm from './components/seachForm.vue'
+import { getIsAuditSet } from '@/api/common'
 
 const checkTimec = [
   {
@@ -334,11 +335,15 @@ export default {
       })
     },
     goEdit ({ id }) {
-      this.$router.push({
-        name: 'ContractEdit',
-        query: {
-          id
-        }
+      getIsAuditSet({
+        auditType: 2
+      }).then(({ success }) => {
+        success && this.$router.push({
+          name: 'ContractEdit',
+          query: {
+            id
+          }
+        })
       })
     },
     goDetail ({ id }) {

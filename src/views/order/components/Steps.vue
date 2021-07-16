@@ -10,7 +10,8 @@
           <div>{{ step.company }}</div>
           <div>{{ step.leveTime }}</div>
           <div v-if="!step.status && (current + 1) === index">
-            <a>催一下</a>
+            <template v-if="step.hurryUp">已催</template>
+            <a v-else @click="prompt(step)">催一下</a>
           </div>
         </template>
       </a-step>
@@ -19,12 +20,22 @@
 </template>
 
 <script>
+import { promptMessage } from '@/api/common'
 export default {
   name: 'OrderSteps',
   props: {
     data: {
       type: Array,
       default: () => []
+    },
+    // 1=订单审核、2=合同审核、3=供应商审核
+    type: {
+      type: String,
+      default: '0'
+    },
+    id: {
+      type: [String, Number],
+      default: '0'
     }
   },
   computed: {
@@ -33,32 +44,19 @@ export default {
       index = index === -1 ? this.data.length : index
       return index - 1
     }
+  },
+  methods: {
+    // 催一下
+    prompt (step) {
+      promptMessage({
+        id: this.id,
+        auditType: this.type
+      }).then((res) => {
+        step.hurryUp = 1
+        this.$message.success('发送成功')
+      })
+    }
   }
-  // data () {
-  //   return {
-  //     stepList: [
-  //       {
-  //         title: '创建',
-  //         name: '曲丽丽',
-  //         company: '公司名称',
-  //         time: '2016-12-12 12:32'
-  //       },
-  //       {
-  //         title: '一审',
-  //         name: '曲丽丽',
-  //         company: '公司名称',
-  //         time: '2016-12-12 12:32'
-  //       },
-  //       {
-  //         title: '完成',
-  //         name: '曲丽丽',
-  //         company: '公司名称',
-  //         time: '2016-12-12 12:32',
-  //         status: 1
-  //       }
-  //     ]
-  //   }
-  // }
 }
 </script>
 

@@ -14,15 +14,20 @@
         <a-form-model-item label="标签说明">
           <div class="box">
             <div class="item"><span>项目名称:</span><span>$project$</span></div>
-            <div class="item"><span>订单编号:</span><span>$project$</span></div>
-            <div class="item"><span>合同编号:</span><span>$project$</span></div>
-            <div class="item"><span>合同金额:</span><span>$project$</span></div>
+            <div class="item"><span>订单编号:</span><span>$orderId$</span></div>
+            <div class="item"><span>合同编号:</span><span>$contractId$</span></div>
+            <div class="item"><span>合同名称:</span><span>$contractName$</span></div>
+            <div class="item"><span>合同金额:</span><span>$contractMoney$</span></div>
+            <div class="item"><span>合同结束日期:</span><span>$contractEndtime$</span></div>
             <div class="item">
-              <span>供应商编号:</span><span>$project$</span>
+              <span>供应商编号:</span><span>$supplierId$</span>
             </div>
             <div class="item">
-              <span>供应商名称:</span><span>$project$</span>
+              <span>供应商名称:</span><span>$supplier$</span>
             </div>
+            <div class="item"><span>审核时间:</span><span>$auditTime$</span></div>
+            <div class="item"><span>审核超时时间:</span><span>$auditTimeout$</span></div>
+            <div class="item"><span>操作者:</span><span>$operator$</span></div>
           </div>
         </a-form-model-item>
         <div class="title">站内消息</div>
@@ -100,7 +105,6 @@
             >
               <a-textarea
                 v-model="form.lcbh"
-                :maxLength="25"
                 placeholder="请输入"
                 auto-size
               />
@@ -112,7 +116,6 @@
             >
               <a-textarea
                 v-model="form.lcmc"
-                :maxLength="25"
                 placeholder="请输入"
                 auto-size
               />
@@ -136,13 +139,11 @@
             >
               <a-textarea
                 v-model="form.lcbz"
-                :maxLength="25"
                 placeholder="请输入"
                 auto-size
               />
             </a-form-model-item>
           </div>
-          <div style="color: rgba(0, 0, 0, 0.447);">每行限1~25个字</div>
         </a-form-model-item>
              <a-form-model-item>
           <template slot="label">
@@ -318,7 +319,7 @@ export default {
 .editContent {
   .box {
     display: flex;
-    width: 300px;
+    width: 420px;
     flex-wrap: wrap;
     .item {
       width: 50%;

@@ -38,7 +38,7 @@
         </a-col>
       </a-row>
     </a-form-model-item>
-    <a-form-model-item label="项目阶段" prop="stage">
+    <a-form-model-item label="项目阶段" prop="stage" required>
       <a-select v-model="form.stage" placeholder="请选择">
         <a-select-option
           v-for="option in stageList"
@@ -196,6 +196,7 @@ export default {
         projectName: [{ required: true, message: '请输入项目名称' }],
         projectShortName: [{ required: true, message: '请输入项目简称' }],
         projectShortEn: [{ required: true, message: '请输入项目英文简称' }],
+        stage: [{ required: true, message: '请选择项目阶段' }],
         manage: [{ required: true, message: '请输入项目负责人姓名' }],
         manageMobile: [{ required: true, message: '请输入项目负责人手机号' }]
       },

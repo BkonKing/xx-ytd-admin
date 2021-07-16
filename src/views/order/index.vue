@@ -205,6 +205,7 @@ import {
   auditOrder,
   auditBatchOrder
 } from '@/api/order'
+import { getIsAuditSet } from '@/api/common'
 
 const checkTimec = [
   {
@@ -411,11 +412,15 @@ export default {
       this.visible = false
     },
     goEdit ({ id }) {
-      this.$router.push({
-        name: 'OrderEdit',
-        query: {
-          id
-        }
+      getIsAuditSet({
+        auditType: 1
+      }).then(({ success }) => {
+        success && this.$router.push({
+          name: 'OrderEdit',
+          query: {
+            id
+          }
+        })
       })
     },
     handleRemove ({ id, idv }) {

@@ -65,19 +65,17 @@ export default {
     // 打开新窗口
     openPage (item) {
       toReadMessageById({ messageId: item.id })
-      // 打开项目
-      if (item.sourceType === '1') {
-        window.open(`/project/detail?id=${item.sourceId}`, '_blank')
-        // 打开合同
-      } else if (item.sourceType === '2') {
-        window.open(`/contract/detail?id=${item.sourceId}`, '_blank')
-        // 打开供应商
-      } else if (item.sourceType === '3') {
-        window.open(`/supplier/detail?id=${item.sourceId}`, '_blank')
-        // 打开订单
-      } else {
-        window.open(`/order/detail?id=${item.sourceId}`, '_blank')
+      const paths = {
+        1: '/project/detail',
+        2: '/contract/detail',
+        3: '/supplier/detail',
+        4: '/order/detail'
       }
+      const path = `${paths[item.sourceType]}?id=${item.sourceId}`
+      const href = this.$router.resolve({
+        path
+      }).href
+      window.open(href, '_blank')
     },
     readAll () {
       toReadAllMessage().then(() => {

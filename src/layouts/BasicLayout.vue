@@ -113,9 +113,9 @@ export default {
   created () {
     getMenu().then(({ data }) => {
       // this.menus = data
-      console.log(data)
+      // console.log(data)
       this.menus = this.formatMenu(data)
-      console.log(this.menus)
+      // console.log(this.menus)
     })
     // 处理侧栏收起状态
     this.$watch('collapsed', () => {

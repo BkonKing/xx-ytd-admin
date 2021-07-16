@@ -86,6 +86,8 @@
     <order-steps
       v-show="!isPass || tabActiveKey === '1'"
       :data="info.auditLeveArr"
+      :id="id"
+      type="1"
     ></order-steps>
     <material-table
       v-show="!isPass || tabActiveKey === '0'"

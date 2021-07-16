@@ -69,9 +69,9 @@ export default {
     })
   },
   methods: {
-    handleChange () {
+    handleChange (value, label, extra) {
       this.$nextTick(() => {
-        this.$emit('change')
+        this.$emit('change', value, label, extra)
       })
     }
   },
