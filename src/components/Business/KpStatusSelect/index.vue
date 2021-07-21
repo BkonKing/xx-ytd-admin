@@ -21,7 +21,7 @@ export default {
   },
   data () {
     return {
-      data: this.value,
+      data: this.value || undefined,
       // 付款情况：0=全部、1=全部已付、2=全部未付、3=部分已付/未付
       options: [
         {

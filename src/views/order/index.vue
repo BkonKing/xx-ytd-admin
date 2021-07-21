@@ -426,8 +426,14 @@ export default {
     handleRemove ({ id, idv }) {
       const that = this
       this.$confirm({
-        title: '删除人员', // 用户名
+        title: '删除订单', // 用户名
         content: `确认删除 "${idv}" 吗？`,
+        icon: () => this.$createElement('a-icon', {
+          props: {
+            type: 'exclamation-circle',
+            theme: 'filled'
+          }
+        }),
         onOk () {
           removeOrder({
             id

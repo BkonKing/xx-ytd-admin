@@ -21,7 +21,7 @@
             <a href="#">条款</a>
           </div>
           <div class="copyright">
-            Copyright &copy; 2020 福建线下信息科技有限公司
+            Copyright &copy; 2021 福建线下信息科技有限公司
           </div>
         </div>
     </div>

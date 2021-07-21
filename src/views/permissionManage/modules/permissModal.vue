@@ -10,7 +10,7 @@
         :replaceFields="{ key: 'id' }"
         @select="onSelect"
         @check="onCheck"
-        :default-expanded-keys="openArr"
+        :autoExpandParent="false"
       >
         <template slot="custom" slot-scope="item">
           {{ item.menuText }}
@@ -41,7 +41,7 @@ export default {
         adminId: this.id,
         allots: this.checkedKeys.concat(this.halfCheckedKeys).join(',')
       })
-      this.$parent.getData()
+      this.$emit('success')
       this.$message.success(res.message)
       this.isShow = false
     },
@@ -74,7 +74,7 @@ export default {
     showPermiasionMenu () {
       toGetAdminMenus({ adminId: this.id }).then(res => {
         this.roleMunes = res.data
-        this.getOpenArr(this.roleMunes)
+        // this.getOpenArr(this.roleMunes)
         console.log(res)
       })
     }
@@ -89,7 +89,7 @@ export default {
       if (newVal === false) {
         this.checkedKeys = []
         this.roleMunes = []
-        this.openArr = []
+        // this.openArr = []
         this.id = ''
       }
     }

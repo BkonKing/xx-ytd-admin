@@ -196,7 +196,10 @@ const columns = [
   },
   {
     title: '领料部门',
-    dataIndex: 'department'
+    dataIndex: 'department',
+    customRender (text) {
+      return text || '--'
+    }
   },
   {
     title: '出入库人',
@@ -293,6 +296,14 @@ export default {
     },
     print () {
       if (this.selectedRowKeys.length) {
+        console.log(this.selectedRowKeys)
+        const href = this.$router.resolve({
+          path: '/stock/print',
+          query: {
+            id: this.selectedRowKeys.join(',')
+          }
+        }).href
+        window.open(href, '_blank')
       } else {
         this.$message.warning('请选择出库单')
       }
@@ -300,7 +311,8 @@ export default {
     handleRemove ({ id }) {
       const that = this
       this.$confirm({
-        content: '是否删除该记录？',
+        title: '删除记录',
+        content: `确定删除“出库记录ID:${id}”吗？`,
         onOk () {
           removeStockCk({
             id

@@ -19,6 +19,7 @@
           <supplier-type-select
             v-model="form.supplierType"
             mode="multiple"
+            @input="$refs.supplierForm.validateField('supplierType')"
           ></supplier-type-select>
         </a-form-model-item>
         <a-form-model-item label="供应物料" prop="material">
@@ -69,6 +70,7 @@
           <upload-image
             v-model="form.legalPersonPz"
             maxLength="5"
+            @input="$refs.supplierForm.validateField('legalPersonPz')"
           ></upload-image>
         </a-form-model-item>
         <a-form-model-item label="成立日期" prop="createDate">
@@ -105,7 +107,11 @@
           </a-row>
         </a-form-model-item>
         <a-form-model-item label="营业执照" prop="licensePz" required>
-          <upload-image v-model="form.licensePz" maxLength="5"></upload-image>
+          <upload-image
+            v-model="form.licensePz"
+            maxLength="5"
+            @input="$refs.supplierForm.validateField('licensePz')"
+          ></upload-image>
         </a-form-model-item>
         <a-form-model-item label="注册资金" prop="registeredCapital">
           <a-input
@@ -128,6 +134,7 @@
           <upload-image
             v-model="form.qualificationsPz"
             maxLength="5"
+            @input="$refs.supplierForm.validateField('qualificationsPz')"
           ></upload-image>
         </a-form-model-item>
       </a-form-model>

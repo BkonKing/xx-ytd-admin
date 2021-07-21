@@ -70,15 +70,6 @@ export default {
           }
         }
       ]
-    },
-    {
-      path: '/stock/print',
-      name: 'stockPrint',
-      component: () => import('@/views/stock/print'),
-      meta: {
-        title: '出库单打印',
-        hidden: true
-      }
     }
   ]
 }

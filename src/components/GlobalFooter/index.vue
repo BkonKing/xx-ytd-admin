@@ -9,7 +9,7 @@
       <a href="https://github.com/vueComponent" target="_blank">vueComponent</a>
     </template>
   </global-footer> -->
-  <div class="center">福建线下信息科技有限公司</div>
+  <div class="center">Copyright &copy; 2021 福建线下信息科技有限公司</div>
 </template>
 
 <script>

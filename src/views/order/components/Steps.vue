@@ -9,7 +9,7 @@
           <div>{{ step.realname }}</div>
           <div>{{ step.company }}</div>
           <div>{{ step.leveTime }}</div>
-          <div v-if="!step.status && (current + 1) === index">
+          <div v-if="!step.status && (current + 1) === index && (data[index] && +data[index].status === 1) && (index !== data.length - 1)">
             <template v-if="step.hurryUp">已催</template>
             <a v-else @click="prompt(step)">催一下</a>
           </div>

@@ -41,8 +41,8 @@ export default {
 .cardInfo {
   .clearfix();
 
-  margin-top: 16px;
-  margin-left: 32px;
+  margin-top: 4px;
+  margin-left: 40px;
   & > div {
     position: relative;
     float: left;

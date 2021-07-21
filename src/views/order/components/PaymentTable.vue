@@ -16,17 +16,22 @@
           >删除</a
         >
       </span>
-      <template v-if="data.allMoney" slot="footer">
-        <span> 总计({{ `${data.unKpNum + data.kpNum}` }}) </span>
-        <span>￥{{ data.allMoney }}</span>
-        <span>
-          已开{{ data.kpNum }} (￥{{ data.kpMoney }}) 未开{{
-            data.unKpNum
-          }}
-          (￥{{ data.unKpMoney }})
-        </span>
-      </template>
     </s-table>
+    <a-row
+      v-if="data.allMoney"
+      class="table-total-row"
+      type="flex"
+      align="middle"
+      style="border-bottom: 1px solid #e8e8e8;"
+    >
+      <div style="width: 41%;">总计({{ `${data.unKpNum + data.kpNum}` }})</div>
+      <div style="width: 20%;">￥{{ data.allMoney }}</div>
+      <div>
+        已开{{ data.kpNum }} (￥{{ data.kpMoney }})，未开{{ data.unKpNum }} (￥{{
+          data.unKpMoney
+        }})
+      </div>
+    </a-row>
     <a-button
       v-if="permissions.CreatePermission"
       style="width: 100%; margin-top: 16px; margin-bottom: 8px"
@@ -77,41 +82,52 @@ export default {
       columns: [
         {
           title: '序号',
-          scopedSlots: { customRender: 'index' }
+          scopedSlots: { customRender: 'index' },
+          width: '7%'
         },
         {
           title: '付款时间',
-          dataIndex: 'payTime'
+          dataIndex: 'payTime',
+          width: '12%'
         },
         {
           title: '付款ID',
-          dataIndex: 'id'
+          dataIndex: 'id',
+          width: '12%'
         },
         {
           title: '付款方式',
-          dataIndex: 'payTypeName'
+          dataIndex: 'payTypeName',
+          width: '10%'
         },
         {
           title: '付款金额',
           dataIndex: 'paid',
-          key: 'paid'
+          width: '10%',
+          customRender (text) {
+            return `￥${text}`
+          }
         },
         {
           title: '付款凭证',
           dataIndex: 'payPzNum',
-          scopedSlots: { customRender: 'payPz' }
+          scopedSlots: { customRender: 'payPz' },
+          width: '10%'
         },
         {
           title: '开票情况',
-          dataIndex: 'isKpName'
+          dataIndex: 'isKpName',
+          width: '10%'
         },
         {
           title: '创建时间',
-          dataIndex: 'ctime'
+          dataIndex: 'ctime',
+          width: '17%'
         },
         {
           title: '操作',
-          scopedSlots: { customRender: 'action' }
+          scopedSlots: { customRender: 'action' },
+          width: '14%'
         }
       ],
       data: {},

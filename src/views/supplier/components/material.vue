@@ -82,7 +82,10 @@ export default {
         {
           title: '金额',
           dataIndex: 'allPrice',
-          width: '20%'
+          width: '20%',
+          customRender (text) {
+            return `￥${text}`
+          }
         },
         {
           title: '订单',

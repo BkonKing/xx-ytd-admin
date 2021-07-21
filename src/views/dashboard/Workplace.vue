@@ -18,7 +18,7 @@
             <span v-if="info">{{ info.adminInfo.realName }}，</span
             >祝你开心每一天！
           </div>
-          <div>{{ info.department }}</div>
+          <div>{{ info.adminInfo.department }}</div>
         </div>
       </div>
     </template>
@@ -74,9 +74,9 @@
             <a slot="extra" @click="$router.push('/project/index')">全部项目</a>
             <div v-if="info != ''">
               <a-card-grid
-                class="project-card-grid"
-                :key="i"
                 v-for="(item, i) in info.project"
+                :key="i"
+                class="project-card-grid"
               >
                 <a-card
                   :bordered="false"
@@ -86,7 +86,16 @@
                 >
                   <a-card-meta>
                     <div slot="title" class="card-title">
-                      <a-avatar size="small" :src="item.cover" />
+                      <a-avatar
+                        v-if="item.cover"
+                        size="small"
+                        :src="item.cover"
+                      />
+                      <img
+                        v-else
+                        class="ant-avatar-sm"
+                        src="@/assets/project-avatar.png"
+                      />
                       <a class="projectName">{{ item.projectName }}</a>
                     </div>
                     <div slot="description" class="card-description">
@@ -116,7 +125,13 @@
             <a-list>
               <a-list-item :key="index" v-for="(item, index) in info.dynamic">
                 <a-list-item-meta>
-                  <a-avatar slot="avatar" :src="item.dyAvatar" />
+                  <a-avatar
+                    slot="avatar"
+                    :src="
+                      item.dyAvatar ||
+                        'https://ytdwz.tosolomo.com/library/img/user-avatar.png'
+                    "
+                  />
                   <div slot="title" v-html="item.dyContent"></div>
                   <div slot="description">{{ item.dyCtime }}</div>
                 </a-list-item-meta>
@@ -235,7 +250,9 @@ export default {
         { item: '引用', a: 70, b: 50, c: 40 }
       ],
       radarData: [],
-      info: ''
+      info: {
+        adminInfo: {}
+      }
     }
   },
 

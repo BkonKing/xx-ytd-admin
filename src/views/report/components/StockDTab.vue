@@ -88,7 +88,8 @@ import { getStockReport } from '@/api/report'
 const columns = [
   {
     title: '库存ID',
-    dataIndex: 'id'
+    dataIndex: 'id',
+    width: '64px'
   },
   {
     title: '所属项目',
@@ -113,23 +114,27 @@ const columns = [
   {
     title: '现有库存',
     dataIndex: 'currentNum',
-    sort: true
+    sort: true,
+    width: '94px'
   },
   {
     title: '期初库存',
     dataIndex: 'originalNum',
     sort: true,
-    scopedSlots: { customRender: 'originalNum' }
+    scopedSlots: { customRender: 'originalNum' },
+    width: '94px'
   },
   {
     title: '总入库',
     dataIndex: 'totalLknum',
-    sorter: true
+    sorter: true,
+    width: '80px'
   },
   {
     title: '总出库',
     dataIndex: 'totalCknum',
-    sorter: true
+    sorter: true,
+    width: '80px'
   },
   {
     title: '备注',
@@ -138,7 +143,7 @@ const columns = [
   },
   {
     title: '操作',
-    width: '80px',
+    width: '65px',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -197,5 +202,9 @@ export default {
   /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
     width: 80px;
   }
+}
+/deep/ .ant-table-thead > tr > th,
+/deep/ .ant-table-tbody > tr > td {
+  padding-right: 0;
 }
 </style>

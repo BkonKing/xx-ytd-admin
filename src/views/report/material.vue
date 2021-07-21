@@ -133,7 +133,8 @@ const columns = [
   },
   {
     title: '订单ID',
-    dataIndex: 'idv'
+    dataIndex: 'idv',
+    width: '172px'
   },
   {
     title: '供应商',
@@ -153,22 +154,29 @@ const columns = [
   },
   {
     title: '税率',
-    dataIndex: 'taxRate'
+    dataIndex: 'taxRate',
+    width: '70px'
   },
   {
     title: '单价',
     dataIndex: 'unitPrice',
-    sorter: true
+    sorter: true,
+    customRender (text) {
+      return +text ? `￥${text}` : '--'
+    }
   },
   {
     title: '金额',
     dataIndex: 'allPrice',
-    sorter: true
+    sorter: true,
+    customRender (text) {
+      return +text ? `￥${text}` : '--'
+    }
   },
   {
     title: '操作',
     dataIndex: 'action',
-    width: '80px',
+    width: '65px',
     scopedSlots: { customRender: 'action' }
   }
 ]

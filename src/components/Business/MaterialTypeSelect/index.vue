@@ -8,7 +8,6 @@
     placeholder="请选择"
     allow-clear
     tree-default-expand-all
-    :show-checked-strategy="SHOW_ALL"
     treeNodeFilterProp="title"
     @change="handleChange"
   >
@@ -42,8 +41,6 @@
 
 <script>
 import { getAllMaterialType } from '@/api/common'
-import { TreeSelect } from 'ant-design-vue'
-const SHOW_ALL = TreeSelect.SHOW_ALL
 export default {
   name: 'ContractTypeSelect',
   props: {
@@ -59,8 +56,7 @@ export default {
   data () {
     return {
       data: this.value,
-      options: [],
-      SHOW_ALL
+      options: []
     }
   },
   created () {

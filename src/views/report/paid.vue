@@ -74,9 +74,11 @@
         </template>
         <template slot="contractMoney" slot-scope="text, record">
           <router-link
+            v-if="+text"
             :to="{ name: 'ContractDetail', query: { id: record.contractId } }"
             >￥{{ text }}</router-link
           >
+          <template v-else>--</template>
         </template>
         <template slot="remarks" slot-scope="text, record">
           <a-input v-if="record.editable" v-model="record.bbBz" />
@@ -124,44 +126,58 @@ import cloneDeep from 'lodash.clonedeep'
 const columns = [
   {
     title: '所属项目',
-    dataIndex: 'projectName'
+    dataIndex: 'projectName',
+    width: '9%'
   },
   {
     title: '订单ID',
-    dataIndex: 'idv'
+    dataIndex: 'idv',
+    width: '12%'
   },
   {
     title: '供应商ID',
-    dataIndex: 'supplierId'
+    dataIndex: 'supplierId',
+    width: '11%'
   },
   {
     title: '供应商',
     dataIndex: 'supplierName',
-    scopedSlots: { customRender: 'supplierName' }
+    scopedSlots: { customRender: 'supplierName' },
+    width: '15%'
   },
   {
     title: '合同金额',
     dataIndex: 'contractMoney',
-    scopedSlots: { customRender: 'contractMoney' }
+    scopedSlots: { customRender: 'contractMoney' },
+    width: '12%'
   },
   {
     title: '已付款金额',
     dataIndex: 'paid',
-    sort: true
+    sort: true,
+    width: '12%',
+    customRender (text) {
+      return +text ? `￥${text}` : '--'
+    }
   },
   {
     title: '未付款金额',
     dataIndex: 'unpaid',
-    sort: true
+    sort: true,
+    width: '12%',
+    customRender (text) {
+      return +text ? `￥${text}` : '--'
+    }
   },
   {
     title: '备注',
     dataIndex: 'bbBz',
-    scopedSlots: { customRender: 'remarks' }
+    scopedSlots: { customRender: 'remarks' },
+    width: '15%'
   },
   {
     title: '操作',
-    width: '120px',
+    width: '90px',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -244,5 +260,9 @@ export default {
   /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
     width: 80px;
   }
+}
+/deep/ .ant-table-thead > tr > th,
+/deep/ .ant-table-tbody > tr > td {
+  padding-right: 0;
 }
 </style>

@@ -2,9 +2,14 @@
   <div>
     <a-card :bordered="false" class="ant-pro-components-tag-select">
       <a-form layout="inline">
-        <standard-form-row title="参与项目" block style="padding-bottom: 11px;">
-          <a-form-item v-if="projectList && projectList.length">
-            <tag-select v-model="projectIds" @change="search">
+        <standard-form-row
+          v-if="projectList && projectList.length"
+          title="参与项目"
+          block
+          style="padding-bottom: 3px;"
+        >
+          <a-form-item>
+            <tag-select v-model="projectIds" @change="getData">
               <tag-select-option
                 v-for="tag in projectList"
                 :key="tag.projectId"
@@ -25,7 +30,7 @@
                 <a-input
                   v-model="serachText"
                   placeholder="ID、名称"
-                  @change="search"
+                  @change="getData"
                   style="max-width: 200px; width: 100%;"
                 ></a-input>
               </a-form-item>
@@ -45,7 +50,9 @@
         <a-list-item slot="renderItem" slot-scope="item, index">
           <a-card
             class="add-project-card"
-            v-if="index === 0 && permissions.CreatePermission"
+            v-if="
+              index === 0 && permissions.CreatePermission && isParentCompany
+            "
             :body-style="{ paddingBottom: 20 }"
             @click="openAddCompany"
           >
@@ -55,8 +62,6 @@
             v-else
             class="project-card"
             :body-style="{ paddingBottom: 20 }"
-            hoverable
-            @click="goProjectDetail(item)"
           >
             <a-card-meta>
               <template slot="title">
@@ -72,18 +77,30 @@
               </template>
             </a-card-meta>
             <template slot="actions">
-              <div class="actions-span" @click.stop="openCompanyPermiss(item.id)"  v-if="+permissions.AllotsPermission===1">
+              <div
+                class="actions-span"
+                @click.stop="openCompanyPermiss(item.id)"
+                v-if="+permissions.AllotsPermission === 1"
+              >
                 权限
               </div>
-              <div class="actions-span" @click.stop="openEditCompany(item)" v-if="+permissions.UpdatePermission===1">
+              <div
+                class="actions-span"
+                @click.stop="openEditCompany(item)"
+                v-if="+permissions.UpdatePermission === 1"
+              >
                 编辑
               </div>
-              <div class="actions-span" @click.stop="removeCompany(item)" v-if="+permissions.RemovePermission===1">
+              <div
+                class="actions-span"
+                @click.stop="removeCompany(item)"
+                v-if="+permissions.RemovePermission === 1"
+              >
                 删除
               </div>
             </template>
             <card-info
-              :company-num="item.relationCompanyNum"
+              :company-num="item.relationProjectNum"
               :contract-num="item.relationContractNum"
               :order-num="item.relationOrderNum"
             ></card-info>
@@ -109,18 +126,13 @@
       ></project-form>
     </a-modal>
     <companyPermiss ref="companyPermiss"></companyPermiss>
- </div>
+  </div>
 </template>
 
 <script>
 import moment from 'moment'
 import clonedeep from 'lodash.clonedeep'
-// import _pick from 'lodash.pick'
-import {
-  TagSelect,
-  StandardFormRow
-  /* Ellipsis, AvatarList */
-} from '@/components'
+import { TagSelect, StandardFormRow } from '@/components'
 import CardInfo from './modules/CardInfo.vue'
 import projectForm from './modules/projectForm.vue'
 import {
@@ -197,32 +209,20 @@ export default {
         const companyList = this.permissions.CreatePermission ? [{}] : []
         this.companyList = companyList.concat(data)
         this.loading = false
-        console.log('获取公司列表', data)
       })
-    },
-    // 获取项目阶段接口
-    // getProjectStage () {
-    //   getProjectStage().then(({ data }) => {
-    //     this.projectStageList = data
-    //   })
-    // },
-    // 获取对应公司列表
-    search () {
-      this.getData()
     },
     // 打开新增项目弹窗
     openAddCompany () {
-      this.title = '新增项目'
+      this.title = '新增公司'
       this.showModal()
       this.$refs.projectForm && this.$refs.projectForm.resetFields()
     },
     // 打开编辑项目弹窗
     openEditCompany (obj) {
-      console.log('打开编辑项目弹窗', obj)
-      this.title = '编辑项目'
+      this.title = '编辑公司'
       this.showModal()
       this.$refs.projectForm && this.$refs.projectForm.resetFields()
-      this.$refs.projectForm.mode = 'edit'
+      // this.$refs.projectForm.mode = 'edit'
       this.$nextTick(() => {
         const data = clonedeep(obj)
         data.companyLogo = []
@@ -232,6 +232,12 @@ export default {
         if (obj.provinceId) {
           data.area = [obj.provinceId, obj.cityId, obj.areaId]
         }
+        const glStatus = []
+        data.projectIds = obj.projectIds.map((item) => {
+          item.glStatus && glStatus.push(item.projectId)
+          return item.projectId
+        })
+        data.glStatus = glStatus
         data.adminPassword = ''
         this.$refs.projectForm.setFieldsValue(data)
       })
@@ -242,7 +248,6 @@ export default {
     handleOkProject (e) {
       this.$refs.projectForm.handleSubmit().then(res => {
         this.confirmLoading = true
-        console.log('表单方法', res)
         const data = clonedeep(res)
         if (data.companyLogo.length > 0) {
           data.companyLogo = data.companyLogo[0]
@@ -288,25 +293,19 @@ export default {
     closeModal () {
       this.visible = false
     },
-    removeCompany ({ id }) {
+    removeCompany ({ id, companyName }) {
       const that = this
       this.$confirm({
-        content: '是否删除该项目？',
+        title: '删除公司',
+        content: `确定删除"${companyName}"吗`,
+        icon: h => <a-icon theme="filled" type="exclamation-circle" />,
         onOk () {
           toRemoveCompany({
             id
           }).then(({ data }) => {
-            that.$message.success('删除项目成功')
+            that.$message.success('删除公司成功')
             that.getData()
           })
-        }
-      })
-    },
-    goProjectDetail ({ id }) {
-      this.$router.push({
-        name: 'ProjectDetail',
-        query: {
-          id
         }
       })
     }
@@ -319,22 +318,17 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 201px;
+  height: 197px;
   background: none;
   border: 1px dashed #ccc;
+  cursor: pointer;
 }
 .project-card {
-  height: 201px;
+  height: 197px;
 }
-/deep/
-  .antd-pro-components-standard-form-row-index-standardFormRow
-  .antd-pro-components-standard-form-row-index-label {
-  margin-top: 4px;
-}
-/deep/
-  .antd-pro-components-standard-form-row-index-standardFormRow.antd-pro-components-standard-form-row-index-standardFormRowGrid
-  .ant-form-item-label {
-  margin-top: 4px;
+/deep/ .ant-avatar-lg {
+  width: 48px;
+  height: 48px;
 }
 /deep/ .ant-card-actions {
   li {
@@ -364,8 +358,11 @@ export default {
 .project-title {
   font-size: 16px;
   font-weight: bold;
+  flex: 1;
+  .textOverflow();
 }
 .project-stage {
+  max-width: 88px;
   margin-right: 0;
 }
 </style>

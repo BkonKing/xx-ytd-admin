@@ -1,16 +1,35 @@
 <template>
   <a-card :bordered="false" title="物料信息" style="margin-top: 24px;">
-    <a-table ref="table" size="default" :columns="columns" :dataSource="data">
+    <a-table
+      ref="table"
+      size="default"
+      rowKey="materialId"
+      :columns="columns"
+      :dataSource="data"
+      :pagination="false"
+    >
       <span slot="material" slot-scope="text, record">
         {{ record.materialNo }} {{ text }}
       </span>
-      <span slot="actions" slot-scope="text">
-        <router-link :to="{ name: 'OrderDetail', query: { id: text } }"
-          >查看</router-link
+      <span slot="taxRate" slot-scope="text">
+        {{ +text ? `${parseFloat(text)}%` : "无" }}
+      </span>
+      <span slot="action">
+        <router-link :to="{ name: 'OrderEdit', query: { id: id } }"
+          >编辑</router-link
         >
       </span>
-      <template slot="footer"> 总计 {{number}} ￥{{money}} </template>
     </a-table>
+    <a-row
+      class="table-total-row"
+      type="flex"
+      align="middle"
+      style="border-bottom: 1px solid #e8e8e8;"
+    >
+      <div style="width: 72%;">总计</div>
+      <div style="width: 8%;">{{ number }}</div>
+      <div>￥{{ money }}</div>
+    </a-row>
   </a-card>
 </template>
 
@@ -18,9 +37,9 @@
 export default {
   name: 'MaterialList',
   props: {
-    type: {
-      type: Number,
-      default: 1
+    updatePermission: {
+      type: [Number, Boolean],
+      default: false
     },
     data: {
       type: Array,
@@ -33,6 +52,10 @@ export default {
     money: {
       type: [Number, String],
       default: 0
+    },
+    id: {
+      type: [Number, String],
+      default: ''
     }
   },
   data () {
@@ -41,44 +64,61 @@ export default {
         {
           title: '物料',
           dataIndex: 'materialName',
-          width: '150px',
+          width: '17%',
           scopedSlots: { customRender: 'material' }
         },
         {
           title: '物料品牌',
-          dataIndex: 'brand'
+          dataIndex: 'brand',
+          width: '17%'
         },
         {
           title: '规格型号',
-          dataIndex: 'model'
+          dataIndex: 'model',
+          width: '17%'
         },
         {
           title: '税率',
-          dataIndex: 'taxRate'
+          dataIndex: 'taxRate',
+          scopedSlots: { customRender: 'taxRate' },
+          width: '7%'
         },
         {
-          title: '采购单价（元）',
-          dataIndex: 'unitPrice'
+          title: '采购单价(元)',
+          dataIndex: 'unitPrice',
+          width: '14%',
+          customRender (text) {
+            return `￥${text}`
+          }
         },
         {
           title: '数量',
-          dataIndex: 'total'
+          dataIndex: 'total',
+          width: '8%',
+          customRender (text, record) {
+            return `${text}${record.unitv}`
+          }
         },
         {
           title: '金额',
-          dataIndex: 'allPrice'
+          dataIndex: 'allPrice',
+          customRender (text) {
+            return `￥${text}`
+          }
         }
       ]
     }
   },
-  created () {
-    if (this.type === '1') {
-      this.columns.push({
-        title: '操作',
-        dataIndex: 'orderId',
-        width: '100px',
-        scopedSlots: { customRender: 'action' }
-      })
+  watch: {
+    updatePermission (val) {
+      if (val && this.columns[this.columns.length - 1].dataIndex !== 'orderId') {
+        this.columns.push({
+          title: '操作',
+          dataIndex: 'orderId',
+          width: '7%',
+          scopedSlots: { customRender: 'action' }
+        })
+      }
     }
   }
 }

@@ -6,13 +6,110 @@
   >
     <a-card class="search-card" style="margin-top: 24px" :bordered="false">
       <div class="table-page-search-wrapper">
-        <search-form
-          v-model="queryParam"
-          ref="contractSearchForm"
-          :statusAble="tabActiveKey !== '0' && +tabActiveKey < 10"
-          :contractStatusAble="tabActiveKey !== '0' && +tabActiveKey > 10"
-          @search="$refs.table.refresh(true)"
-        ></search-form>
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="8" :sm="24">
+              <a-form-item label="审核状态">
+                <a-select
+                  v-model="queryParam.status"
+                  placeholder="请选择"
+                  :disabled="statusAble"
+                >
+                  <a-select-option
+                    v-for="option in statusOptions"
+                    :value="option.value"
+                    :key="option.value"
+                  >
+                    {{ option.text }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="所属项目">
+                <project-select v-model="queryParam.projectId"></project-select>
+              </a-form-item>
+            </a-col>
+            <template v-if="advanced">
+              <a-col v-if="isParentCompany" :md="8" :sm="24">
+                <a-form-item label="所属公司">
+                  <company-select
+                    v-model="queryParam.companyId"
+                  ></company-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="合同状态">
+                  <a-select
+                    v-model="queryParam.contractStatus"
+                    placeholder="请选择"
+                    :disabled="contractStatusAble"
+                  >
+                    <a-select-option
+                      v-for="option in contractStatusOptions"
+                      :value="option.value"
+                      :key="option.value"
+                    >
+                      {{ option.text }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="合同类型">
+                  <contract-type-select
+                    v-model="queryParam.categoryId"
+                  ></contract-type-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="合同">
+                  <a-input
+                    v-model="queryParam.serachText"
+                    placeholder="编号、名称"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="订单">
+                  <a-input
+                    v-model="queryParam.orderId"
+                    placeholder="ID"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="供应商">
+                  <a-input
+                    v-model="queryParam.serachSupplierText"
+                    placeholder="ID、名称"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="付款情况">
+                  <pay-status-select
+                    v-model="queryParam.payStatus"
+                  ></pay-status-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="创建时间">
+                  <a-range-picker
+                    v-model="queryParam.time"
+                    valueFormat="YYYY-MM-DD"
+                  />
+                </a-form-item>
+              </a-col>
+            </template>
+            <advanced-form
+              v-model="advanced"
+              :md="isParentCompany ? 16 : 24"
+              @search="$refs.table.refresh(true)"
+              @reset="reset"
+            ></advanced-form>
+          </a-row>
+        </a-form>
       </div>
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
@@ -58,9 +155,7 @@
               @click="goEdit(record)"
               >编辑</a
             >
-            <a
-              v-if="permissions.RemovePermission"
-              @click="handleRemove(record)"
+            <a v-if="permissions.RemovePermission" @click="handleRemove(record)"
               >删除</a
             >
             <a
@@ -92,9 +187,16 @@
 </template>
 
 <script>
-// import moment from 'moment'
-import { STable, CheckForm, TimeWait } from '@/components'
-import SearchForm from './components/seachForm'
+import {
+  STable,
+  CheckForm,
+  TimeWait,
+  ProjectSelect,
+  CompanySelect,
+  ContractTypeSelect,
+  PayStatusSelect,
+  AdvancedForm
+} from '@/components'
 import {
   getContractList,
   removeCont,
@@ -123,8 +225,12 @@ export default {
   components: {
     STable,
     CheckForm,
-    SearchForm,
-    TimeWait
+    TimeWait,
+    ProjectSelect,
+    CompanySelect,
+    ContractTypeSelect,
+    PayStatusSelect,
+    AdvancedForm
   },
   data () {
     return {
@@ -143,8 +249,35 @@ export default {
       confirmLoading: false,
       // 高级搜索 展开/关闭
       advanced: false,
+      // 审核状态：0=全部、1=待审核、2=已通过、3=未通过
+      statusOptions: [
+        { value: '0', text: '全部' },
+        { value: '1', text: '待审核' },
+        { value: '2', text: '已通过' },
+        { value: '3', text: '未通过' }
+      ],
+      // 合同状态：0=全部、1=正常、2=延期、3=终止
+      contractStatusOptions: [
+        {
+          value: 0,
+          text: '全部'
+        },
+        {
+          value: 1,
+          text: '正常'
+        },
+        {
+          value: 2,
+          text: '延期'
+        },
+        {
+          value: 3,
+          text: '终止'
+        }
+      ],
       // 查询参数
       queryParam: {
+        status: '',
         contractStatus: '',
         projectId: '',
         companyId: '',
@@ -208,17 +341,7 @@ export default {
         }
         this.queryParam.startDate = startDate
         this.queryParam.endDate = endDate
-        const index = +this.tabActiveKey
-        const queryParam = {}
-        if (index !== 0) {
-          if (index < 10) {
-            queryParam.status = this.tabActiveKey
-          } else {
-            queryParam.status = 0
-            queryParam.contractStatus = index - 10
-          }
-        }
-        return getContractList(Object.assign(parameter, this.queryParam, queryParam))
+        return getContractList(Object.assign(parameter, this.queryParam))
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -239,6 +362,12 @@ export default {
         }),
         onChange: this.onSelectChange
       }
+    },
+    statusAble () {
+      return this.tabActiveKey !== '0' && +this.tabActiveKey < 10
+    },
+    contractStatusAble () {
+      return this.tabActiveKey !== '0' && +this.tabActiveKey > 10
     }
   },
   created () {
@@ -251,14 +380,17 @@ export default {
   methods: {
     handleTabChange (key) {
       this.tabActiveKey = key
+      this.changeStatus()
       this.changeColumns(+key)
       this.$refs.table.refresh()
     },
     changeColumns (index) {
       // 是否有审核时间
-      const isAudit = this.columns.findIndex(column => column.dataIndex === 'auditTime') > -1
+      const isAudit =
+        this.columns.findIndex(column => column.dataIndex === 'auditTime') > -1
       // 是否有审核状态
-      const isStatus = this.columns.findIndex(column => column.dataIndex === 'statusv') > -1
+      const isStatus =
+        this.columns.findIndex(column => column.dataIndex === 'statusv') > -1
       if (index === 1) {
         isStatus && this.columns.shift()
         !isAudit && this.columns.unshift(...checkTimec)
@@ -270,8 +402,25 @@ export default {
         isStatus && this.columns.shift()
       }
     },
-    toggleAdvanced () {
-      this.advanced = !this.advanced
+    reset () {
+      this.queryParam = {
+        status: '',
+        contractStatus: ''
+      }
+      this.changeStatus()
+    },
+    changeStatus () {
+      const index = +this.tabActiveKey
+      if (index !== 0) {
+        if (index < 10) {
+          this.queryParam.status = String(index)
+        } else {
+          this.queryParam.contractStatus = index - 10
+        }
+      } else {
+        this.queryParam.status = ''
+        this.queryParam.contractStatus = ''
+      }
     },
     openCheck ({ id }) {
       id && (this.checkId = id)
@@ -322,8 +471,14 @@ export default {
     handleRemove ({ id, contractName }) {
       const that = this
       this.$confirm({
-        title: '删除人员', // 用户名
+        title: '删除合同',
         content: `确认删除 "${contractName}" 吗？`,
+        icon: () => this.$createElement('a-icon', {
+          props: {
+            type: 'exclamation-circle',
+            theme: 'filled'
+          }
+        }),
         onOk () {
           removeCont({
             id
@@ -338,12 +493,13 @@ export default {
       getIsAuditSet({
         auditType: 2
       }).then(({ success }) => {
-        success && this.$router.push({
-          name: 'ContractEdit',
-          query: {
-            id
-          }
-        })
+        success &&
+          this.$router.push({
+            name: 'ContractEdit',
+            query: {
+              id
+            }
+          })
       })
     },
     goDetail ({ id }) {

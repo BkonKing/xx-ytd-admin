@@ -15,7 +15,8 @@ export const stock = {
   getAllProMaterialBand: '/public/common/getAllProMaterialBand',
   getAllProMatBanModel: '/public/common/getAllProMatBanModel',
   getAllProMatBanModelUnit: '/public/common/getAllProMatBanModelUnit',
-  getAllStockClkList: '/public/common/getAllStockClkList'
+  getAllStockClkList: '/public/common/getAllStockClkList',
+  stockCkBill: '/operate/stock/stockCkBill'
 }
 
 // 获取库存列表接口
@@ -148,6 +149,15 @@ export function getAllProMatBanModelUnit (params) {
 export function getAllStockClkList (params) {
   return request({
     url: stock.getAllStockClkList,
+    method: 'get',
+    params
+  })
+}
+
+// 出库单数据打印接口
+export function getStockCkBill (params) {
+  return request({
+    url: stock.stockCkBill,
     method: 'get',
     params
   })

@@ -11,19 +11,19 @@
         {{ data.projectName || "--" }}
       </a-descriptions-item>
       <a-descriptions-item :label="`${typeText}日期`">
-        {{ data.cktime }}
+        {{ data.cktime || "--" }}
       </a-descriptions-item>
       <a-descriptions-item label="领料部门">
-        {{ data.department }}
+        {{ data.department || "--" }}
       </a-descriptions-item>
       <a-descriptions-item label="领料人">
-        {{ data.stockMen }}
+        {{ data.stockMen || "--" }}
       </a-descriptions-item>
       <a-descriptions-item :label="`${typeText}人`">
-        {{ data.clkAdmin }}
+        {{ data.clkAdmin || "--" }}
       </a-descriptions-item>
       <a-descriptions-item :label="`系统${typeText}`">
-        {{ data.ctime }}
+        {{ data.ctime || "--" }}
       </a-descriptions-item>
       <a-descriptions-item label="物料" :span="2">
         种类{{ data.materiaCount }} 数量{{ data.materiaNum }}
@@ -53,10 +53,16 @@
       <span slot="stockNum" slot-scope="text, record">
         {{ text }} {{ record.unitv }}
       </span>
-      <template slot="footer">
-        总计 {{data.materiaNum}}
-      </template>
     </a-table>
+    <a-row
+      class="table-total-row"
+      type="flex"
+      align="middle"
+      style="border-bottom: 1px solid #e8e8e8;"
+    >
+      <div style="width: calc(40% + 80px);">总计</div>
+      <div>{{ data.materiaNum }}</div>
+    </a-row>
   </a-modal>
 </template>
 
@@ -84,17 +90,20 @@ export default {
         {
           title: '序号',
           dataIndex: 'id',
-          scopedSlots: { customRender: 'index' }
+          scopedSlots: { customRender: 'index' },
+          width: '80px'
         },
         {
           title: '物料',
           dataIndex: 'materialName',
-          scopedSlots: { customRender: 'materialName' }
+          scopedSlots: { customRender: 'materialName' },
+          width: '40%'
         },
         {
           title: '数量',
           dataIndex: 'stockNum',
-          scopedSlots: { customRender: 'stockNum' }
+          scopedSlots: { customRender: 'stockNum' },
+          width: '150px'
         },
         {
           title: '物料用途',

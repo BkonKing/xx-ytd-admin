@@ -9,7 +9,10 @@
         :wrapper-col="wrapperCol"
       >
         <a-form-model-item label="项目" prop="projectId" required>
-          <project-select v-model="form.projectId"></project-select>
+          <project-select
+            v-model="form.projectId"
+            @input="$refs.BasicForm.validateField('projectId')"
+          ></project-select>
         </a-form-model-item>
         <a-form-model-item label="合同编号" prop="contractNo" required>
           <a-input
@@ -21,6 +24,7 @@
         <a-form-model-item label="合同类型" prop="categoryId" required>
           <contract-type-select
             v-model="form.categoryId"
+            @input="$refs.BasicForm.validateField('categoryId')"
           ></contract-type-select>
         </a-form-model-item>
         <a-form-model-item label="合同名称" prop="contractName" required>
@@ -35,16 +39,18 @@
             v-model="form.signDate"
             placeholder="请选择"
             valueFormat="YYYY-MM-DD"
+            style="width:100%;"
           ></a-date-picker>
         </a-form-model-item>
         <a-form-model-item label="合同有效期" prop="rtime" required>
           <a-range-picker
             v-model="form.rtime"
             valueFormat="YYYY-MM-DD"
+            style="width:100%;"
           ></a-range-picker>
         </a-form-model-item>
         <a-form-model-item label="合同状态" prop="contractStatus" required>
-          <a-select v-model="form.contractStatus">
+          <a-select v-model="form.contractStatus" placeholder="请选择">
             <a-select-option
               v-for="option in contractStatusOptions"
               :value="option.value"
@@ -109,16 +115,20 @@
           <span style="margin-left: 10px;">%</span>
         </a-form-model-item>
         <a-form-model-item label="供应商" prop="supplierId" required>
-          <supplier-select v-model="form.supplierId"></supplier-select>
+          <supplier-select
+            v-model="form.supplierId"
+            @input="$refs.SupplierForm.validateField('supplierId')"
+          ></supplier-select>
         </a-form-model-item>
         <a-form-model-item label="物料" prop="material" required>
           <material-type-select
             v-model="form.material"
             tree-checkable
+            @input="$refs.SupplierForm.validateField('material')"
           ></material-type-select>
         </a-form-model-item>
         <a-form-model-item label="结算方式" prop="settleType" required>
-          <a-select v-model="form.settleType">
+          <a-select v-model="form.settleType" placeholder="请选择">
             <a-select-option
               v-for="option in settleTypeOptions"
               :value="option.typeId"
@@ -129,7 +139,7 @@
           </a-select>
         </a-form-model-item>
         <a-form-model-item label="付款方式" prop="payType" required>
-          <a-select v-model="form.payType">
+          <a-select v-model="form.payType" placeholder="请选择">
             <a-select-option
               v-for="option in payTypeOptions"
               :value="option.typeId"
@@ -180,7 +190,7 @@ const form = {
   contractName: '',
   signDate: '',
   rtime: [],
-  contractStatus: '',
+  contractStatus: undefined,
   contractPz: [],
   remarks: '',
   contractMoney: '',
@@ -188,8 +198,8 @@ const form = {
   taxRate: 0,
   supplierId: '',
   material: [],
-  settleType: '',
-  payType: ''
+  settleType: undefined,
+  payType: undefined
 }
 export default {
   name: 'ContractEdit',

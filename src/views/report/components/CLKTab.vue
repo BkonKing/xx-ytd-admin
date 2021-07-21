@@ -138,12 +138,13 @@ const columns = [
   },
   {
     title: '出入库时间',
-    dataIndex: 'ctime'
+    dataIndex: 'ctime',
+    width: '170px'
   },
   {
     title: '操作',
     dataIndex: 'action',
-    width: '150px',
+    width: '65px',
     scopedSlots: { customRender: 'action' }
   }
 ]

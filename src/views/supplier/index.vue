@@ -221,7 +221,7 @@ export default {
         },
         {
           title: '供应物料',
-          dataIndex: 'materialName',
+          dataIndex: 'materialCount',
           sorter: true
         },
         {
@@ -383,8 +383,14 @@ export default {
     handleRemove ({ id, supplierName }) {
       const that = this
       this.$confirm({
-        title: '删除人员', // 用户名
+        title: '删除供应商', // 用户名
         content: `确认删除 "${supplierName}" 吗？`,
+        icon: () => this.$createElement('a-icon', {
+          props: {
+            type: 'exclamation-circle',
+            theme: 'filled'
+          }
+        }),
         onOk () {
           removeSupplier({
             id

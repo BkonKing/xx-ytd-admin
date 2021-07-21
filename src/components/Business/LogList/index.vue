@@ -1,6 +1,6 @@
 <template>
   <a-card title="操作日志" style="margin-top: 24px" :bordered="false">
-    <div class="table-page-search-wrapper">
+    <div class="table-page-search-wrapper table-page-fw-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="48">
           <a-col :md="8" :sm="24">
@@ -140,15 +140,18 @@ export default {
         },
         {
           title: '模块',
-          dataIndex: 'logType'
+          dataIndex: 'logType',
+          width: '90px'
         },
         {
           title: '操作员',
-          dataIndex: 'admin'
+          dataIndex: 'admin',
+          width: '160px'
         },
         {
           title: '操作类型',
-          dataIndex: 'operationType'
+          dataIndex: 'operationType',
+          width: '90px'
         },
         {
           title: '操作说明',

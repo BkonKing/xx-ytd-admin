@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-card title="订单信息" style="margin-top: 24px">
-      <div class="table-page-search-wrapper">
+      <div class="table-page-search-wrapper table-page-fw-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
@@ -47,7 +47,7 @@
             <advanced-form
               v-model="advanced"
               :md="8"
-              @reset="() => this.queryParam = {}"
+              @reset="() => (this.queryParam = {})"
               @search="$refs.orderTable.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -71,7 +71,13 @@
       </s-table>
     </a-card>
     <a-card title="付款信息" style="margin-top: 24px" :bordered="false">
-      <s-table ref="table" size="default" rowKey="id" :columns="columns" :data="loadData">
+      <s-table
+        ref="table"
+        size="default"
+        rowKey="id"
+        :columns="columns"
+        :data="loadData"
+      >
         <span slot="index" slot-scope="text, record, index">
           {{ payData.data.records.length - index }}
         </span>
@@ -85,20 +91,20 @@
       </s-table>
       <a-row
         v-if="payData.data && payData.data.allMoney"
-        class="table-total"
+        class="table-total-row"
         type="flex"
         align="middle"
       >
-        <a-col flex="1">
+        <div style="width: 41%;">
           总计({{ `${payData.data.unKpNum + payData.data.kpNum}` }})
-        </a-col>
-        <a-col flex="1">￥{{ payData.data.allMoney }}</a-col>
-        <a-col flex="1">
-          已开{{ payData.kpNum }} (￥{{ payData.data.kpMoney }}) 未开{{
+        </div>
+        <div style="width: 20%;">￥{{ payData.data.allMoney }}</div>
+        <div>
+          已开{{ payData.kpNum }} (￥{{ payData.data.kpMoney }})， 未开{{
             payData.data.unKpNum
           }}
           (￥{{ payData.data.unKpMoney }})
-        </a-col>
+        </div>
       </a-row>
     </a-card>
   </div>
@@ -181,28 +187,34 @@ export default {
       columns: [
         {
           title: '序号',
-          scopedSlots: { customRender: 'index' }
+          scopedSlots: { customRender: 'index' },
+          width: '7%'
         },
         {
           title: '付款时间',
-          dataIndex: 'payTime'
+          dataIndex: 'payTime',
+          width: '12%'
         },
         {
           title: '付款ID',
-          dataIndex: 'id'
+          dataIndex: 'id',
+          width: '12%'
         },
         {
           title: '付款方式',
-          dataIndex: 'payTypeName'
+          dataIndex: 'payTypeName',
+          width: '10%'
         },
         {
           title: '付款金额',
-          dataIndex: 'paid'
+          dataIndex: 'paid',
+          width: '10%'
         },
         {
           title: '付款凭证',
           dataIndex: 'payPzNum',
-          scopedSlots: { customRender: 'payPz' }
+          scopedSlots: { customRender: 'payPz' },
+          width: '10%'
         },
         {
           title: '开票情况',
@@ -214,7 +226,8 @@ export default {
         },
         {
           title: '操作',
-          scopedSlots: { customRender: 'action' }
+          scopedSlots: { customRender: 'action' },
+          width: '70px'
         }
       ],
       // 加载数据方法 必须为 Promise 对象

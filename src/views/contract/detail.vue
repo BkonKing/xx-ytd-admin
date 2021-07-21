@@ -69,28 +69,28 @@
         </a-col>
         <a-col flex="1">
           <info
-            :title="`已付款（${info.orderPayNum}）`"
+            :title="`已付款（${info.orderPayNum}个订单）`"
             :value="`￥${info.orderPayMoney}`"
             :bordered="true"
           />
         </a-col>
         <a-col flex="1">
           <info
-            :title="`未付款（${info.orderUnPayNum}）`"
+            :title="`未付款（${info.orderUnPayNum}个订单）`"
             :value="`￥${info.orderUnPayMoney}`"
             :bordered="true"
           />
         </a-col>
         <a-col flex="1">
           <info
-            :title="`已收票（${info.orderInvoicedNum}）`"
+            :title="`已收票（${info.orderInvoicedNum}个订单）`"
             :value="`￥${info.orderInvoicedMoney}`"
             :bordered="true"
           />
         </a-col>
         <a-col flex="1">
           <info
-            :title="`未收票付款（${info.orderUnInvoicedNum}）`"
+            :title="`未收票付款（${info.orderUnInvoicedNum}个订单）`"
             :value="`￥${info.orderUnInvoicedMoney}`"
           />
         </a-col>

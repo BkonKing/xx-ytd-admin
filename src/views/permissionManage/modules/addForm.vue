@@ -117,7 +117,6 @@ export default {
       e.target.value = e.target.value.replace(/[^\a-\z\A-\Z0-9]/g, '')
     },
     onOk () {
-      // console.log('监听了 modal ok 事件')
       return new Promise(resolve => {
         this.$refs.form.validate(result => {
           if (result) {
@@ -145,17 +144,6 @@ export default {
         resolve(true)
       })
     }
-    // handleSubmit () {
-    //   const {
-    //     form: { validateFields }
-    //   } = this
-    //   this.visible = true
-    //   validateFields((errors, values) => {
-    //     if (!errors) {
-    //       console.log('values', values)
-    //     }
-    //   })
-    // }
   },
   created () {
     this.getRole()

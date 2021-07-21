@@ -49,17 +49,20 @@
       </a-select>
     </a-form-model-item>
     <a-form-model-item label="参与公司" prop="companyIds">
-      <a-checkbox-group v-model="form.companyIds" :options="options" />
+      <a-checkbox-group v-model="form.companyIds" :options="options" class="companyIds-checkbox" />
+      <div class="alert-text">参与则可对项目有关联订单、合同等相关处理权限</div>
     </a-form-model-item>
     <a-form-model-item label="开竣工日期" prop="buildTime">
       <a-range-picker
         v-model="form.buildTime"
         style="width: 100%"
+        valueFormat="YYYY-MM-DD"
         :placeholder="['开工日期', '竣工日期']"
       />
     </a-form-model-item>
     <a-form-model-item label="施工许可证" prop="licence">
       <upload-image v-model="form.licence" maxLength="3"></upload-image>
+      <div class="alert-text" style="margin-top: -10px;">支持扩展名.png .jpg</div>
     </a-form-model-item>
     <a-form-model-item label="项目地址" prop="area">
       <a-cascader
@@ -208,7 +211,8 @@ export default {
       return this.companyList.map(option => {
         return {
           label: option.companyName,
-          value: option.companyId
+          value: option.companyId,
+          disabled: this.form.glStatus && this.form.glStatus.includes(option.companyId)
         }
       })
     }
@@ -241,11 +245,21 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .form-title {
   margin-bottom: 10px;
   font-size: 16px;
   font-weight: 600;
   color: #000;
+}
+.companyIds-checkbox {
+  /deep/ .ant-checkbox-wrapper {
+    display: block;
+    margin-top: 5px;
+  }
+}
+.alert-text {
+  color: #00000072;
+  line-height: 1;
 }
 </style>

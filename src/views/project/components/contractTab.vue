@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-card title="合同信息" style="margin-top: 24px" :bordered="false">
-      <div class="table-page-search-wrapper">
+      <div class="table-page-search-wrapper table-page-fw-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">

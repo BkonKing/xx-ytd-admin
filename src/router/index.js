@@ -55,6 +55,16 @@ export const constantRoutes = [{
 },
 
 {
+  path: '/stock/print',
+  name: 'stockPrint',
+  component: () => import('@/views/stock/print'),
+  meta: {
+    title: '出库单打印',
+    hidden: true
+  }
+},
+
+{
   path: '/403',
   name: '403',
   component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/403')

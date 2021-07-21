@@ -106,35 +106,37 @@ import { getSuppReport } from '@/api/report'
 const columns = [
   {
     title: '所属项目',
-    dataIndex: 'projectName'
+    dataIndex: 'projectName',
+    width: '20%'
   },
   {
     title: '供应商ID',
-    dataIndex: 'id',
-    width: '95px'
+    dataIndex: 'idv',
+    width: '110px'
   },
   {
     title: '供应商',
-    dataIndex: 'supplierName'
+    dataIndex: 'supplierName',
+    width: '15%'
   },
   {
     title: '类型',
-    dataIndex: 'supplierTypeName'
+    dataIndex: 'supplierTypeName',
+    width: '10%'
   },
   {
     title: '统一社会信用代码',
-    dataIndex: 'socialCode'
+    dataIndex: 'socialCode',
+    width: '175px'
   },
   {
     title: '供应物料',
-    dataIndex: 'materialCount',
-    sorter: true,
-    width: '110px'
+    dataIndex: 'materialName'
   },
   {
     title: '操作',
     dataIndex: 'action',
-    width: '80px',
+    width: '65px',
     scopedSlots: { customRender: 'action' }
   }
 ]

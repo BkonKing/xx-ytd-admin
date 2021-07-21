@@ -38,13 +38,22 @@
           </a-form-model-item>
         </a-form-model>
       </a-col>
-      <a-col :md="24" :lg="8" :style="{ minHeight: '180px' }">
-        <div class="ant-upload-preview" @click="$refs.modal.edit(1)">
-          <a-icon type="cloud-upload-o" class="upload-icon" />
-          <div class="mask">
-            <a-icon type="plus" />
+      <a-col :md="24" :lg="8" :style="{ minHeight: '212px' }">
+        <div class="avatar-box">
+        <div style="transform: translateX(-66px);margin-bottom: 20px;">头像</div>
+          <div class="ant-upload-preview" @click="$refs.modal.edit(1)">
+            <div class="mask">
+              <a-icon type="plus" />
+            </div>
+            <img v-if="form.avatar" :src="form.avatar" />
           </div>
-          <img v-if="form.avatar" :src="form.avatar" />
+          <a-button
+            icon="upload"
+            style="margin-top: 20px;"
+            @click="$refs.modal.edit(1)"
+          >
+            更换头像
+          </a-button>
         </div>
       </a-col>
     </a-row>
@@ -122,8 +131,8 @@ export default {
   position: relative;
   margin: 0 auto;
   width: 100%;
-  max-width: 180px;
-  max-height: 180px;
+  max-width: 160px;
+  max-height: 160px;
   border-radius: 50%;
   box-shadow: 0 0 4px #ccc;
 
@@ -167,5 +176,10 @@ export default {
     border-radius: 50%;
     overflow: hidden;
   }
+}
+.avatar-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>

@@ -7,7 +7,7 @@
     :wrapper-col="wrapperCol"
   >
     <div class="form-title">公司信息</div>
-      <a-form-model-item label="公司logo" >
+    <a-form-model-item label="公司logo">
       <upload-image v-model="form.companyLogo" maxLength="1"></upload-image>
       <div class="logoText">支持扩展名.png .jpg; 建议比例1:1</div>
     </a-form-model-item>
@@ -43,14 +43,19 @@
       </a-row>
     </a-form-model-item>
     <a-form-model-item label="参与项目" prop="projectIds">
-      <a-checkbox-group v-if="options && options.length" v-model="form.projectIds" :options="options" />
+      <a-checkbox-group
+        v-if="options && options.length"
+        v-model="form.projectIds"
+        :options="options"
+        class="projectIds-checkbox"
+      />
       <template v-else>暂无项目</template>
       <div class="joinProject">参与项目，才有对项目有相关处理权限</div>
     </a-form-model-item>
-       <a-form-model-item label="负责人" >
+    <a-form-model-item label="负责人">
       <a-row type="flex">
         <a-col flex="1">
-          <a-form-model-item >
+          <a-form-model-item>
             <a-input
               v-model="form.manage"
               placeholder="姓名"
@@ -60,9 +65,10 @@
         </a-col>
         <a-col flex="30px" style="text-align: center;">--</a-col>
         <a-col flex="1">
-          <a-form-model-item >
+          <a-form-model-item>
             <a-input
               v-model="form.manageMobile"
+              v-number-input
               placeholder="手机号"
               :maxLength="11"
             ></a-input>
@@ -86,24 +92,22 @@
       <a-input
         v-model="form.adminAccount"
         :maxLength="20"
-
-         oninput="value=value.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"
+        oninput="value=value.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5]/g,'')"
         placeholder="请输入2~20个中文、英文或数字"
       />
     </a-form-model-item>
-   <a-form-model-item label="登录密码" >
+    <a-form-model-item label="登录密码">
       <a-input
         v-model="form.adminPassword"
         :maxLength="18"
         type="password"
-
-         oninput="value=value.replace(/[^\a-\z\A-\Z0-9]/g,'')"
+        oninput="value=value.replace(/[^\a-\z\A-\Z0-9]/g,'')"
         placeholder="请输入6~18个英文、数字"
       />
-      <div v-if="mode==='add'">如果未填，则默认密码为888888</div>
+      <div v-if="mode === 'add'">如果未填，则默认密码为888888</div>
       <div v-else>如果未填，则不修改密码</div>
     </a-form-model-item>
-     <a-form-model-item label="真实姓名" required>
+    <a-form-model-item label="真实姓名" required>
       <a-row type="flex">
         <a-col flex="1">
           <a-form-model-item prop="adminRealname">
@@ -119,8 +123,9 @@
           <a-form-model-item prop="adminMobile">
             <a-input
               v-model="form.adminMobile"
-              placeholder="手机号"
+              v-number-input
               :maxLength="11"
+              placeholder="手机号"
             ></a-input>
           </a-form-model-item>
         </a-col>
@@ -165,7 +170,6 @@ export default {
       type: Array,
       default: () => []
     }
-
   },
   data () {
     return {
@@ -191,13 +195,13 @@ export default {
       return this.projectList.map(option => {
         return {
           label: option.projectName,
-          value: option.projectId
+          value: option.projectId,
+          disabled: this.form.glStatus && this.form.glStatus.includes(option.projectId)
         }
       })
     }
   },
   methods: {
-
     handleSubmit () {
       return new Promise((resolve, reject) => {
         this.$refs.projectForm.validate(valid => {
@@ -221,28 +225,26 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .form-title {
   margin-bottom: 10px;
   font-size: 16px;
   font-weight: 600;
   color: #000;
 }
-.logoText{
-  margin-top: -20px;
-    font-family: 'Microsoft YaHei Regular', 'Microsoft YaHei';
-    font-weight: 400;
-    font-style: normal;
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.447058823529412);
-    line-height: 22px;
+.projectIds-checkbox {
+  /deep/ .ant-checkbox-wrapper {
+    display: block;
+    margin-top: 5px;
+  }
 }
-.joinProject{
-font-family: 'Microsoft YaHei Regular', 'Microsoft YaHei';
-    font-weight: 400;
-    font-style: normal;
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.447058823529412);
-    /* line-height: 22px; */
+.logoText {
+  margin-top: -20px;
+  color: rgba(0, 0, 0, 0.45);
+  line-height: 22px;
+}
+.joinProject {
+  color: rgba(0, 0, 0, 0.45);
+  line-height: 1;
 }
 </style>

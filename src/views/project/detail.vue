@@ -6,59 +6,69 @@
     @tabChange="handleTabChange"
   >
     <template v-slot:content>
-      <a-descriptions size="small" :column="2">
-        <a-descriptions-item label="项目工期">
-          {{ projectInfo.startDate }}~{{ projectInfo.endDate }}
-        </a-descriptions-item>
-        <a-descriptions-item label="项目ID">
-          {{ projectInfo.id }}
-        </a-descriptions-item>
-        <a-descriptions-item label="项目负责">
-          {{ projectInfo.manage }} {{ projectInfo.manageMobile }}
-        </a-descriptions-item>
-        <a-descriptions-item label="项目采购">
-          <template v-if="projectInfo.buyer && projectInfo.buyerMobile">
-            {{ projectInfo.buyer }} {{ projectInfo.buyerMobile }}
-          </template>
-          <template v-else>无</template>
-        </a-descriptions-item>
-        <a-descriptions-item label="技术负责">
-          <template v-if="projectInfo.technician && projectInfo.technicianMobile">
-            {{ projectInfo.technician }} {{ projectInfo.technicianMobile }}
-          </template>
-          <template v-else>无</template>
-        </a-descriptions-item>
-        <a-descriptions-item label="施工许可证">
-          {{ projectInfo.licenceNum }}张
-          <a-button
-            v-if="projectInfo.licence && projectInfo.licence.length"
-            type="link"
-            @click="previewLicence"
-          >
-            查看
-          </a-button>
-        </a-descriptions-item>
-        <a-descriptions-item label="创建人">
-          {{ projectInfo.createAdmin }}
-        </a-descriptions-item>
-        <a-descriptions-item label="参与公司">
-          {{ projectInfo.companyNames || '无' }}
-        </a-descriptions-item>
-      </a-descriptions>
-    </template>
-
-    <template v-slot:extraContent>
-      <a-row class="status-list">
-        <a-col :xs="12" :sm="12">
-          <div class="text">阶段</div>
-          <div class="heading">{{ projectInfo.stage || "无" }}</div>
+      <a-row type="flex">
+        <a-col flex="1">
+          <a-descriptions size="small" :column="2">
+            <a-descriptions-item label="项目工期">
+              {{ projectInfo.startDate }}~{{ projectInfo.endDate }}
+            </a-descriptions-item>
+            <a-descriptions-item label="项目ID">
+              {{ projectInfo.id }}
+            </a-descriptions-item>
+            <a-descriptions-item label="项目负责">
+              {{ projectInfo.manage }} {{ projectInfo.manageMobile }}
+            </a-descriptions-item>
+            <a-descriptions-item label="项目采购">
+              <template v-if="projectInfo.buyer || projectInfo.buyerMobile">
+                {{ projectInfo.buyer }} {{ projectInfo.buyerMobile }}
+              </template>
+              <template v-else>无</template>
+            </a-descriptions-item>
+            <a-descriptions-item label="技术负责">
+              <template
+                v-if="projectInfo.technician || projectInfo.technicianMobile"
+              >
+                {{ projectInfo.technician }} {{ projectInfo.technicianMobile }}
+              </template>
+              <template v-else>无</template>
+            </a-descriptions-item>
+            <a-descriptions-item label="施工许可证">
+              {{ projectInfo.licenceNum }}张
+              <a-button
+                v-if="projectInfo.licence && projectInfo.licence.length"
+                type="link"
+                @click="previewLicence"
+              >
+                查看
+              </a-button>
+            </a-descriptions-item>
+          </a-descriptions>
         </a-col>
-        <a-col :xs="12" :sm="12">
-          <div class="text">参与公司</div>
-          <div class="heading">{{ projectInfo.relationCompanyNum || 0 }}家</div>
+        <a-col flex="242px" style="margin-left: 88px;text-align: right;">
+          <a-row class="status-list">
+            <a-col :xs="12" :sm="12">
+              <div class="text">阶段</div>
+              <div class="heading">{{ projectInfo.stageName || "无" }}</div>
+            </a-col>
+            <a-col :xs="12" :sm="12">
+              <div class="text">参与公司</div>
+              <div class="heading">
+                {{ projectInfo.relationCompanyNum || 0 }}家
+              </div>
+            </a-col>
+          </a-row></a-col
+        >
+      </a-row>
+      <a-row type="flex">
+        <a-col style="width: calc(50% - 165px)">
+          创建人：{{ projectInfo.createAdmin }} {{ projectInfo.ctime }}
+        </a-col>
+        <a-col style="width: calc(50% + 165px)">
+          参与公司：{{ projectInfo.companyNames || "无" }}
         </a-col>
       </a-row>
     </template>
+
     <a-card style="margin-top: 24px" :bordered="false">
       <a-row>
         <a-col :sm="6" :xs="24">
@@ -186,10 +196,11 @@ export default {
   .detail-layout {
     margin-left: unset;
   }
-  .text {
-  }
   .status-list {
     text-align: left;
   }
+}
+/deep/ .ant-descriptions-item {
+  vertical-align: top;
 }
 </style>

@@ -197,7 +197,7 @@ export default {
 .message-container {
   // width: 360px;
   /deep/ .ant-tabs-tab {
-    margin-left: 30px;
+    margin-left: 15px;
     margin-right: 0;
   }
   .message-list {

@@ -9,7 +9,7 @@
         :tree-data="roleMunes"
         :replaceFields="{ key: 'id' }"
         @select="onSelect"
-        :default-expanded-keys="openArr"
+        :autoExpandParent="false"
         @check='onCheck'
       >
         <template slot="custom" slot-scope="item">
@@ -74,7 +74,7 @@ export default {
     showPermiasionMenu () {
       toGetAllCompanyMenus({ companyId: this.id }).then(res => {
         this.roleMunes = res.data
-        this.getOpenArr(this.roleMunes)
+        // this.getOpenArr(this.roleMunes)
         console.log(res)
       })
     }
@@ -89,7 +89,7 @@ export default {
       if (newVal === false) {
         this.checkedKeys = []
         this.roleMunes = []
-        this.openArr = []
+        // this.openArr = []
         this.id = ''
       }
     }

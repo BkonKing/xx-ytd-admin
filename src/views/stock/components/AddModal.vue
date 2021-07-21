@@ -12,10 +12,13 @@
       :model="form"
       :rules="rules"
       :label-col="{ lg: { span: 7 }, sm: { span: 7 } }"
-      :wrapper-col="{ lg: { span: 10 }, sm: { span: 17 } }"
+      :wrapper-col="{ lg: { span: 10 }, sm: { span: 10 } }"
     >
       <a-form-model-item required prop="projectId" label="入库项目">
-        <project-select v-model="form.projectId"></project-select>
+        <project-select
+          v-model="form.projectId"
+          @input="$refs.form.validateField('projectId')"
+        ></project-select>
       </a-form-model-item>
     </a-form-model>
     <div class="edit-table">
@@ -55,6 +58,7 @@
                     v-model="record.materialId"
                     :show-search="true"
                     @change="value => getUnit(value, index)"
+                    @input="$refs[`tableForm${index}`][0].validateField('materialId')"
                   ></material-type-select>
                 </a-col>
               </a-row>
@@ -194,8 +198,7 @@ export default {
       return num
     }
   },
-  created () {
-  },
+  created () {},
   methods: {
     getUnit (value, index) {
       getMaterialUnit({
@@ -292,6 +295,7 @@ export default {
     value (val) {
       if (val) {
         this.form.projectId = ''
+        this.$refs.form && this.$refs.form.resetFields()
         this.tableData = []
       }
       this.visible = val

@@ -54,16 +54,16 @@
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="24">
-          <a-form-item label="订单">
-            <a-input v-model="queryParam.orderId" placeholder="ID"></a-input>
-          </a-form-item>
-        </a-col>
-        <a-col :md="8" :sm="24">
           <a-form-item label="合同">
             <a-input
               v-model="queryParam.serachText"
               placeholder="编号、名称"
             ></a-input>
+          </a-form-item>
+        </a-col>
+        <a-col :md="8" :sm="24">
+          <a-form-item label="订单">
+            <a-input v-model="queryParam.orderId" placeholder="ID"></a-input>
           </a-form-item>
         </a-col>
         <a-col :md="8" :sm="24">
@@ -93,7 +93,7 @@
       <advanced-form
         v-model="advanced"
         :md="isParentCompany ? 16 : 24"
-        @search="search"
+        @search="$refs.table.refresh(true)"
         @reset="reset"
       ></advanced-form>
     </a-row>
@@ -129,6 +129,10 @@ export default {
     contractStatusAble: {
       type: Boolean,
       default: false
+    },
+    activeIndex: {
+      type: [Number, String],
+      default: 0
     }
   },
   data () {
@@ -169,7 +173,20 @@ export default {
       this.$emit('search')
     },
     reset () {
-      this.queryParam = {}
+      let status = ''
+      let contractStatus = ''
+      const index = +this.tabActiveKey
+      if (index !== 0) {
+        if (index < 10) {
+          status = String(index)
+        } else {
+          contractStatus = index - 10
+        }
+      }
+      this.queryParam = {
+        status,
+        contractStatus
+      }
       this.$emit('input', this.queryParam)
     },
     toggleAdvanced () {
@@ -179,6 +196,21 @@ export default {
   watch: {
     value (val) {
       this.queryParam = val
+    },
+    activeIndex (val) {
+      const index = +val
+      console.log(index)
+      if (index !== 0) {
+        if (index < 10) {
+          this.queryParam.status = String(index)
+          console.log('status', this.queryParam.status)
+        } else {
+          this.queryParam.contractStatus = index - 10
+        }
+      } else {
+        this.queryParam.status = ''
+        this.queryParam.contractStatus = ''
+      }
     }
   }
 }

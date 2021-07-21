@@ -10,10 +10,11 @@
 
       <a-form-model-item prop="account">
         <a-input
+          v-model="form.account"
+          :maxLength="20"
           size="large"
           type="text"
           placeholder="账户"
-          v-model="form.account"
         >
           <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
         </a-input>
@@ -21,9 +22,10 @@
 
       <a-form-model-item prop="password">
         <a-input-password
+          v-model="form.password"
+          :maxLength="18"
           size="large"
           placeholder="密码"
-          v-model="form.password"
         >
           <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
         </a-input-password>

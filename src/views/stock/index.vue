@@ -103,7 +103,7 @@
         showPagination="auto"
       >
         <template slot="originalNum" slot-scope="text, record">
-          <a-input-number v-if="record.editable" v-model="record.originalNum" />
+          <a-input-number v-if="record.editable" v-model="record.originalNum" style="width: 78px;" />
           <template v-else>
             {{ text }}
           </template>
@@ -113,6 +113,7 @@
             v-if="record.editable"
             v-model="record.remarks"
             :maxLength="100"
+            style="width: 124px;"
           />
           <template v-else>
             {{ text }}
@@ -131,7 +132,12 @@
             <a v-if="permissions.UpdatePermission" @click="handleEdit(index)"
               >编辑</a
             >
-            <a v-if="permissions.RemovePermission && ((+record.totalLknum) + (+record.totalCknum) <= 0)" @click="handleRemove(record)"
+            <a
+              v-if="
+                permissions.RemovePermission &&
+                  +record.totalLknum + +record.totalCknum <= 0
+              "
+              @click="handleRemove(record)"
               >删除</a
             >
           </span>
@@ -162,7 +168,8 @@ import clonedeep from 'lodash.clonedeep'
 const columns = [
   {
     title: '库存ID',
-    dataIndex: 'id'
+    dataIndex: 'id',
+    width: '64px'
   },
   {
     title: '所属项目',
@@ -183,32 +190,37 @@ const columns = [
   {
     title: '现有库存',
     dataIndex: 'currentNum',
-    sorter: true
+    sorter: true,
+    width: '94px'
   },
   {
     title: '期初库存',
     dataIndex: 'originalNum',
     sorter: true,
+    width: '94px',
     scopedSlots: { customRender: 'originalNum' }
   },
   {
     title: '总入库',
     dataIndex: 'totalLknum',
-    sorter: true
+    sorter: true,
+    width: '80px'
   },
   {
     title: '总出库',
     dataIndex: 'totalCknum',
-    sorter: true
+    sorter: true,
+    width: '80px'
   },
   {
     title: '备注',
     dataIndex: 'remarks',
+    width: '140px',
     scopedSlots: { customRender: 'remarks' }
   },
   {
     title: '操作',
-    width: '150px',
+    width: '124px',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -258,7 +270,14 @@ export default {
     handleRemove ({ id }) {
       const that = this
       this.$confirm({
-        content: '是否删除该库存？',
+        title: '删除库存',
+        content: `确定删除“库存ID${id}”吗？`,
+        icon: () => this.$createElement('a-icon', {
+          props: {
+            type: 'exclamation-circle',
+            theme: 'filled'
+          }
+        }),
         onOk () {
           removeStock({
             id
@@ -305,9 +324,25 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.status-list {
+  position: absolute;
+  right: 24px;
+  bottom: 16px;
+  .text {
+    color: #00000072;
+  }
+  .heading {
+    font-size: 20px;
+    color: #000000d8;
+  }
+}
 .table-page-search-wrapper {
   /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
     width: 80px;
   }
+}
+/deep/ .ant-table-thead > tr > th,
+/deep/ .ant-table-tbody > tr > td {
+  padding-right: 0;
 }
 </style>

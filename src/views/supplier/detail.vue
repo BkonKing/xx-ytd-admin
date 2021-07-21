@@ -13,10 +13,10 @@
         <a-descriptions-item label="关联项目">
           <template v-if="info.projectArr && info.projectArr.length">
             <router-link
-              v-for="item in info.projectArr"
+              v-for="(item, index) in info.projectArr"
               :key="item.projectId"
               :to="{name: 'ProjectDetail', query: {id: item.projectId}}"
-              >{{ item.projectName }}</router-link
+              >{{ item.projectName }}{{index === info.projectArr.length -1 ? '' : ','}}</router-link
             >
           </template>
           <span v-else>--</span>

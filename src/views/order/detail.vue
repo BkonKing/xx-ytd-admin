@@ -35,11 +35,12 @@
         <a-descriptions-item label="合同名称">
           <router-link
             :to="{ name: 'ContractDetail', query: { id: info.contractId } }"
-            >{{ info.contractName || '--' }}</router-link
+            >{{ info.contractName || "--" }}</router-link
           >
         </a-descriptions-item>
         <a-descriptions-item label="创建人">
           {{ info.createAdmin }}
+          {{ info.ctime }}
         </a-descriptions-item>
       </a-descriptions>
     </template>
@@ -47,7 +48,12 @@
     <!-- actions -->
     <template v-slot:extra>
       <a-button v-if="UpdatePermission" @click="goEdit">编辑</a-button>
-      <a-button v-if="info.status === '0' && info.auditPermission" type="primary" @click="openCheck">审核</a-button>
+      <a-button
+        v-if="info.status === '0' && info.auditPermission"
+        type="primary"
+        @click="openCheck"
+        >审核</a-button
+      >
     </template>
 
     <template v-slot:extraContent>
@@ -91,9 +97,11 @@
     ></order-steps>
     <material-table
       v-show="!isPass || tabActiveKey === '0'"
+      :updatePermission="UpdatePermission"
       :data="info.material"
       :number="info.materialNum"
       :money="info.orderPrice"
+      :id="id"
     ></material-table>
     <payment-table
       v-if="isPass"
@@ -189,7 +197,8 @@ export default {
       getAllots({
         limitsPath: '/order/index'
       }).then(({ data }) => {
-        this.UpdatePermission = data.UpdatePermission || data.UpdatePartPermission
+        this.UpdatePermission =
+          data.UpdatePermission || data.UpdatePartPermission
       })
     },
     handleTabChange (key) {

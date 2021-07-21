@@ -12,7 +12,7 @@
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
         <a-button
-         v-if="permissions.ExportPermission"
+          v-if="permissions.ExportPermission"
           type="primary"
           :disabled="!selectedRowKeys.length"
           @click="exportReport"
@@ -31,6 +31,9 @@
         :rowSelectionPaging="true"
         showPagination="auto"
       >
+        <div slot="orderNum" slot-scope="text" style="min-width: 48px;">{{
+          text
+        }}</div>
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
@@ -50,7 +53,8 @@ import ContractSearchForm from './components/ContractSearchForm'
 const columns = [
   {
     title: '合同状态',
-    dataIndex: 'contractStatusv'
+    dataIndex: 'contractStatusv',
+    width: '92px'
   },
   {
     title: '所属项目',
@@ -67,21 +71,26 @@ const columns = [
   {
     title: '订单',
     dataIndex: 'orderNum',
-    sorter: true
+    sorter: true,
+    scopedSlots: { customRender: 'orderNum' }
   },
   {
     title: '金额',
     dataIndex: 'contractMoney',
-    sorter: true
+    sorter: true,
+    customRender (text) {
+      return +text ? `￥${text}` : '--'
+    }
   },
   {
     title: '创建时间',
-    dataIndex: 'ctime'
+    dataIndex: 'ctime',
+    width: '162px'
   },
   {
     title: '操作',
     dataIndex: 'id',
-    width: '100px',
+    width: '64px',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -143,12 +152,17 @@ export default {
       if (!this.queryParam.projectId) {
         this.$message.warning('请选择项目')
       } else {
-        const baseUrl = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
+        const baseUrl =
+          process.env.NODE_ENV === 'production'
+            ? process.env.VUE_APP_API_BASE_URL
+            : '/api'
         const params = {
           projectId: this.queryParam.projectId,
           ids: this.selectedRowKeys.join(',')
         }
-        location.href = `${baseUrl}/operate/report/contractReportExcel?${changeJSON2QueryString(params)}`
+        location.href = `${baseUrl}/operate/report/contractReportExcel?${changeJSON2QueryString(
+          params
+        )}`
       }
     },
     goDetail ({ id }) {

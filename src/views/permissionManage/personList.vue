@@ -40,58 +40,61 @@
       </div>
     </a-card>
     <a-card class="card2">
-      <a-button type="primary" @click="add" v-if="+permissions.CreatePermission===1">新增人员</a-button>
-      <div class="table">
-        <a-table
-          :columns="columns"
-          rowKey="id"
-          :data-source="tableData"
-          :pagination="false"
+      <div class="table-operator">
+        <a-button
+          v-if="+permissions.CreatePermission === 1"
+          type="primary"
+          @click="add"
+          >新增人员</a-button
         >
-          <template slot="opera" slot-scope="text, record">
-            <div class="opera">
-              <a-button type="link" @click="openEditPermiss(record)"
-                v-if="+permissions.AllotsPermission===1">权限</a-button
-              >
-              <a-button type="link" @click="edit(record)" v-if="+permissions.UpdatePermission===1">编辑</a-button>
-              <a-button type="link" @click="delPerson(record)" v-if="+permissions.RemovePermission===1">删除</a-button>
-            </div>
-          </template>
-        </a-table>
       </div>
-      <div class="pagination">
-        <!-- :default-current="pagination.currentPage" -->
-        <a-pagination
-          v-model="pagination.currentPage"
-          show-quick-jumper
-          show-size-changer
-          :page-size-options="pagination.sizes"
-          :total="pagination.total"
-          :page-size.sync="pagination.pageSize"
-          :show-total="
-            (total, range) =>
-              `共 ${total} 条记录 第${pagination.currentPage}/${Math.ceil(
-                total / pagination.pageSize
-              )}页`
-          "
-          @change="onChange"
-          @showSizeChange="sizeChange"
-        />
-      </div>
+      <s-table
+        ref="table"
+        rowKey="id"
+        :columns="columns"
+        :data="loadData"
+        showPagination="auto"
+      >
+        <template slot="opera" slot-scope="text, record">
+          <div class="table-action">
+            <a
+              @click="openEditPermiss(record)"
+              v-if="+permissions.AllotsPermission === 1"
+              >权限</a
+            >
+            <a @click="edit(record)" v-if="+permissions.UpdatePermission === 1"
+              >编辑</a
+            >
+            <a
+              @click="delPerson(record)"
+              v-if="+permissions.RemovePermission === 1"
+              >删除</a
+            >
+          </div>
+        </template>
+      </s-table>
     </a-card>
-    <permissModal ref="permissModal"></permissModal>
+    <permissModal
+      ref="permissModal"
+      @success="$refs.table.refresh()"
+    ></permissModal>
   </div>
 </template>
 
 <script>
-import { toGetAdminList, toRemoveAdmin, toGetRoles } from '@/api/permissionManage'
+import { STable } from '@/components'
+import {
+  toGetAdminList,
+  toRemoveAdmin,
+  toGetRoles
+} from '@/api/permissionManage'
 import addForm from './modules/addForm'
 import permissModal from './modules/permissModal.vue'
 import bus from '@/utils/bus'
 export default {
   components: {
-    // addForm,
-    permissModal
+    permissModal,
+    STable
   },
   data () {
     return {
@@ -133,7 +136,6 @@ export default {
           dataIndex: 'loginTime',
           key: 'loginTime',
           width: '20%'
-
         },
         {
           title: '操作',
@@ -144,26 +146,27 @@ export default {
           // align: 'right'
         }
       ],
-      pagination: {
-        // 任务流水列表页码
-        sizes: ['1', '5', '10', '15'], // 页容量
-        currentPage: 1, // 默认页
-        total: 50, // 总数
-        pageSize: 10 // 默认页容量
+      // 加载数据方法 必须为 Promise 对象
+      loadData: parameter => {
+        const requestParameters = Object.assign({}, parameter, {
+          roleId: this.roleId,
+          searchText: this.searchText
+        })
+        return toGetAdminList(requestParameters).then(res => {
+          return res
+        })
       },
       roleId: '', // 角色id
       searchText: '', // 姓名、手机号关键字
       allRole: []
     }
   },
+  created () {
+    this.getRole()
+  },
   mounted () {
     bus.$on('refresh', value => {
-      if (value === 'add') {
-        this.pagination.currentPage = 1
-        this.getData()
-      } else {
-        this.getData()
-      }
+      this.$refs.table.refresh()
     })
   },
   methods: {
@@ -171,27 +174,20 @@ export default {
     async getRole () {
       const res = await toGetRoles()
       this.treeData = res.data
-      console.log('获取角色', res)
     },
     // 编辑权限
     openEditPermiss (record) {
-      console.log(record)
       this.$refs.permissModal.isShow = true
-      // this.$refs.permissModal.roleId = record.roleId
       this.$refs.permissModal.id = record.id
     },
     // 重置
     reset () {
-      this.pagination.currentPage = 1
       this.roleId = ''
       this.searchText = ''
-      this.pagination.pageSize = 10
-      this.getData()
     },
     // 搜索
     search () {
-      this.pagination.currentPage = 1
-      this.getData()
+      this.$refs.table.refresh(true)
     },
     // 编辑
     edit (item) {
@@ -199,7 +195,6 @@ export default {
 
       this.$dialog(
         addForm,
-        // component props
         {
           mode: 'edit',
           record,
@@ -215,7 +210,6 @@ export default {
             }
           }
         },
-        // modal props
         {
           title: '编辑人员',
           width: 700,
@@ -236,7 +230,7 @@ export default {
           toRemoveAdmin({ id: item.id }).then(() => {
             self.$message.success('删除成功')
 
-            self.getData()
+            self.$refs.table.refresh()
           })
         },
         onCancel () {
@@ -273,36 +267,7 @@ export default {
           maskClosable: false
         }
       )
-    },
-    // 获取人员列表
-    async getData () {
-      const res = await toGetAdminList({
-        roleId: this.roleId,
-        pageNum: this.pagination.currentPage,
-        pageSize: this.pagination.pageSize,
-        searchText: this.searchText
-      })
-      this.tableData = res.data.records
-      this.pagination.total = +res.data.total
-      console.log('人员列表', res)
-    },
-    // 任务流水页码改变事件
-    onChange (page, size) {
-      // console.log('Page: ', page)
-      this.pagination.currentPage = page
-      this.getData()
-    },
-    // 任务流水页容量改变事件
-    sizeChange (current, size) {
-      // console.log('size: ', size)
-      this.pagination.currentPage = 1
-      this.pagination.pageSize = size
-      this.getData()
     }
-  },
-  created () {
-    this.getData()
-    this.getRole()
   }
 }
 </script>
@@ -310,7 +275,7 @@ export default {
 <style lang="less" scoped>
 .personList {
   .card {
-   /deep/ .ant-card-body{
+    /deep/ .ant-card-body {
       padding: 24px 24px 4px 24px;
     }
     .btns {
@@ -321,28 +286,7 @@ export default {
     }
   }
   .card2 {
-    margin-top: 20px;
-    .table {
-      margin-top: 16px;
-    }
-    .pagination {
-      margin-top: 10px;
-      /deep/ .ant-pagination {
-        padding-top: 10px;
-        padding-bottom: 20px;
-        text-align: right;
-      }
-      /deep/ .ant-pagination-total-text {
-        float: left;
-        // margin-left: 20px;
-        // margin-right: 300px;
-      }
-    }
-    .opera{
-      button{
-        padding-left: 0;
-      }
-    }
+    margin-top: 24px;
   }
 }
 </style>

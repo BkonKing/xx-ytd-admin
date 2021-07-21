@@ -76,6 +76,7 @@ export default {
         path
       }).href
       window.open(href, '_blank')
+      item.isRead = '1'
     },
     readAll () {
       toReadAllMessage().then(() => {

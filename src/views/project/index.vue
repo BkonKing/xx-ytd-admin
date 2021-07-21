@@ -2,7 +2,12 @@
   <page-header-wrapper>
     <a-card :bordered="false" class="ant-pro-components-tag-select">
       <a-form layout="inline">
-        <standard-form-row v-if="companyList && companyList.length && isParentCompany" title="参与公司" block style="padding-bottom: 11px;">
+        <standard-form-row
+          v-if="companyList && companyList.length && isParentCompany"
+          title="参与公司"
+          block
+          style="padding-bottom: 3px;"
+        >
           <a-form-item>
             <tag-select v-model="companyIds" @change="getProjectList">
               <tag-select-option
@@ -66,7 +71,9 @@
         <a-list-item slot="renderItem" slot-scope="item, index">
           <a-card
             class="add-project-card"
-            v-if="index === 0 && permissions.CreatePermission && isParentCompany"
+            v-if="
+              index === 0 && permissions.CreatePermission && isParentCompany
+            "
             :body-style="{ paddingBottom: 20 }"
             @click="openAddProject"
           >
@@ -83,20 +90,31 @@
               <template slot="title">
                 <div class="project-header">
                   <span class="project-title">{{ item.projectName }}</span>
-                  <a-tag v-if="item.stage" color="blue" class="project-stage">
-                    {{ item.stage }}
+                  <a-tag v-if="item.stageName" color="blue" class="project-stage">
+                    {{ item.stageName }}
                   </a-tag>
                 </div>
               </template>
               <template slot="avatar">
-                <img style="width: 40px;height: 40px;" src="@/assets/project-avatar.png" />
+                <img
+                  style="width: 48px;height: 48px;"
+                  src="@/assets/project-avatar.png"
+                />
               </template>
             </a-card-meta>
             <template slot="actions">
-              <div v-if="permissions.UpdatePermission && isParentCompany" class="actions-span" @click.stop="openEditProject(item)">
+              <div
+                v-if="permissions.UpdatePermission && isParentCompany"
+                class="actions-span"
+                @click.stop="openEditProject(item)"
+              >
                 编辑
               </div>
-              <div v-if="permissions.RemovePermission && isParentCompany" class="actions-span" @click.stop="removeProject(item)">
+              <div
+                v-if="permissions.RemovePermission && isParentCompany"
+                class="actions-span"
+                @click.stop="removeProject(item)"
+              >
                 删除
               </div>
             </template>
@@ -131,10 +149,7 @@
 
 <script>
 import moment from 'moment'
-import {
-  TagSelect,
-  StandardFormRow
-} from '@/components'
+import { TagSelect, StandardFormRow } from '@/components'
 import CardInfo from './components/CardInfo'
 import projectForm from './components/ProjectForm'
 import {
@@ -165,7 +180,7 @@ export default {
       data: [],
       companyIds: [],
       serachText: '',
-      stage: '',
+      stage: undefined,
       companyList: [],
       projectStageList: [],
       loading: true,
@@ -204,7 +219,8 @@ export default {
         serachText: this.serachText,
         stage: this.stage
       }).then(({ data }) => {
-        const list = this.permissions.CreatePermission && this.isParentCompany ? [{}] : []
+        const list =
+          this.permissions.CreatePermission && this.isParentCompany ? [{}] : []
         this.data = list.concat(data)
         this.loading = false
       })
@@ -223,11 +239,17 @@ export default {
       this.$nextTick(() => {
         const data = clonedeep(obj)
         if (obj.startDate) {
-          data.buildTime = [moment(obj.startDate), moment(obj.endDate)]
+          data.buildTime = [obj.startDate, obj.endDate]
         }
         if (obj.provinceId) {
           data.area = [obj.provinceId, obj.cityId, obj.areaId]
         }
+        const glStatus = []
+        data.companyIds = obj.companyIds.map((item) => {
+          item.glStatus && glStatus.push(item.glStatus)
+          return item.companyId
+        })
+        data.glStatus = glStatus
         this.$refs.projectForm.setFieldsValue(data)
       })
     },
@@ -239,8 +261,8 @@ export default {
         this.confirmLoading = true
         const data = clonedeep(res)
         if (data.buildTime && data.buildTime.length) {
-          data.startDate = moment(data.buildTime[0]).format('YYYY-MM-DD')
-          data.endDate = moment(data.buildTime[1]).format('YYYY-MM-DD')
+          data.startDate = data.buildTime[0]
+          data.endDate = data.buildTime[1]
         }
         if (data.area && data.area.length) {
           data.provinceId = data.area[0]
@@ -283,10 +305,17 @@ export default {
     closeModal () {
       this.visible = false
     },
-    removeProject ({ id }) {
+    removeProject ({ id, projectName }) {
       const that = this
       this.$confirm({
-        content: '是否删除该项目？',
+        title: '删除项目',
+        content: `确定删除“${projectName}”吗？`,
+        icon: () => this.$createElement('a-icon', {
+          props: {
+            type: 'exclamation-circle',
+            theme: 'filled'
+          }
+        }),
         onOk () {
           removeProject({
             id
@@ -314,22 +343,13 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 201px;
+  height: 197px;
   background: none;
   border: 1px dashed #ccc;
+  cursor: pointer;
 }
 .project-card {
-  height: 201px;
-}
-/deep/
-  .antd-pro-components-standard-form-row-index-standardFormRow
-  .antd-pro-components-standard-form-row-index-label {
-  margin-top: 4px;
-}
-/deep/
-  .antd-pro-components-standard-form-row-index-standardFormRow.antd-pro-components-standard-form-row-index-standardFormRowGrid
-  .ant-form-item-label {
-  margin-top: 4px;
+  height: 197px;
 }
 /deep/ .ant-card-actions {
   li {
@@ -359,8 +379,11 @@ export default {
 .project-title {
   font-size: 16px;
   font-weight: bold;
+  flex: 1;
+  .textOverflow();
 }
 .project-stage {
+  max-width: 88px;
   margin-right: 0;
 }
 </style>

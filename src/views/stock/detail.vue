@@ -9,7 +9,7 @@
           {{ info.companyName }}
         </a-descriptions-item>
         <a-descriptions-item label="备注">
-          {{ info.remarks
+          {{ info.remarks || '--'
           }}<a-button v-if="UpdatePermission" type="link" @click="openEditInfo"
             >编辑</a-button
           >
@@ -221,7 +221,10 @@ export default {
         },
         {
           title: '领料部门',
-          dataIndex: 'department'
+          dataIndex: 'department',
+          customRender (text) {
+            return text || '--'
+          }
         },
         {
           title: '出入库人',
@@ -331,7 +334,7 @@ export default {
 <style lang="less" scoped>
 .table-page-search-wrapper {
   /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
+    width: 91px;
   }
 }
 .detail-layout {

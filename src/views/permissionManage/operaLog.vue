@@ -6,65 +6,67 @@
           <a-row :gutter="36">
             <a-col :md="8" :sm="24">
               <a-form-model-item label="模块">
-
                 <a-cascader
-                placeholder="请选择"
-                v-model="logType"
-                :field-names="{ label: 'logType', value: 'typeId', children: 'children' }"
+                  placeholder="请选择"
+                  v-model="logType"
+                  :field-names="{
+                    label: 'logType',
+                    value: 'typeId',
+                    children: 'children'
+                  }"
                   :options="options"
                   change-on-select
-
                 />
               </a-form-model-item>
             </a-col>
             <a-col :md="8" :sm="24">
               <a-form-model-item label="操作员">
                 <a-select v-model="adminId" placeholder="请选择">
-                  <a-select-option v-for="(item, index) in logAdminArr" :key="index" :value="item.adminId">
-                    {{item.admin}}
+                  <a-select-option
+                    v-for="(item, index) in logAdminArr"
+                    :key="index"
+                    :value="item.adminId"
+                  >
+                    {{ item.admin }}
                   </a-select-option>
                 </a-select>
               </a-form-model-item>
             </a-col>
             <template v-if="bol">
-              <div>
-                <a-col :md="8" :sm="24">
-                  <a-form-model-item label="操作时间">
-                    <a-range-picker
-                      v-model="operaTime"
-                      style="width: 100%"
-                      :placeholder="['开始时间', '结束时间']"
-                    />
-                  </a-form-model-item>
-                </a-col>
-                <a-col :md="8" :sm="24">
-                  <a-form-model-item label="操作类型">
-                    <a-input v-model="operationType" placeholder="关键字"></a-input>
-                  </a-form-model-item>
-                </a-col>
-                <a-col :md="8" :sm="24">
-                  <a-form-model-item label="操作说明">
-                    <a-input v-model="serachText" placeholder="关键字"></a-input>
-                  </a-form-model-item>
-                </a-col>
-                <a-col :md="8" :sm="24">
-                  <div class="btns">
-                    <a-button type="primary" @click="search">查询</a-button>
-                    <a-button @click="reset">重置</a-button>
-                    <a-button type="link" @click="close"
-                      >收起 <a-icon type="up"
-                    /></a-button>
-                  </div>
-                </a-col>
-              </div>
+              <a-col :md="8" :sm="24">
+                <a-form-model-item label="操作时间">
+                  <a-range-picker
+                    v-model="operaTime"
+                    style="width: 100%"
+                    :placeholder="['开始时间', '结束时间']"
+                  />
+                </a-form-model-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-model-item label="操作类型">
+                  <a-input
+                    v-model="operationType"
+                    placeholder="关键字"
+                  ></a-input>
+                </a-form-model-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-model-item label="操作说明">
+                  <a-input v-model="serachText" placeholder="关键字"></a-input>
+                </a-form-model-item>
+              </a-col>
             </template>
-            <a-col :md="8" :sm="24" v-if="!bol">
-              <div class="btns">
+            <a-col :md="8" :sm="24">
+              <div
+                class="table-page-search-submitButtons"
+                :style="(bol && { float: 'right', overflow: 'hidden' }) || {}"
+              >
                 <a-button type="primary" @click="search">查询</a-button>
                 <a-button @click="reset">重置</a-button>
-                <a-button type="link" @click="open"
-                  >展开 <a-icon type="down"
-                /></a-button>
+                <a @click="toggle" style="margin-left: 8px">
+                  {{ bol ? "收起" : "展开" }}
+                  <a-icon :type="bol ? 'up' : 'down'"
+                /></a>
               </div>
             </a-col>
           </a-row>
@@ -72,7 +74,12 @@
       </div>
     </a-card>
     <a-card class="card2">
-      <a-table rowKey="id" :columns="columns" :pagination="false" :data-source="tableData">
+      <a-table
+        rowKey="id"
+        :columns="columns"
+        :pagination="false"
+        :data-source="tableData"
+      >
       </a-table>
       <div class="pagination">
         <!-- :default-current="pagination.currentPage" -->
@@ -98,7 +105,11 @@
 </template>
 
 <script>
-import { toGetLogsList, toGetLogType, toGetLogAdmin } from '@/api/permissionManage'
+import {
+  toGetLogsList,
+  toGetLogType,
+  toGetLogAdmin
+} from '@/api/permissionManage'
 import moment from 'moment'
 export default {
   data () {
@@ -110,36 +121,29 @@ export default {
         {
           title: 'id',
           dataIndex: 'id',
-          key: 'id',
-          width: '4%'
-          // scopedSlots: { customRender: 'name' }
+          width: '90px'
         },
         {
           title: '操作时间',
           dataIndex: 'ctime',
-          key: 'ctime',
-          width: '10%'
+          width: '165px'
         },
         {
           title: '模块',
           dataIndex: 'logType',
-          key: 'logType',
-          width: '6%'
+          width: '15%'
           // ellipsis: true
         },
         {
           title: '操作员',
           dataIndex: 'admin',
-          key: 'admin',
-          width: '6%'
+          width: '160px'
           // ellipsis: true
         },
         {
           title: '操作类型',
           dataIndex: 'operationType',
-          key: 'operationType',
-          width: '6%'
-          // ellipsis: true
+          width: '90px'
         },
         {
           title: '操作说明',
@@ -201,8 +205,14 @@ export default {
       toGetLogsList({
         pageNum: this.pagination.currentPage,
         pageSize: this.pagination.pageSize,
-        startDate: this.operaTime.length > 0 ? moment(this.operaTime[0]).format('YYYY-MM-DD') : '',
-        endDate: this.operaTime.length > 0 ? moment(this.operaTime[1]).format('YYYY-MM-DD') : '',
+        startDate:
+          this.operaTime.length > 0
+            ? moment(this.operaTime[0]).format('YYYY-MM-DD')
+            : '',
+        endDate:
+          this.operaTime.length > 0
+            ? moment(this.operaTime[1]).format('YYYY-MM-DD')
+            : '',
         logType: this.logType,
         operationType: this.operationType,
         searchText: this.serachText,
@@ -213,13 +223,9 @@ export default {
         console.log('获取日志列表', data)
       })
     },
-    // 收起
-    close () {
-      this.bol = false
-    },
     // 展开
-    open () {
-      this.bol = true
+    toggle () {
+      this.bol = !this.bol
     }
   },
   created () {
@@ -243,7 +249,7 @@ export default {
   /deep/ .ant-form-item-label {
     min-width: 88px;
   }
-  /deep/ .ant-card-body{
+  /deep/ .ant-card-body {
     padding: 24px 24px 4px 24px;
   }
   .piker-time {
