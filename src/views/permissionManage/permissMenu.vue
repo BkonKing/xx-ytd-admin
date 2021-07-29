@@ -406,18 +406,28 @@ export default {
     // 创建初始角色
     async initSave () {
       const arr = this.inputArr3.map(item => {
+        let id = item.id
+        let parentId = item.parentId
+        if (!parentId) {
+          id = 0
+          parentId = 0
+        }
         return {
           display: +item.display,
           icon: item.icon,
-          id: 0,
+          id,
           level: item.level,
           limitsPath: item.limitsPath,
           listOrder: item.listOrder,
           menuText: item.menuText,
           apiPath: item.apiPath,
-          parentId: 0
+          parentId
         }
-      })
+      }).filter(item => item.menuText)
+      if (!arr || arr.length === 0) {
+        this.$message.warning('请输入菜单信息')
+        return
+      }
       const res = await toUpdateBatchMenu({ menus: arr })
       this.inputArr3 = res.data
       this.getData()

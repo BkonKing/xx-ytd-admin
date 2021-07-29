@@ -2,7 +2,8 @@
 
 html,
 body,
-#app, #root {
+#app, 
+#root {
   height: 100%;
 }
 
@@ -17,14 +18,14 @@ body {
 
 ::-webkit-scrollbar-track {
   width: 6px;
-  background: rgba(#101F1C, 0.1);
+  background: rgba(#101f1c, 0.1);
   -webkit-border-radius: 2em;
   -moz-border-radius: 2em;
   border-radius: 2em;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(#101F1C, 0.5);
+  background-color: rgba(#101f1c, 0.5);
   background-clip: padding-box;
   min-height: 28px;
   -webkit-border-radius: 2em;
@@ -33,7 +34,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(#101F1C, 1);
+  background-color: rgba(#101f1c, 1);
 }
 
 // 数据列表 样式
@@ -105,13 +106,13 @@ body {
   text-align: right;
 }
 .color-1890FF {
-  color: #1890FF;
+  color: #1890ff;
 }
 .color-F5222D {
-  color: #F5222D;
+  color: #f5222d;
 }
 .color-00025 {
-  color: rgba(0, 0, 0, 0.25)
+  color: rgba(0, 0, 0, 0.25);
 }
 
 .popover-toast {
@@ -160,7 +161,7 @@ div.ant-pro-grid-content.wide {
 }
 
 .color-red {
-  color: #F5222D;
+  color: #f5222d;
 }
 
 .ant-form .ant-form-item .ant-form-item {
@@ -192,7 +193,8 @@ div.ant-pro-grid-content.wide {
   }
 }
 
-.ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+.ant-table-thead > tr > th,
+.ant-table-tbody > tr > td {
   word-break: break-all;
 }
 
@@ -212,4 +214,27 @@ div.ant-pro-grid-content.wide {
 
 .table-page-search-wrapper .table-page-search-submitButtons {
   text-align: right;
+}
+
+// 必填字段后面加*
+.form-required-after::after {
+  display: inline-block;
+  margin-left: 4px;
+  color: #f5222d;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
+
+// 面包屑第一个不显示
+.ant-breadcrumb {
+  > span:first-child {
+    display: none;
+  }
+}
+
+// 强制不换行
+.nowrap {
+  white-space: nowrap;
 }

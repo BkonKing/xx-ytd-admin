@@ -12,7 +12,9 @@ export const report = {
   stockLkReport: '/operate/report/stockLkReport',
   stockCkReport: '/operate/report/stockCkReport',
   paidReportExcel: '/operate/report/paidReportExcel',
-  invoicedReportExcel: '/operate/report/invoicedReportExcel'
+  invoicedReportExcel: '/operate/report/invoicedReportExcel',
+  ambReport: '/operate/report/ambReport',
+  updateAmbReport: '/operate/report/updateAmbReport'
 }
 
 // 付款明细报表接口
@@ -102,5 +104,23 @@ export function getStockCkReport (params) {
     url: report.stockCkReport,
     method: 'get',
     params
+  })
+}
+
+// 阿米巴报表接口
+export function getAmbReport (params) {
+  return request({
+    url: report.ambReport,
+    method: 'get',
+    params
+  })
+}
+
+// 阿米巴报表接口
+export function updateAmbReport (data) {
+  return request({
+    url: report.updateAmbReport,
+    method: 'post',
+    data
   })
 }

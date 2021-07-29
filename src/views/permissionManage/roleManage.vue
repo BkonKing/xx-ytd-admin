@@ -408,7 +408,6 @@ export default {
   },
   methods: {
     onCheck (checkedKeys, e) {
-      console.log('e.halfCheckedKeys', e.halfCheckedKeys)
       this.halfCheckedKeys = e.halfCheckedKeys
       this.selectMenuBol = false
       // this.checkedKeys = checkedKeys
@@ -416,13 +415,23 @@ export default {
     // 创建初始角色
     async initSave () {
       const arr = this.inputArr3.map(item => {
+        let id = item.id
+        let parentId = item.parentId
+        if (!parentId) {
+          id = 0
+          parentId = 0
+        }
         return {
-          id: 0,
-          parentId: 0,
+          id,
+          parentId,
           roleName: item.roleName,
           listOrder: item.listOrder
         }
-      })
+      }).filter(item => item.roleName || item.listOrder)
+      if (!arr || arr.length === 0) {
+        this.$message.warning('请输入角色信息')
+        return
+      }
       const res = await toUpdateBatchRole({ roles: arr })
       this.inputArr3 = res.data
       this.getData()

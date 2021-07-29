@@ -135,6 +135,8 @@
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
         showPagination="auto"
+        :scroll="{ x: 2500 }"
+        style="width: 100%"
       >
         <span slot="auditTime" slot-scope="text, record">
           <time-wait
@@ -150,12 +152,12 @@
             <a @click="goDetail(record)">查看</a>
             <a
               v-if="
-                permissions.UpdatePermission || permissions.UpdatePartPermission
+                (permissions.UpdatePermission || permissions.UpdatePartPermission) && userCompanyId == record.companyId
               "
               @click="goEdit(record)"
               >编辑</a
             >
-            <a v-if="permissions.RemovePermission" @click="handleRemove(record)"
+            <a v-if="permissions.RemovePermission && userCompanyId == record.companyId" @click="handleRemove(record)"
               >删除</a
             >
             <a
@@ -205,20 +207,20 @@ import {
 } from '@/api/contract'
 import { getIsAuditSet } from '@/api/common'
 
-const checkTimec = [
-  {
-    title: '审核时间',
-    dataIndex: 'auditTime',
-    scopedSlots: { customRender: 'auditTime' }
-  }
-]
+// const checkTimec = [
+//   {
+//     title: '审核时间',
+//     dataIndex: 'auditTime',
+//     scopedSlots: { customRender: 'auditTime' }
+//   }
+// ]
 
-const checkStatusC = [
-  {
-    title: '审核状态',
-    dataIndex: 'statusv'
-  }
-]
+// const checkStatusC = [
+//   {
+//     title: '审核状态',
+//     dataIndex: 'statusv'
+//   }
+// ]
 
 export default {
   name: 'TableList',
@@ -277,18 +279,101 @@ export default {
       ],
       // 查询参数
       queryParam: {
-        status: '',
-        contractStatus: '',
-        projectId: '',
-        companyId: '',
-        categoryId: '',
-        orderId: '',
-        serachText: '',
-        serachSupplierText: '',
-        payStatus: '',
         time: []
       },
       columns: [
+        {
+          title: '所属项目',
+          dataIndex: 'projectName'
+        },
+        {
+          title: '合同编号',
+          dataIndex: 'contractNo'
+        },
+        {
+          title: '合同名称',
+          dataIndex: 'contractName'
+        },
+        {
+          title: '类型',
+          dataIndex: 'categoryName'
+        },
+        {
+          title: '供应商',
+          dataIndex: 'supplierName'
+        },
+        {
+          title: '金额',
+          dataIndex: 'contractMoney',
+          sorter: true,
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        {
+          title: '总量',
+          dataIndex: 'contractTotal'
+        },
+        {
+          title: '税率',
+          dataIndex: 'taxRate',
+          customRender (text) {
+            const number = parseFloat(text)
+            return number ? `${number}%` : number
+          }
+        },
+        {
+          title: '签订日期',
+          dataIndex: 'signDate'
+        },
+        {
+          title: '有效期',
+          dataIndex: 'startDate',
+          customRender (text, row) {
+            return `${text}~${row.endDate}`
+          }
+        },
+        {
+          title: '结算方式',
+          dataIndex: 'settleTypeName'
+        },
+        {
+          title: '付款方式',
+          dataIndex: 'payTypeName'
+        },
+        {
+          title: '订单',
+          dataIndex: 'orderNum',
+          sorter: true
+        },
+        {
+          title: '已付款',
+          dataIndex: 'orderPayMoney',
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        {
+          title: '未付款',
+          dataIndex: 'orderUnPayMoney',
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        {
+          title: '已收票金额',
+          dataIndex: 'orderInvoicedMoney',
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        {
+          title: '未收票金额',
+          dataIndex: 'orderUnInvoicedMoney',
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
         {
           title: '审核状态',
           dataIndex: 'statusv'
@@ -298,26 +383,13 @@ export default {
           dataIndex: 'contractStatusv'
         },
         {
-          title: '所属项目',
-          dataIndex: 'projectName'
+          title: '审核时间',
+          dataIndex: 'auditTime',
+          scopedSlots: { customRender: 'auditTime' }
         },
         {
-          title: '合同名称',
-          dataIndex: 'contractName'
-        },
-        {
-          title: '合同编号',
-          dataIndex: 'contractNo'
-        },
-        {
-          title: '订单',
-          dataIndex: 'orderNum',
-          sorter: true
-        },
-        {
-          title: '金额',
-          dataIndex: 'contractMoney',
-          sorter: true
+          title: '备注',
+          dataIndex: 'remarks'
         },
         {
           title: '创建时间',
@@ -326,7 +398,7 @@ export default {
         {
           title: '操作',
           dataIndex: 'id',
-          width: '180px',
+          fixed: 'right',
           scopedSlots: { customRender: 'action' }
         }
       ],
@@ -354,6 +426,7 @@ export default {
         return null
       }
       return {
+        fixed: true,
         selectedRowKeys: this.selectedRowKeys,
         getCheckboxProps: record => ({
           props: {
@@ -374,14 +447,14 @@ export default {
     const tab = this.$route.query.tabActiveKey
     if (tab) {
       this.tabActiveKey = tab
-      this.changeColumns(+tab)
+      // this.changeColumns(+tab)
     }
   },
   methods: {
     handleTabChange (key) {
       this.tabActiveKey = key
       this.changeStatus()
-      this.changeColumns(+key)
+      // this.changeColumns(+key)
       this.$refs.table.refresh()
     },
     changeColumns (index) {
@@ -393,21 +466,19 @@ export default {
         this.columns.findIndex(column => column.dataIndex === 'statusv') > -1
       if (index === 1) {
         isStatus && this.columns.shift()
-        !isAudit && this.columns.unshift(...checkTimec)
+        // !isAudit && this.columns.unshift(...checkTimec)
       } else if (index === 0 || index > 10) {
         isAudit && this.columns.shift()
-        !isStatus && this.columns.unshift(...checkStatusC)
+        // !isStatus && this.columns.unshift(...checkStatusC)
       } else {
         isAudit && this.columns.shift()
         isStatus && this.columns.shift()
       }
     },
     reset () {
-      this.queryParam = {
-        status: '',
-        contractStatus: ''
-      }
+      this.queryParam = {}
       this.changeStatus()
+      this.$refs.table.refresh(true)
     },
     changeStatus () {
       const index = +this.tabActiveKey
@@ -418,8 +489,8 @@ export default {
           this.queryParam.contractStatus = index - 10
         }
       } else {
-        this.queryParam.status = ''
-        this.queryParam.contractStatus = ''
+        this.queryParam.status = undefined
+        this.queryParam.contractStatus = undefined
       }
     },
     openCheck ({ id }) {
@@ -473,12 +544,13 @@ export default {
       this.$confirm({
         title: '删除合同',
         content: `确认删除 "${contractName}" 吗？`,
-        icon: () => this.$createElement('a-icon', {
-          props: {
-            type: 'exclamation-circle',
-            theme: 'filled'
-          }
-        }),
+        icon: () =>
+          this.$createElement('a-icon', {
+            props: {
+              type: 'exclamation-circle',
+              theme: 'filled'
+            }
+          }),
         onOk () {
           removeCont({
             id

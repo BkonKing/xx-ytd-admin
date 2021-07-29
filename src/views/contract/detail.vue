@@ -10,11 +10,12 @@
         <a-descriptions-item label="所属项目">
           <router-link
             :to="{ name: 'ProjectDetail', query: { id: info.projectId } }"
+            target="_blank"
             >{{ info.projectName || "--" }}</router-link
           >
         </a-descriptions-item>
         <a-descriptions-item label="创建人">
-          {{ info.createAdmin }}
+          {{ info.createAdmin }} {{ info.ctime }}
         </a-descriptions-item>
         <a-descriptions-item label="所属公司">
           {{ info.companyName }}
@@ -24,7 +25,11 @@
 
     <!-- actions -->
     <template v-slot:extra>
-      <a-button v-if="UpdatePermission" @click="goEdit">编辑</a-button>
+      <a-button
+        v-if="UpdatePermission && userCompanyId == info.companyId"
+        @click="goEdit"
+        >编辑</a-button
+      >
       <a-button
         v-if="info.status === '0' && info.auditPermission"
         type="primary"
@@ -43,7 +48,7 @@
           <div class="text">合同状态</div>
           <div class="heading">{{ info.contractStatusv }}</div>
         </a-col>
-        <a-col flex="2">
+        <a-col flex="1">
           <div class="text">合同金额</div>
           <div class="heading">￥{{ info.contractMoney }}</div>
         </a-col>
@@ -111,7 +116,11 @@
       v-show="!isPass || tabActiveKey === '2'"
       :data="info.auditLeveLog"
     ></c-steps-info>
-    <log-list v-show="!isPass || tabActiveKey === '0'" typeId="20"></log-list>
+    <log-list
+      v-show="!isPass || tabActiveKey === '0'"
+      typeId="20"
+      :sourceId="id"
+    ></log-list>
 
     <order-tab
       v-show="tabActiveKey === '1'"
@@ -254,13 +263,15 @@ export default {
   margin-left: 44px;
 }
 .text {
+  padding-left: 10px;
   color: rgba(0, 0, 0, 0.45);
 }
 
 .heading {
+  padding-left: 10px;
   color: rgba(0, 0, 0, 0.85);
   font-size: 20px;
-  word-break: break-all;
+  // word-break: break-all;
 }
 
 /deep/ .ant-pro-page-header-wrap-main .ant-pro-page-header-wrap-content,

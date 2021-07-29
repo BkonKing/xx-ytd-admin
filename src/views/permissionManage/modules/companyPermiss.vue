@@ -74,8 +74,7 @@ export default {
     showPermiasionMenu () {
       toGetAllCompanyMenus({ companyId: this.id }).then(res => {
         this.roleMunes = res.data
-        // this.getOpenArr(this.roleMunes)
-        console.log(res)
+        this.getOpenArr(this.roleMunes)
       })
     }
   },
@@ -89,7 +88,7 @@ export default {
       if (newVal === false) {
         this.checkedKeys = []
         this.roleMunes = []
-        // this.openArr = []
+        this.openArr = []
         this.id = ''
       }
     }

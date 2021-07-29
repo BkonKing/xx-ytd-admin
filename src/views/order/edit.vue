@@ -25,12 +25,12 @@
     <a-card title="物料信息" style="margin-top: 24px;">
       <div class="edit-table">
         <a-row class="edit-table-header" type="flex">
-          <a-col flex="2">物料</a-col>
-          <a-col flex="2">物料品牌</a-col>
-          <a-col flex="2">规格型号</a-col>
-          <a-col flex="110px">税率</a-col>
-          <a-col flex="120px">采购单价(元)</a-col>
-          <a-col flex="180px">数量</a-col>
+          <a-col class="form-required-after" flex="2">物料</a-col>
+          <a-col class="form-required-after" flex="2">物料品牌</a-col>
+          <a-col class="form-required-after" flex="2">规格型号</a-col>
+          <a-col class="form-required-after" flex="110px">税率</a-col>
+          <a-col class="form-required-after" flex="120px">采购单价(元)</a-col>
+          <a-col class="form-required-after" flex="180px">数量</a-col>
           <a-col flex="1">金额</a-col>
           <a-col flex="100px">排序</a-col>
           <a-col flex="60px">操作</a-col>
@@ -122,7 +122,7 @@
             <a-col flex="1">
               <span style="word-break: break-all;"
                 >￥{{
-                  NPTimes(record.unitPrice, parseFloat(record.total) || 0)
+                  NPTimes(record.unitPrice, parseFloat(record.total) || 0).toFixed(2)
                 }}</span
               >
             </a-col>
@@ -267,7 +267,7 @@ export default {
         this.form.supplier = data.supplierName
         this.tableData = data.material
         this.tableData.forEach((obj, index) => {
-          this.getUnit(obj.materialId, index)
+          this.getUnit(obj.materialId, index, obj.unit)
         })
       })
     },
@@ -282,12 +282,12 @@ export default {
     getSupplier (value, option) {
       this.form.supplier = option.supplierName
     },
-    getUnit (value, index) {
+    getUnit (value, index, unit) {
       getMaterialUnit({
         id: value
       }).then(({ data }) => {
         this.$set(this.tableData[index], 'unitOptions', data)
-        this.$set(this.tableData[index], 'unit', data[0].unit)
+        this.$set(this.tableData[index], 'unit', unit || data[0].unit)
       })
     },
     handleAdd () {
@@ -295,7 +295,7 @@ export default {
         materialId: '',
         brand: '',
         model: '',
-        taxRate: (this.tableData[0] && this.tableData[0].taxRate) || 0,
+        taxRate: '',
         unitPrice: '',
         unit: '',
         unitOptions: [],
@@ -361,9 +361,14 @@ export default {
             material: this.tableData
           }
           const api = this.id ? updateOrder : addOrder
-          api(params).then(() => {
+          api(params).then(({ id }) => {
             this.$message.success('提交成功')
-            this.$router.go(-1)
+            this.$router.replace({
+              name: 'OrderDetail',
+              query: {
+                id: this.id || id
+              }
+            })
           })
         })
         .catch(() => {})

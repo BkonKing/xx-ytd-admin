@@ -1,7 +1,12 @@
 <template>
   <div :class="wrpCls">
-    <message-center style="margin-right: 20px;"></message-center>
-    <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
+    <message-center></message-center>
+    <avatar-dropdown
+      :menu="showMenu"
+      :current-user="currentUser"
+      :class="prefixCls"
+      style="margin-left: 11px;"
+    />
   </div>
 </template>
 
@@ -45,7 +50,9 @@ export default {
     wrpCls () {
       return {
         'ant-pro-global-header-index-right': true,
-        [`ant-pro-global-header-index-${(this.isMobile || !this.topMenu) ? 'light' : this.theme}`]: true
+        [`ant-pro-global-header-index-${
+          this.isMobile || !this.topMenu ? 'light' : this.theme
+        }`]: true
       }
     },
     ...mapGetters(['userInfo'])

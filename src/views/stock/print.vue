@@ -1,12 +1,14 @@
 <template>
   <div class="print-page">
-    <button v-show="false" ref="button" v-print="'#print-table'"
-      >打印</button
-    >
+    <button v-show="false" ref="button" v-print="'#print-table'">打印</button>
     <div id="print-table">
       <template v-for="(tableData, index) in CKData">
         <div class="print-page-title" :key="index">出库单</div>
-        <table class="print-table" :key="`table${index}`" style="page-break-after: always">
+        <table
+          class="print-table"
+          :key="`table${index}`"
+          style="page-break-after: always"
+        >
           <tbody>
             <tr class="print-text-tr">
               <th colspan="4">领料部门：{{ tableData.department }}</th>
@@ -21,10 +23,6 @@
               <th width="10%">规格</th>
               <th width="10%">单位</th>
               <th width="10%">数量</th>
-              <th
-                :rowspan="tableData.children.length + 1"
-                style="background: #fff;width: 10%;"
-              ></th>
               <th width="10%">金额</th>
               <th width="10%">备注</th>
             </tr>
@@ -40,14 +38,18 @@
               <td>{{ item.model }}</td>
               <td>{{ item.unitv }}</td>
               <td>{{ item.stockNum }}</td>
-              <td>￥</td>
+              <td><span style="float: left">￥</span
+                ><span style="float: right;margin-right: 30px;">-</span></td>
               <td></td>
             </tr>
             <tr class="print-tbody-tr-border">
               <td colspan="2">合计（大写）:</td>
-              <td colspan="5"></td>
+              <td colspan="4"></td>
               <td>（小写）:</td>
-              <td colspan="2">￥</td>
+              <td colspan="2">
+                <span style="float: left">￥</span
+                ><span style="float: right;margin-right: 30px;">-</span>
+              </td>
             </tr>
             <tr>
               <td colspan="4">审核人：</td>
@@ -131,6 +133,7 @@ export default {
 }
 .print-table > tbody > .print-thead-tr-border > th,
 .print-table > tbody > .print-tbody-tr-border > td {
+  text-align: center;
   border-right: 1px solid #e8e8e8;
   border-bottom: 1px solid #e8e8e8;
 }

@@ -15,8 +15,12 @@
             <router-link
               v-for="(item, index) in info.projectArr"
               :key="item.projectId"
-              :to="{name: 'ProjectDetail', query: {id: item.projectId}}"
-              >{{ item.projectName }}{{index === info.projectArr.length -1 ? '' : ','}}</router-link
+              :to="{ name: 'ProjectDetail', query: { id: item.projectId } }"
+              target="_blank"
+              >{{ item.projectName
+              }}{{
+                index === info.projectArr.length - 1 ? "" : ","
+              }}</router-link
             >
           </template>
           <span v-else>--</span>
@@ -35,8 +39,13 @@
 
     <!-- actions -->
     <template v-slot:extra>
-      <a-button v-if="UpdatePermission" @click="goEdit">编辑</a-button>
-      <a-button v-if="info.status === '0' &&  info.auditPermission" type="primary" @click="openCheck">审核</a-button>
+      <a-button v-if="UpdatePermission && userCompanyId == info.companyId" @click="goEdit">编辑</a-button>
+      <a-button
+        v-if="info.status === '0' && info.auditPermission"
+        type="primary"
+        @click="openCheck"
+        >审核</a-button
+      >
     </template>
 
     <template v-slot:extraContent>
@@ -67,7 +76,11 @@
       v-show="!isPass || tabActiveKey === '2'"
       :data="info.auditLeveLog"
     ></order-steps-info>
-    <log-list v-show="!isPass || tabActiveKey === '0'" typeId="40"></log-list>
+    <log-list
+      v-show="!isPass || tabActiveKey === '0'"
+      typeId="40"
+      :sourceId="id"
+    ></log-list>
 
     <material-table
       v-if="isPass"

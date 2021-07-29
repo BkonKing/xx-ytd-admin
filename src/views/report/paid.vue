@@ -18,7 +18,7 @@
               <a-col :md="8" :sm="24">
                 <a-form-item label="合同">
                   <a-input
-                    v-model="queryParam.serachMaterialText"
+                    v-model="queryParam.serachContractText"
                     placeholder="编号、名称"
                   ></a-input>
                 </a-form-item>
@@ -44,7 +44,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 8 : 16"
-              @reset="() => this.queryParam = {}"
+              @reset="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>

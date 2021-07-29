@@ -14,8 +14,14 @@
       <span slot="taxRate" slot-scope="text">
         {{ +text ? `${parseFloat(text)}%` : "无" }}
       </span>
+      <span slot="paid" slot-scope="text, record">
+        <div v-if="+text">已付￥{{ text }}</div>
+        <div v-if="+record.unpaid">未付￥{{ record.unpaid }}</div>
+      </span>
       <span slot="action">
-        <router-link :to="{ name: 'OrderEdit', query: { id: id } }"
+        <router-link
+          :to="{ name: 'OrderEdit', query: { id: id } }"
+          target="_blank"
           >编辑</router-link
         >
       </span>
@@ -26,9 +32,10 @@
       align="middle"
       style="border-bottom: 1px solid #e8e8e8;"
     >
-      <div style="width: 72%;">总计</div>
+      <div style="width: 62%;">总计</div>
       <div style="width: 8%;">{{ number }}</div>
-      <div>￥{{ money }}</div>
+      <div style="width: 10%;">￥{{ money }}</div>
+      <div style="width: 20%;">已付￥{{ paid }}，未付￥{{ unpaid }}</div>
     </a-row>
   </a-card>
 </template>
@@ -53,6 +60,14 @@ export default {
       type: [Number, String],
       default: 0
     },
+    paid: {
+      type: [Number, String],
+      default: 0
+    },
+    unpaid: {
+      type: [Number, String],
+      default: 0
+    },
     id: {
       type: [Number, String],
       default: ''
@@ -64,18 +79,18 @@ export default {
         {
           title: '物料',
           dataIndex: 'materialName',
-          width: '17%',
+          width: '14%',
           scopedSlots: { customRender: 'material' }
         },
         {
           title: '物料品牌',
           dataIndex: 'brand',
-          width: '17%'
+          width: '14%'
         },
         {
           title: '规格型号',
           dataIndex: 'model',
-          width: '17%'
+          width: '14%'
         },
         {
           title: '税率',
@@ -86,7 +101,7 @@ export default {
         {
           title: '采购单价(元)',
           dataIndex: 'unitPrice',
-          width: '14%',
+          width: '13%',
           customRender (text) {
             return `￥${text}`
           }
@@ -102,16 +117,25 @@ export default {
         {
           title: '金额',
           dataIndex: 'allPrice',
+          width: '10%',
           customRender (text) {
             return `￥${text}`
           }
+        },
+        {
+          title: '付款情况',
+          dataIndex: 'paid',
+          scopedSlots: { customRender: 'paid' }
         }
       ]
     }
   },
   watch: {
     updatePermission (val) {
-      if (val && this.columns[this.columns.length - 1].dataIndex !== 'orderId') {
+      if (
+        val &&
+        this.columns[this.columns.length - 1].dataIndex !== 'orderId'
+      ) {
         this.columns.push({
           title: '操作',
           dataIndex: 'orderId',

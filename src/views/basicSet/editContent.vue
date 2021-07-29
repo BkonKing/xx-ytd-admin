@@ -1,5 +1,5 @@
 <template>
-  <div class="editContent">
+  <page-header-wrapper class="editContent">
     <a-card>
       <a-form-model
         ref="form"
@@ -13,21 +13,37 @@
         </a-form-model-item>
         <a-form-model-item label="标签说明">
           <div class="box">
-            <div class="item"><span>项目名称:</span><span>$project$</span></div>
-            <div class="item"><span>订单编号:</span><span>$orderId$</span></div>
-            <div class="item"><span>合同编号:</span><span>$contractId$</span></div>
-            <div class="item"><span>合同名称:</span><span>$contractName$</span></div>
-            <div class="item"><span>合同金额:</span><span>$contractMoney$</span></div>
-            <div class="item"><span>合同结束日期:</span><span>$contractEndtime$</span></div>
             <div class="item">
-              <span>供应商编号:</span><span>$supplierId$</span>
+              <span>项目名称：</span><span>$project$</span>
             </div>
             <div class="item">
-              <span>供应商名称:</span><span>$supplier$</span>
+              <span>订单编号：</span><span>$orderId$</span>
             </div>
-            <div class="item"><span>审核时间:</span><span>$auditTime$</span></div>
-            <div class="item"><span>审核超时时间:</span><span>$auditTimeout$</span></div>
-            <div class="item"><span>操作者:</span><span>$operator$</span></div>
+            <div class="item">
+              <span>合同编号：</span><span>$contractId$</span>
+            </div>
+            <div class="item">
+              <span>合同名称：</span><span>$contractName$</span>
+            </div>
+            <div class="item">
+              <span>合同金额：</span><span>$contractMoney$</span>
+            </div>
+            <div class="item">
+              <span>合同结束日期：</span><span>$contractEndtime$</span>
+            </div>
+            <div class="item">
+              <span>供应商编号：</span><span>$supplierId$</span>
+            </div>
+            <div class="item">
+              <span>供应商名称：</span><span>$supplier$</span>
+            </div>
+            <div class="item">
+              <span>审核时间：</span><span>$auditTime$</span>
+            </div>
+            <div class="item">
+              <span>审核超时时间：</span><span>$auditTimeout$</span>
+            </div>
+            <div class="item"><span>操作者：</span><span>$operator$</span></div>
           </div>
         </a-form-model-item>
         <div class="title">站内消息</div>
@@ -37,7 +53,9 @@
             :maxLength="20"
             style="width:440px"
           ></a-input>
-          <div style="color: rgba(0, 0, 0, 0.447);">限2~20个字符</div>
+          <div style="color: rgba(0, 0, 0, 0.447);line-height: 24px;">
+            限2~20个字符
+          </div>
         </a-form-model-item>
         <a-form-model-item label="内容模板" prop="webMessageTemp">
           <a-textarea
@@ -59,13 +77,16 @@
                 <template slot="title">
                   仅通知与本人相关的信息
                 </template>
-                <a-icon type="info-circle" />
+                <a-icon
+                  type="info-circle"
+                  style="color: #797979;margin-top: 3px;"
+                />
               </a-tooltip>
             </span>
           </template>
-            <div>{{info.webSendName}}</div>
+          <div style="width: 440px;">{{ info.webSendName }}</div>
         </a-form-model-item>
-        <a-form-model-item>
+        <a-form-model-item v-if="+other">
           <template slot="label">
             <span>
               额外通知用户
@@ -73,7 +94,10 @@
                 <template slot="title">
                   通知所有的信息
                 </template>
-                <a-icon type="info-circle" />
+                <a-icon
+                  type="info-circle"
+                  style="color: #797979;margin-top: 3px;"
+                />
               </a-tooltip>
             </span>
           </template>
@@ -96,56 +120,41 @@
         </a-form-model-item>
         <div class="title">微信公众号</div>
         <a-form-model-item label="模板标题">流程代办提醒</a-form-model-item>
-        <a-form-model-item label="内容模板">
+        <a-form-model-item label="内容模板" required>
           <div class="inputBox">
             <a-form-model-item
               label="流程编号"
               prop="lcbh"
-              :rules="{ required: true, message: '请填写 ', trigger: 'change' }"
+              :label-col="labelColSpan"
             >
-              <a-textarea
-                v-model="form.lcbh"
-                placeholder="请输入"
-                auto-size
-              />
+              <a-textarea v-model="form.lcbh" placeholder="请输入" auto-size />
             </a-form-model-item>
             <a-form-model-item
               label="流程名称"
               prop="lcmc"
-              :rules="{ required: true, message: '请填写 ', trigger: 'change' }"
+              :label-col="labelColSpan"
             >
-              <a-textarea
-                v-model="form.lcmc"
-                placeholder="请输入"
-                auto-size
-              />
+              <a-textarea v-model="form.lcmc" placeholder="请输入" auto-size />
             </a-form-model-item>
 
             <a-form-model-item
               label="流程摘要"
-              prop="lcmc"
-              :rules="{ required: true, message: '请填写 ', trigger: 'change' }"
+              prop="lczy"
+              :label-col="labelColSpan"
             >
-              <a-textarea
-                v-model="form.lczy"
-                placeholder="请输入"
-                auto-size
-              />
+              <a-textarea v-model="form.lczy" placeholder="请输入" auto-size />
             </a-form-model-item>
             <a-form-model-item
               label="备注"
+              class="lcbz"
               prop="lcbz"
-              :rules="{ required: true, message: '请填写 ', trigger: 'change' }"
+              :label-col="labelColSpan"
             >
-              <a-textarea
-                v-model="form.lcbz"
-                placeholder="请输入"
-                auto-size
-              />
+              <a-textarea v-model="form.lcbz" placeholder="请输入" auto-size />
             </a-form-model-item>
           </div>
         </a-form-model-item>
-             <a-form-model-item>
+        <a-form-model-item>
           <template slot="label">
             <span>
               默认通知用户
@@ -153,21 +162,27 @@
                 <template slot="title">
                   仅通知与本人相关的信息
                 </template>
-                <a-icon type="info-circle" />
+                <a-icon
+                  type="info-circle"
+                  style="color: #797979;margin-top: 3px;"
+                />
               </a-tooltip>
             </span>
           </template>
-            <div>{{info.wxSendName}}</div>
+          <div style="width: 440px;">{{ info.wxSendName }}</div>
         </a-form-model-item>
-        <a-form-model-item>
-            <template slot="label">
+        <a-form-model-item v-if="+other">
+          <template slot="label">
             <span>
               额外通知用户
               <a-tooltip>
                 <template slot="title">
                   通知所有的信息
                 </template>
-                <a-icon type="info-circle" />
+                <a-icon
+                  type="info-circle"
+                  style="color: #797979;margin-top: 3px;"
+                />
               </a-tooltip>
             </span>
           </template>
@@ -189,11 +204,14 @@
           </a-select>
         </a-form-model-item>
       </a-form-model>
-      <div class="btn">
-        <a-button type="primary" @click="save" :disabled="bol">保存</a-button>
-      </div>
+      <a-row class="btn-container">
+        <a-col :span="7"></a-col>
+        <a-col :span="14">
+          <a-button type="primary" @click="save" :disabled="bol">保存</a-button>
+        </a-col>
+      </a-row>
     </a-card>
-  </div>
+  </page-header-wrapper>
 </template>
 
 <script>
@@ -202,7 +220,8 @@ export default {
   data () {
     return {
       info: {},
-      labelCol: { span: 4 },
+      labelCol: { span: 7 },
+      labelColSpan: { span: 4 },
       wrapperCol: { span: 14 },
       // webTagArr: [], // 站内消息通知用户
       // wxTagArr: [], // 微信消息通知用户
@@ -223,9 +242,16 @@ export default {
 
       rules: {
         webTitle: [{ required: true, message: '请填写', trigger: 'change' }],
-        webMessageTemp: [{ required: true, message: '请填写', trigger: 'change' }]
+        webMessageTemp: [
+          { required: true, message: '请填写', trigger: 'change' }
+        ],
+        lcbh: [{ required: true, message: '请填写 ', trigger: 'change' }],
+        lcmc: [{ required: true, message: '请填写 ', trigger: 'change' }],
+        lczy: [{ required: true, message: '请填写 ', trigger: 'change' }],
+        lcbz: [{ required: true, message: '请填写 ', trigger: 'change' }]
       },
-      bol: true
+      bol: true,
+      other: '0' // 是否为不是待审核、超时（是则显示额外通知用户）
     }
   },
   watch: {
@@ -268,7 +294,7 @@ export default {
             wxMessageTemp: obj,
             wxIds: this.wxIds.join(',')
           }).then(res => {
-            this.$message.success(res.message)
+            this.$message.success('提交成功')
             this.bol = true
           })
         }
@@ -307,6 +333,7 @@ export default {
     if (this.id) {
       this.getDetail()
     }
+    this.other = this.$route.query.other
     toGetAllAdminList().then(({ data }) => {
       this.tzList = data
       console.log('获取额外通知列表', data)
@@ -319,14 +346,14 @@ export default {
 .editContent {
   .box {
     display: flex;
-    width: 420px;
+    width: 460px;
     flex-wrap: wrap;
     .item {
       width: 50%;
     }
   }
   .title {
-    margin-left: 150px;
+    margin-left: 20%;
     font-family: "PingFang SC Bold", "PingFang SC";
     font-weight: 650;
     font-style: normal;

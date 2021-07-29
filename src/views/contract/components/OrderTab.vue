@@ -47,7 +47,7 @@
             <advanced-form
               v-model="advanced"
               :md="8"
-              @reset="() => (this.queryParam = {})"
+              @reset="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
               @search="$refs.orderTable.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -128,11 +128,11 @@ export default {
   },
   props: {
     companyId: {
-      type: String,
+      type: [String, Number],
       default: ''
     },
     contractId: {
-      type: String,
+      type: [String, Number],
       default: ''
     }
   },

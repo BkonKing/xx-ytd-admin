@@ -24,9 +24,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .limit-width {
   min-width: 1200px;
-  overflow-x: auto;
 }
 </style>

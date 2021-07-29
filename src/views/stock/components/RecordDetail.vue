@@ -46,6 +46,7 @@
       <span slot="materialName" slot-scope="text, record">
         <router-link
           :to="{ name: 'stockDetail', query: { id: record.stockId } }"
+          target="_blank"
         >
           {{ record.materialNo }} {{ text }} </router-link
         >/{{ record.brand }}/{{ record.model }}

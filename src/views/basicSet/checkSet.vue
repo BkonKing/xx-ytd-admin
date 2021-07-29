@@ -1,21 +1,21 @@
 <template>
-  <div class="checkSet">
+  <page-header-wrapper class="checkSet">
     <a-card>
       <a-form-model
         ref="form"
         :model="form"
-        :label-col="labelCol"
         :rules="rules"
+        :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
         <div class="title">订单审核</div>
         <a-form-model-item label="审核处理时间" prop="auditHours1">
           <a-input v-model="form.auditHours1" style="width:88px"></a-input>
-          <span style="marginLeft:10px">小时内</span>
-          <div>需要在设定时间内进行审核处理，超时则提醒</div>
+          <span style="margin-left:10px">小时内</span>
+          <div class="text">需要在设定时间内进行审核处理，超时则提醒</div>
         </a-form-model-item>
         <a-form-model-item label="审核人员">
-          <div>同一级审核，多人时，任意一人同意即可</div>
+          <div class="text">同一级审核，多人时，任意一人同意即可</div>
           <div class="checkInputs">
             <div
               class="item"
@@ -63,10 +63,10 @@
         <a-form-model-item label="审核处理时间" prop="auditHours2">
           <a-input v-model="form.auditHours2" style="width:88px"></a-input>
           <span style="marginLeft:10px">小时内</span>
-          <div>需要在设定时间内进行审核处理，超时则提醒</div>
+          <div class="text">需要在设定时间内进行审核处理，超时则提醒</div>
         </a-form-model-item>
         <a-form-model-item label="审核人员">
-          <div>同一级审核，多人时，任意一人同意即可</div>
+          <div class="text">同一级审核，多人时，任意一人同意即可</div>
           <div class="checkInputs">
             <div
               class="item"
@@ -114,10 +114,10 @@
         <a-form-model-item label="审核处理时间" prop="auditHours3">
           <a-input v-model="form.auditHours3" style="width:88px"></a-input>
           <span style="marginLeft:10px">小时内</span>
-          <div>需要在设定时间内进行审核处理，超时则提醒</div>
+          <div class="text">需要在设定时间内进行审核处理，超时则提醒</div>
         </a-form-model-item>
         <a-form-model-item label="审核人员">
-          <div>同一级审核，多人时，任意一人同意即可</div>
+          <div class="text">同一级审核，多人时，任意一人同意即可</div>
           <div class="checkInputs">
             <div
               class="item"
@@ -162,11 +162,14 @@
           </div>
         </a-form-model-item>
       </a-form-model>
-      <div class="btn">
-        <a-button type="primary" @click="save" :disabled="bol">保存</a-button>
-      </div>
+      <a-row class="btn-container">
+        <a-col :span="7"></a-col>
+        <a-col :span="14">
+          <a-button type="primary" @click="save" :disabled="bol">保存</a-button>
+        </a-col>
+      </a-row>
     </a-card>
-  </div>
+  </page-header-wrapper>
 </template>
 
 <script>
@@ -186,7 +189,7 @@ const LevelKey = [
 export default {
   data () {
     return {
-      labelCol: { span: 4 },
+      labelCol: { span: 7 },
       wrapperCol: { span: 14 },
       form: {
         auditHours1: 24,
@@ -320,7 +323,7 @@ export default {
           toUpdateSetData({
             setData: setData
           }).then(res => {
-            this.$message.success(res.message)
+            this.$message.success('提交成功')
             this.$nextTick(() => {
               this.bol = true
             })
@@ -334,7 +337,8 @@ export default {
     convertData (data) {
       const setData = {}
       data.forEach((item, index) => {
-        setData[LevelKey[index]] = item.level.length > 0 && item.level.join(',')
+        setData[LevelKey[index]] =
+          item.level.length > 0 && item.level.join(',')
       })
       return setData
     },
@@ -382,7 +386,7 @@ export default {
             otherAdmin.push(...level.level)
           }
         })
-        const newOrderP = options.filter((peo) => {
+        const newOrderP = options.filter(peo => {
           return !otherAdmin.includes(peo.id)
         })
         arr.push(newOrderP)
@@ -440,14 +444,16 @@ export default {
     margin-bottom: 14px;
   }
   .title {
-    margin-left: 150px;
-    font-family: "PingFang SC Bold", "PingFang SC";
+    margin-left: 20%;
     font-weight: 650;
-    font-style: normal;
     font-size: 16px;
-    color: rgba(0, 0, 0, 0.847);
+    color: rgba(0, 0, 0, 0.85);
     line-height: 24px;
     margin-bottom: 24px;
+  }
+  .text {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.45);
   }
   .checkInputs {
     .item {
@@ -469,8 +475,8 @@ export default {
     text-align: center;
     border: 1px dashed #e9e9e9;
   }
-  .btn {
-    margin-left: 268px;
+  .btn-container {
+    margin-top: 50px;
   }
 }
 </style>

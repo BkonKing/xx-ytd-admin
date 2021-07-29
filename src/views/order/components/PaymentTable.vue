@@ -5,7 +5,11 @@
         {{ data.records.length - index }}
       </span>
       <span slot="payPz" slot-scope="text, record">
-        <a v-if="text" @click="previewImage(record.payPz)">{{ text }}张</a>
+        <a v-if="+text !== 0" @click="previewImage(record.payPz)">{{ text }}张</a>
+        <template v-else>--</template>
+      </span>
+      <span slot="kpPz" slot-scope="text, record">
+        <a v-if="+text !== 0" @click="previewImage(record.kpPz)">{{ text }}张</a>
         <template v-else>--</template>
       </span>
       <span class="table-action" slot="action" slot-scope="text, recode">
@@ -27,9 +31,10 @@
       <div style="width: 41%;">总计({{ `${data.unKpNum + data.kpNum}` }})</div>
       <div style="width: 20%;">￥{{ data.allMoney }}</div>
       <div>
-        已开{{ data.kpNum }} (￥{{ data.kpMoney }})，未开{{ data.unKpNum }} (￥{{
-          data.unKpMoney
-        }})
+        已开{{ data.kpNum }} (￥{{ data.kpMoney }})，未开{{
+          data.unKpNum
+        }}
+        (￥{{ data.unKpMoney }})
       </div>
     </a-row>
     <a-button
@@ -50,7 +55,11 @@
       @ok="handleOk"
       @cancel="closeModal"
     >
-      <payment-edit-form ref="PaymentForm"></payment-edit-form>
+      <payment-edit-form
+        ref="PaymentForm"
+        :material="clonedeep(material)"
+        :unpaid="unpaid"
+      ></payment-edit-form>
     </a-modal>
   </a-card>
 </template>
@@ -73,6 +82,14 @@ export default {
   },
   props: {
     id: {
+      type: [String, Number],
+      default: ''
+    },
+    material: {
+      type: Array,
+      default: () => []
+    },
+    unpaid: {
       type: [String, Number],
       default: ''
     }
@@ -120,14 +137,20 @@ export default {
           width: '10%'
         },
         {
+          title: '开票凭证',
+          dataIndex: 'kpPzNum',
+          scopedSlots: { customRender: 'kpPz' },
+          width: '9%'
+        },
+        {
           title: '创建时间',
           dataIndex: 'ctime',
-          width: '17%'
+          width: '10%'
         },
         {
           title: '操作',
           scopedSlots: { customRender: 'action' },
-          width: '14%'
+          width: '10%'
         }
       ],
       data: {},
@@ -143,7 +166,8 @@ export default {
       },
       title: '',
       visible: false,
-      confirmLoading: false
+      confirmLoading: false,
+      clonedeep
     }
   },
   methods: {
@@ -211,11 +235,13 @@ export default {
       this.$confirm({
         title: '删除付款',
         content: '确定删除吗？',
+        icon: h => <a-icon theme="filled" type="exclamation-circle" />,
         onOk () {
           removeOrderPay({
             id
           }).then(({ data }) => {
             that.$message.success('删除成功')
+            that.$emit('changePay')
             that.$refs.table.refresh()
           })
         }

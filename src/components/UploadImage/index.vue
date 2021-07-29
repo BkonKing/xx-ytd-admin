@@ -6,6 +6,7 @@
     name="imgFile"
     :file-list="fileList"
     multiple
+    :beforeUpload="beforeUpload"
     @preview="handlePreview"
     @change="handleChange"
   >
@@ -35,12 +36,17 @@ export default {
   data () {
     return {
       fileList: this.format(this.value),
+      uploadList: [],
       action: process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
     }
   },
   methods: {
     genId (length) {
-      return Number(Math.random().toString().substr(3, length) + Date.now()).toString(36)
+      return Number(
+        Math.random()
+          .toString()
+          .substr(3, length) + Date.now()
+      ).toString(36)
     },
     format (list) {
       return list.map(item => {
@@ -49,12 +55,14 @@ export default {
           uid: index,
           name: index,
           status: 'done',
+          response: {
+            data: item
+          },
           url: item
         }
       })
     },
     async handlePreview (file) {
-      console.log(file)
       if (!file.url && !file.preview) {
         file.preview = await getBase64(file.originFileObj)
       }
@@ -62,26 +70,50 @@ export default {
       this.$viewerApi({
         options: {
           toolbar: true,
-          initialViewIndex: this.value.findIndex(
-            obj => url === obj
-          )
+          initialViewIndex: this.value.findIndex(obj => url === obj)
         },
         images: this.value
       })
     },
-    handleChange ({ file, fileList }) {
+    beforeUpload (file, fileList) {
+      const index = parseInt(this.maxLength) - this.fileList.length
+      if (index > 0) {
+        const active = fileList.findIndex(obj => obj.name === file.name) + 1
+        if (active <= index) {
+          return file
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    },
+    handleChange ({ file, fileList, event }) {
+      const max = parseInt(this.maxLength)
+      const index = max - this.fileList.length
+      const deleteCount = index < 0 ? Math.abs(index) : 0
       this.fileList = fileList
+      if (deleteCount) {
+        this.fileList.splice(this.fileList.length - 1, deleteCount)
+      }
       if (file.status === 'done' || file.status === 'removed') {
         const uploadList = fileList.map(obj => {
-          return (obj.response && obj.response.data) || obj.url
+          if (obj.response) {
+            return obj.response.data
+          }
+        }).filter(item => {
+          return item
         })
+        this.uploadList = uploadList
         this.$emit('input', uploadList)
       }
     }
   },
   watch: {
     value (val) {
-      this.fileList = this.format(val)
+      if (val !== this.uploadList) {
+        this.fileList = this.format(val)
+      }
     }
   }
 }

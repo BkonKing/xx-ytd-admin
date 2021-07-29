@@ -62,7 +62,12 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 16 : 24"
-              @reset="() => this.queryParam = {}"
+              @reset="
+                () => {
+                  this.queryParam = {};
+                  this.$refs.table.refresh(true);
+                }
+              "
               @search="$refs.orderTable.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -79,6 +84,7 @@
         <span slot="idv" slot-scope="text, record">
           <router-link
             :to="{ name: 'OrderDetail', query: { id: record.id } }"
+            target="_blank"
             >{{ text }}</router-link
           >
         </span>
@@ -139,7 +145,7 @@
         type="flex"
         align="middle"
       >
-        <div style="width: 55%;"> 总计({{ payData.total }}) </div>
+        <div style="width: 55%;">总计({{ payData.total }})</div>
         <div style="width: 10%;">￥{{ payData.allMoney }}</div>
         <div style="width: 35%;">
           已开{{ payData.kpNum }} (￥{{ payData.kpMoney }})， 未开{{
@@ -161,6 +167,7 @@
         <span slot="orderIdv" slot-scope="text, record">
           <router-link
             :to="{ name: 'OrderDetail', query: { id: record.orderId } }"
+            target="_blank"
             >{{ text }}</router-link
           >
         </span>

@@ -162,6 +162,10 @@ export default {
     typeId: {
       type: [String, Number],
       default: ''
+    },
+    sourceId: {
+      type: [String, Number],
+      default: ''
     }
   },
   data () {
@@ -179,7 +183,9 @@ export default {
           this.queryParam.startDate = time[0]
           this.queryParam.endDate = time[1]
         }
-        return getLogsList(Object.assign(parameter, this.queryParam))
+        return getLogsList(Object.assign(parameter, this.queryParam, {
+          sourceId: this.sourceId
+        }))
       }
     }
   },
@@ -222,6 +228,7 @@ export default {
       if (!this.allowClear) {
         this.queryParam.logType = parseInt(this.typeId)
       }
+      this.$refs.table.refresh(true)
     }
   }
 }

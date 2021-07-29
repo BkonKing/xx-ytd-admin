@@ -337,9 +337,14 @@ export default {
         .catch(() => {})
     },
     addCont (params) {
-      addCont(params).then(() => {
+      addCont(params).then(({ id }) => {
         this.$message.success('提交成功')
-        this.$router.go(-1)
+        this.$router.replace({
+          name: 'ContractDetail',
+          query: {
+            id
+          }
+        })
       })
     },
     updateCont (params) {
@@ -348,7 +353,12 @@ export default {
         id: this.id
       }).then(() => {
         this.$message.success('提交成功')
-        this.$router.go(-1)
+        this.$router.replace({
+          name: 'ContractDetail',
+          query: {
+            id: this.id
+          }
+        })
       })
     }
   }

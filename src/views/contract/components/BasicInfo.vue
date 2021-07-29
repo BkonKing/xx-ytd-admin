@@ -1,6 +1,6 @@
 <template>
   <a-card title="基础信息" :bordered="false" style="margin-top: 24px;">
-    <a-descriptions title="合同">
+    <a-descriptions>
       <a-descriptions-item label="合同单号">
         {{ data.contractNo }}
       </a-descriptions-item>
@@ -36,7 +36,7 @@
         >
       </a-descriptions-item>
       <a-descriptions-item label="合同金额">
-        {{ data.contractMoney }}
+        ￥{{ data.contractMoney }}
       </a-descriptions-item>
       <a-descriptions-item label="合同总量">
         {{ data.contractTotal }}
@@ -57,7 +57,7 @@
         {{ data.materialName }}
       </a-descriptions-item>
       <a-descriptions-item label="备注" :span="3">
-        {{ data.remarks || '无' }}
+        {{ data.remarks || '--' }}
       </a-descriptions-item>
     </a-descriptions>
   </a-card>

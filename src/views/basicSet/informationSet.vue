@@ -1,10 +1,18 @@
 <template>
-  <div class="infomationSet">
+  <page-header-wrapper class="infomationSet">
     <a-card>
-      <a-table rowKey="id" :columns="columns" :data-source="tableData" :pagination="false">
+      <a-table
+        rowKey="id"
+        :columns="columns"
+        :data-source="tableData"
+        :pagination="false"
+      >
         <template slot="opera" slot-scope="text, record">
           <div>
-            <a-button type="link" :disabled="!permissions.UpdatePermission" @click="toEditContent(record)"
+            <a-button
+              type="link"
+              :disabled="!permissions.UpdatePermission"
+              @click="toEditContent(record)"
               >编辑内容</a-button
             >
           </div>
@@ -33,7 +41,7 @@
         </template>
       </a-table>
     </a-card>
-  </div>
+  </page-header-wrapper>
 </template>
 
 <script>
@@ -82,8 +90,15 @@ export default {
   },
   methods: {
     // 跳转到编辑内容
-    toEditContent (record) {
-      this.$router.push('/basicSet/editContent?id=' + record.id)
+    toEditContent ({ id, messageName }) {
+      const reg = /(待审核)|(审核超时)/g
+      this.$router.push({
+        path: '/basicSet/editContent',
+        query: {
+          id,
+          other: messageName.search(reg) === -1 ? 1 : 0
+        }
+      })
     },
     // 设置微信消息
     sendWx (record) {
@@ -92,35 +107,17 @@ export default {
         setTimeout(hide, 1000)
         return
       }
-      if (+record.wxSend === 1) {
-        this.flag = 0
-        setTimeout(() => {
-          toWxSendSet({
-            id: record.id,
-            wxSend: 0
-          }).then(res => {
-            record.wxSend = 0
-            this.flag = 1
-            this.$message.success(res.message)
-            this.getData()
-          })
-        }, 1000)
-      } else {
-        this.flag = 0
-        setTimeout(() => {
-          toWxSendSet({
-            id: record.id,
-            wxSend: 1
-          }).then(res => {
-            record.wxSend = 1
-            this.flag = 1
-            this.$message.success(res.message)
-            this.getData()
-          })
-        }, 1000)
-      }
-
-      console.log('发送站内消息', record)
+      const wxSend = +record.wxSend === 1 ? 0 : 1
+      this.flag = 0
+      toWxSendSet({
+        id: record.id,
+        wxSend
+      }).then(res => {
+        record.wxSend = wxSend
+        this.flag = 1
+        // this.$message.success(res.message)
+        this.getData()
+      })
     },
     // 设置站内消息
     sendWeb (record) {
@@ -129,35 +126,16 @@ export default {
         setTimeout(hide, 1000)
         return
       }
-      if (+record.webSend === 1) {
-        this.flag = 0
-        setTimeout(() => {
-          toWebSendSet({
-            id: record.id,
-            webSend: 0
-          }).then(res => {
-            record.webSend = 0
-            this.flag = 1
-            this.$message.success(res.message)
-            this.getData()
-          })
-        }, 1000)
-      } else {
-        this.flag = 0
-        setTimeout(() => {
-          toWebSendSet({
-            id: record.id,
-            webSend: 1
-          }).then(res => {
-            record.webSend = 1
-            this.flag = 1
-            this.$message.success(res.message)
-            this.getData()
-          })
-        }, 1000)
-      }
-
-      console.log('发送站内消息', record)
+      const webSend = +record.webSend === 1 ? 0 : 1
+      this.flag = 0
+      toWebSendSet({
+        id: record.id,
+        webSend
+      }).then(res => {
+        record.webSend = webSend
+        this.flag = 1
+        this.getData()
+      })
     },
     // 获取消息设置数据
     getData () {
@@ -165,19 +143,6 @@ export default {
         this.tableData = res.data
         console.log('获取消息设置数据', res)
       })
-    },
-    // 任务流水页码改变事件
-    onChange (page, size) {
-      // console.log('Page: ', page)
-      this.pagination.currentPage = page
-      this.getData()
-    },
-    // 任务流水页容量改变事件
-    sizeChange (current, size) {
-      // console.log('size: ', size)
-      this.pagination.currentPage = 1
-      this.pagination.pageSize = size
-      this.getData()
     }
   },
   created () {

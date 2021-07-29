@@ -65,9 +65,9 @@ import PermissionHelper from '@/core/permission'
 import '@/directives/action'
 
 // mixin
-import Permissions from '@/store/permission-mixin'
+import GlobalMixin from '@/store/global-mixin'
 
-Vue.mixin(Permissions)
+Vue.mixin(GlobalMixin)
 
 Vue.use(ConfigProvider)
 Vue.use(Layout)

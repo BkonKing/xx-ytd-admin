@@ -1,15 +1,14 @@
 <template>
   <a-popover
     v-model="visible"
-    :arrowPointAtCenter="true"
     trigger="click"
-    placement="bottomRight"
+    placement="bottomLeft"
     overlayClassName="message-popover"
   >
     <template v-slot:content v-if="shortInfo !== ''">
       <div class="message-container">
         <div class="message-list">
-          <a-tabs default-active-key="1">
+          <a-tabs v-model="active">
             <a-tab-pane key="1">
               <template slot="tab">
                 <div>
@@ -88,14 +87,14 @@
           </a-tabs>
         </div>
         <a-row class="message-btn-box" type="flex">
-          <a-col class="message-btn" :span="12" @click="clear">清除通知</a-col>
+          <a-col class="message-btn" :span="12" @click="clear">清除{{active | activeText}}</a-col>
           <a-col class="message-btn" :span="12" @click="viewMore"
             >查看更多</a-col
           >
         </a-row>
       </div>
     </template>
-    <a-badge :count="count">
+    <a-badge :count="count" style="padding-right: 9px;">
       <a-icon type="bell" style="font-size: 22px;" />
     </a-badge>
   </a-popover>
@@ -121,7 +120,8 @@ export default {
       visible: false,
       shortInfo: '',
       count: 0,
-      timer: null
+      timer: null,
+      active: '1'
     }
   },
   watch: {
@@ -150,7 +150,9 @@ export default {
       })
     },
     clear () {
-      toClearMessage().then(() => {
+      toClearMessage({
+        messageType: this.active
+      }).then(() => {
         this.getData()
         this.getMessageCount()
       })
@@ -183,6 +185,16 @@ export default {
       }
     }
   },
+  filters: {
+    activeText (val) {
+      const text = {
+        1: '通知',
+        2: '消息',
+        3: '待办'
+      }
+      return text[val]
+    }
+  },
   created () {
     this.getData()
     this.getMessageCount()
@@ -194,11 +206,20 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/ .ant-badge-count {
+  right: 9px;
+}
 .message-container {
   // width: 360px;
-  /deep/ .ant-tabs-tab {
-    margin-left: 15px;
-    margin-right: 0;
+  /deep/ .ant-tabs-nav {
+    width: 100%;
+    .ant-tabs-tab {
+      width: 33.33%;
+      margin-right: 0;
+      text-align: center;
+      padding: 14px 16px;
+      // margin-left: 15px;
+    }
   }
   .message-list {
     width: 338px;
@@ -213,21 +234,23 @@ export default {
     cursor: pointer;
     .message-item-title {
       font-size: 14px;
+      line-height: 27px;
       color: #000000a5;
     }
     .message-item-content {
       font-size: 12px;
+      line-height: 24px;
       color: #00000072;
     }
   }
   .is-read-message-item {
     .message-item-title {
       font-size: 14px;
-      color: #00000072;
+      color: #0000003F;
     }
     .message-item-content {
       font-size: 12px;
-      color: #0000004d;
+      color: #0000003F;
     }
   }
   .message-btn {

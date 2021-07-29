@@ -29,7 +29,7 @@
             >
             <a-button
               style="margin-left: 8px"
-              @click="() => (this.queryParam = {})"
+              @click="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
               >重置</a-button
             >
           </a-col>

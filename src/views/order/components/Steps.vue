@@ -9,7 +9,14 @@
           <div>{{ step.realname }}</div>
           <div>{{ step.company }}</div>
           <div>{{ step.leveTime }}</div>
-          <div v-if="!step.status && (current + 1) === index && (data[index] && +data[index].status === 1) && (index !== data.length - 1)">
+          <div
+            v-if="
+              !step.status &&
+                current + 1 === index &&
+                data[index] && +data[index].status === 1 &&
+                index !== data.length - 1
+            "
+          >
             <template v-if="step.hurryUp">已催</template>
             <a v-else @click="prompt(step)">催一下</a>
           </div>
@@ -40,9 +47,8 @@ export default {
   },
   computed: {
     current () {
-      let index = this.data.findIndex(obj => obj.status === 0)
-      index = index === -1 ? this.data.length : index
-      return index - 1
+      const index = this.data.findIndex(obj => obj.status === 0)
+      return index === -1 ? this.data.length - 1 : index
     }
   },
   methods: {
@@ -51,7 +57,7 @@ export default {
       promptMessage({
         id: this.id,
         auditType: this.type
-      }).then((res) => {
+      }).then(res => {
         step.hurryUp = 1
         this.$message.success('发送成功')
       })
@@ -63,5 +69,26 @@ export default {
 <style lang="less" scoped>
 .check-tab-steps {
   justify-content: center;
+  /deep/ .ant-steps-item:last-child {
+    margin-right: 67px;
+  }
+  /deep/ .ant-steps-item-content, .ant-steps-dot.ant-steps-small .ant-steps-item-content {
+    width: auto;
+  }
+  /deep/ .ant-steps-item-title {
+    margin-bottom:8px;
+  }
+  /deep/ .ant-steps-item-content {
+    margin-left: 55px;
+    text-align: left;
+  }
+  /deep/ .ant-steps-item-process > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-title {
+    color: rgba(0, 0, 0, 0.45);
+  }
+  /deep/ .ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-description,
+  /deep/ .ant-steps-item-wait > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-description,
+  /deep/ .ant-steps-item-process > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-description{
+    color: rgba(0, 0, 0, 0.35);
+  }
 }
 </style>

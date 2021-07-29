@@ -1,7 +1,7 @@
 <template>
   <a-modal
     title="新增入库"
-    width="80%"
+    width="1000px"
     :visible="visible"
     :confirm-loading="confirmLoading"
     @ok="validate"
@@ -23,11 +23,11 @@
     </a-form-model>
     <div class="edit-table">
       <a-row class="edit-table-header" type="flex">
-        <a-col flex="1">物料</a-col>
-        <a-col flex="1">物料品牌</a-col>
-        <a-col flex="1">规格型号</a-col>
-        <a-col flex="200px">数量</a-col>
-        <a-col flex="150px">备注</a-col>
+        <a-col flex="1" class="form-required-after">物料</a-col>
+        <a-col flex="1" class="form-required-after">物料品牌</a-col>
+        <a-col flex="1" class="form-required-after">规格型号</a-col>
+        <a-col flex="200px" class="form-required-after">数量</a-col>
+        <a-col flex="180px">备注</a-col>
         <a-col flex="60px">操作</a-col>
       </a-row>
       <a-form-model
@@ -58,7 +58,9 @@
                     v-model="record.materialId"
                     :show-search="true"
                     @change="value => getUnit(value, index)"
-                    @input="$refs[`tableForm${index}`][0].validateField('materialId')"
+                    @input="
+                      $refs[`tableForm${index}`][0].validateField('materialId')
+                    "
                   ></material-type-select>
                 </a-col>
               </a-row>
@@ -86,7 +88,7 @@
           </a-col>
           <a-col flex="200px">
             <a-row type="flex">
-              <a-col flex="50px">
+              <a-col flex="80px">
                 <a-form-model-item prop="unit">
                   <unit-select
                     v-model="record.unit"
@@ -103,28 +105,27 @@
                     v-model="record.originalNum"
                     placeholder="请输入"
                     :min="0"
-                    :maxLength="15"
+                    :precision="0"
+                    :max="999999999999999"
+                    style="width: 100%;"
                     @change="changeError(index)"
                   />
                 </a-form-model-item>
               </a-col>
             </a-row>
           </a-col>
-          <a-col flex="150px">
+          <a-col flex="180px">
             <a-form-model-item prop="remarks">
               <a-input
                 v-model="record.remarks"
                 placeholder="请输入"
+                :maxLength="100"
                 @change="changeError(index)"
               />
             </a-form-model-item>
           </a-col>
           <a-col flex="60px">
-            <span>
-              <a-popconfirm title="是否要删除此行？" @confirm="remove(index)">
-                <a>删除</a>
-              </a-popconfirm>
-            </span>
+            <a @click="remove(index)">删除</a>
           </a-col>
         </a-row>
       </a-form-model>
@@ -132,10 +133,11 @@
         v-if="tableData && tableData.length"
         class="table-total"
         type="flex"
+        align="middle"
       >
         <a-col flex="3">总计</a-col>
-        <a-col flex="200px">{{ totalNum }}</a-col>
-        <a-col flex="160px"></a-col>
+        <a-col flex="82px"></a-col>
+        <a-col flex="348px">{{ totalNum }}</a-col>
       </a-row>
       <a-button
         style="width: 100%; margin-top: 16px; margin-bottom: 8px"
@@ -278,14 +280,7 @@ export default {
         })
     },
     handleCheckCancel () {
-      const that = this
-      this.$confirm({
-        title: '提示',
-        content: '是否放弃当前信息关闭弹窗？',
-        onOk () {
-          that.visible = false
-        }
-      })
+      this.visible = false
     }
   },
   watch: {
@@ -310,14 +305,14 @@ export default {
     background: #fafafa;
     border-bottom: 1px solid #e8e8e8;
     > .ant-col {
-      padding: 16px;
+      padding: 16px 10px;
     }
   }
   &-body {
     > .ant-row-flex {
       border-bottom: 1px solid #e8e8e8;
       > .ant-col {
-        padding: 16px;
+        padding: 16px 10px;
       }
     }
   }
@@ -327,8 +322,9 @@ export default {
   }
 }
 .table-total {
+  font-weight: bold;
   .ant-col {
-    padding: 6px 8px;
+    padding: 6px 10px;
   }
 }
 </style>

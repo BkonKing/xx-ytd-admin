@@ -29,6 +29,7 @@
           v-model="form.describe"
           placeholder="请输入"
           :auto-size="{ minRows: 3, maxRows: 5 }"
+          style="max-width: 328px;"
         />
       </a-form-model-item>
       <a-form-model-item label="图片">
@@ -71,8 +72,8 @@ export default {
       rules: {
         auidtStatus: [{ required: true, message: '请填写', trigger: 'change' }]
       },
-      labelCol: { span: 7 },
-      wrapperCol: { span: 14 }
+      labelCol: { span: 6 },
+      wrapperCol: { span: 18 }
     }
   },
   methods: {

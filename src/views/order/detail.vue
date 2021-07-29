@@ -10,12 +10,14 @@
         <a-descriptions-item label="所属项目">
           <router-link
             :to="{ name: 'ProjectDetail', query: { id: info.projectId } }"
+            target="_blank"
             >{{ info.projectName || "--" }}</router-link
           >
         </a-descriptions-item>
         <a-descriptions-item label="供应商">
           <router-link
             :to="{ name: 'SupplierDetail', query: { id: info.supplierId } }"
+            target="_blank"
             >{{ info.supplierName }}</router-link
           >
         </a-descriptions-item>
@@ -35,6 +37,7 @@
         <a-descriptions-item label="合同名称">
           <router-link
             :to="{ name: 'ContractDetail', query: { id: info.contractId } }"
+            target="_blank"
             >{{ info.contractName || "--" }}</router-link
           >
         </a-descriptions-item>
@@ -47,7 +50,11 @@
 
     <!-- actions -->
     <template v-slot:extra>
-      <a-button v-if="UpdatePermission" @click="goEdit">编辑</a-button>
+      <a-button
+        v-if="UpdatePermission && userCompanyId == info.companyId"
+        @click="goEdit"
+        >编辑</a-button
+      >
       <a-button
         v-if="info.status === '0' && info.auditPermission"
         type="primary"
@@ -101,19 +108,27 @@
       :data="info.material"
       :number="info.materialNum"
       :money="info.orderPrice"
+      :paid="info.paid"
+      :unpaid="info.unpaid"
       :id="id"
     ></material-table>
     <payment-table
       v-if="isPass"
       v-show="tabActiveKey === '0'"
       :id="id"
+      :material="info.material"
+      :unpaid="info.unpaid"
       @changePay="getOrderInfo"
     ></payment-table>
     <order-info
       v-show="!isPass || tabActiveKey === '1'"
       :data="info.auditLeveLog"
     ></order-info>
-    <log-list v-show="!isPass || tabActiveKey === '0'" typeId="30"></log-list>
+    <log-list
+      v-show="!isPass || tabActiveKey === '0'"
+      typeId="30"
+      :sourceId="id"
+    ></log-list>
 
     <a-modal
       title="审核"

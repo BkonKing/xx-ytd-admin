@@ -80,7 +80,7 @@
               <div
                 class="actions-span"
                 @click.stop="openCompanyPermiss(item.id)"
-                v-if="+permissions.AllotsPermission === 1"
+                v-if="+permissions.AllotsPermission === 1 && item.id !== '1'"
               >
                 权限
               </div>
@@ -94,7 +94,7 @@
               <div
                 class="actions-span"
                 @click.stop="removeCompany(item)"
-                v-if="+permissions.RemovePermission === 1"
+                v-if="+permissions.RemovePermission === 1 && item.id !== '1'"
               >
                 删除
               </div>

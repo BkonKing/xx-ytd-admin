@@ -9,7 +9,10 @@
         :wrapper-col="{ lg: { span: 10 }, sm: { span: 17 } }"
       >
         <a-form-model-item required prop="projectId" label="申请项目">
-          <project-select v-model="form.projectId"></project-select>
+          <project-select
+            v-model="form.projectId"
+            @input="$refs.form.validateField('projectId')"
+          ></project-select>
         </a-form-model-item>
         <a-form-model-item required prop="department" label="领料部门">
           <a-input v-model="form.department"></a-input>
@@ -53,6 +56,7 @@
                   :projectId="form.projectId"
                   :ref="`material${index}`"
                   @change="value => handleChange(value, index)"
+                  @input="$refs[`tableForm${index}`][0].validateField('materialIdArr')"
                 ></material-type-select>
               </a-form-model-item>
             </a-col>

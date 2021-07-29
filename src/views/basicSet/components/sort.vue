@@ -303,18 +303,25 @@ export default {
     // 创建初始角色
     async initSave () {
       const arr = this.inputArr3.map(item => {
+        let id = item.id
+        let parentId = item.parentId
+        if (!parentId) {
+          id = 0
+          parentId = 0
+        }
         return {
-          display: +item.display,
-          icon: item.icon,
-          id: 0,
-          level: item.level,
-          limitsPath: item.limitsPath,
+          id,
           listOrder: item.listOrder,
           categoryName: item.categoryName,
-          parentId: 0
+          parentId
         }
-      })
+      }).filter(item => item.categoryName)
+      if (!arr || arr.length === 0) {
+        this.$message.warning('请输入合同分类信息')
+        return
+      }
       const res = await toUpdateBatchContract({ category: arr })
+      this.inputArr3 = res.data
       this.getData()
       this.initBol = true
       this.$message.success(res.message)
@@ -343,11 +350,7 @@ export default {
       // if (this.parentId === 0) {
       let menus = this.itemInfo2.children.map(item => {
         return {
-          display: +item.display,
-          icon: item.icon,
           id: item.id,
-          level: item.level,
-          limitsPath: item.limitsPath,
           listOrder: item.listOrder,
           categoryName: item.categoryName,
           parentId: item.parentId
@@ -602,24 +605,11 @@ export default {
       if (item.children) {
         this.parentId = item.id
         this.itemInfo = JSON.parse(JSON.stringify(item))
-        // this.itemInfo.children.forEach(item => {
-        //   item.display = +item.display
-        // })
         this.$nextTick(() => {
           this.createBol = true
         })
       } else {
         this.parentId = item.id
-        // let obj = {}
-        // obj = {
-        //   ...JSON.parse(JSON.stringify(item.dataRef))
-        // }
-        // const arr = []
-        // arr.push(obj)
-        // this.itemInfo = { children: arr }
-        // this.itemInfo.children.forEach(item => {
-        //   item.display = +item.display
-        // })
       }
     }
   },

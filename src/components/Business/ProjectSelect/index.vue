@@ -1,12 +1,11 @@
 <template>
-  <a-select v-model="data" placeholder="请选择">
+  <a-select v-model="data" placeholder="请选择" @change="handleChange">
     <a-select-option
       v-for="option in options"
       :value="option.projectId"
       :key="option.projectId"
+      >{{ option.projectName }}</a-select-option
     >
-      {{ option.projectName }}
-    </a-select-option>
   </a-select>
 </template>
 
@@ -30,6 +29,15 @@ export default {
     getAllProject().then(({ data }) => {
       this.options = data
     })
+  },
+  methods: {
+    handleChange (value, option) {
+      this.$emit(
+        'change',
+        value,
+        option.componentOptions && option.componentOptions.children[0].text
+      )
+    }
   },
   watch: {
     value (val) {

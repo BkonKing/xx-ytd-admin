@@ -45,7 +45,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 8 : 16"
-              @reset="() => this.queryParam = {}"
+              @reset="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>

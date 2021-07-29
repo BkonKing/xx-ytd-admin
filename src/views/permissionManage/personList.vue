@@ -184,6 +184,7 @@ export default {
     reset () {
       this.roleId = ''
       this.searchText = ''
+      this.$refs.table.refresh(true)
     },
     // 搜索
     search () {

@@ -15,7 +15,7 @@
     <template v-slot:menuHeaderRender>
       <div>
         <logo-svg />
-        <h1>{{ title }}</h1>
+        <h1>{{ userInfo.shortCompanyName ||title }}</h1>
       </div>
     </template>
     <!-- 1.0.0+ 版本 pro-layout 提供 API,
@@ -61,6 +61,7 @@ import defaultSettings from '@/settings'
 import RightContent from '@/components/GlobalHeader/RightContent'
 import GlobalFooter from '@/components/GlobalFooter'
 import LogoSvg from '../assets/logo.svg?inline'
+import { mapGetters } from 'vuex'
 import { getMenu } from '@/api/user'
 
 export default {
@@ -109,6 +110,9 @@ export default {
       // 是否手机模式
       isMobile: false
     }
+  },
+  computed: {
+    ...mapGetters(['userInfo'])
   },
   created () {
     getMenu().then(({ data }) => {

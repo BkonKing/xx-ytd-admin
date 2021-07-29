@@ -81,7 +81,12 @@
               v-model="advanced"
               :md="isParentCompany ? 8 : 16"
               @search="$refs.table.refresh(true)"
-              @reset="() => (this.queryParam = {})"
+              @reset="
+                () => {
+                  this.queryParam = {};
+                  this.$refs.table.refresh(true);
+                }
+              "
             ></advanced-form>
           </a-row>
         </a-form>
@@ -102,8 +107,16 @@
         :data="loadData"
         showPagination="auto"
       >
+        <template slot="materialName" slot-scope="text, record">
+          {{ record.materialNo }} {{ text }}
+        </template>
         <template slot="originalNum" slot-scope="text, record">
-          <a-input-number v-if="record.editable" v-model="record.originalNum" style="width: 78px;" />
+          <a-input-number
+            v-if="record.editable"
+            v-model="record.originalNum"
+            :min="0"
+            style="width: 70px;"
+          />
           <template v-else>
             {{ text }}
           </template>
@@ -113,7 +126,7 @@
             v-if="record.editable"
             v-model="record.remarks"
             :maxLength="100"
-            style="width: 124px;"
+            style="width: 96px;"
           />
           <template v-else>
             {{ text }}
@@ -123,19 +136,23 @@
         <template slot="action" slot-scope="text, record, index">
           <span class="table-action" v-if="record.editable">
             <a @click="save(index, record)">保存</a>
-            <a-popconfirm title="是否取消？" @confirm="cancel(index)">
-              <a>取消</a>
-            </a-popconfirm>
+            <a @click="cancel(index)">取消</a>
           </span>
           <span class="table-action" v-else>
             <a @click="goDetail(record)">查看</a>
-            <a v-if="permissions.UpdatePermission" @click="handleEdit(index)"
+            <a
+              v-if="
+                permissions.UpdatePermission &&
+                  userCompanyId == record.companyId
+              "
+              @click="handleEdit(index)"
               >编辑</a
             >
             <a
               v-if="
                 permissions.RemovePermission &&
-                  +record.totalLknum + +record.totalCknum <= 0
+                  +record.totalLknum + +record.totalCknum <= 0 &&
+                  userCompanyId == record.companyId
               "
               @click="handleRemove(record)"
               >删除</a
@@ -169,48 +186,57 @@ const columns = [
   {
     title: '库存ID',
     dataIndex: 'id',
-    width: '64px'
+    width: '52px'
   },
   {
     title: '所属项目',
-    dataIndex: 'projectName'
+    dataIndex: 'projectName',
+    width: '10%'
   },
   {
     title: '物料名称',
-    dataIndex: 'materialName'
+    dataIndex: 'materialName',
+    scopedSlots: { customRender: 'materialName' }
   },
   {
     title: '物料品牌',
-    dataIndex: 'brand'
+    dataIndex: 'brand',
+    width: '10%'
   },
   {
     title: '规格型号',
-    dataIndex: 'model'
+    dataIndex: 'model',
+    width: '10%'
+  },
+  {
+    title: '单位',
+    dataIndex: 'unitv',
+    width: '50px'
   },
   {
     title: '现有库存',
     dataIndex: 'currentNum',
     sorter: true,
-    width: '94px'
+    width: '86px'
   },
   {
     title: '期初库存',
     dataIndex: 'originalNum',
     sorter: true,
-    width: '94px',
+    width: '86px',
     scopedSlots: { customRender: 'originalNum' }
   },
   {
     title: '总入库',
     dataIndex: 'totalLknum',
     sorter: true,
-    width: '80px'
+    width: '74px'
   },
   {
     title: '总出库',
     dataIndex: 'totalCknum',
     sorter: true,
-    width: '80px'
+    width: '74px'
   },
   {
     title: '备注',
@@ -220,7 +246,7 @@ const columns = [
   },
   {
     title: '操作',
-    width: '124px',
+    class: 'nowrap max-width',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -272,12 +298,13 @@ export default {
       this.$confirm({
         title: '删除库存',
         content: `确定删除“库存ID${id}”吗？`,
-        icon: () => this.$createElement('a-icon', {
-          props: {
-            type: 'exclamation-circle',
-            theme: 'filled'
-          }
-        }),
+        icon: () =>
+          this.$createElement('a-icon', {
+            props: {
+              type: 'exclamation-circle',
+              theme: 'filled'
+            }
+          }),
         onOk () {
           removeStock({
             id
@@ -301,7 +328,7 @@ export default {
         remarks
       }).then(({ data }) => {
         this.setEditable(index, false)
-        this.cacheData = clonedeep(this.tableData)
+        this.$refs.table.refresh()
       })
     },
     cancel (index) {
@@ -343,6 +370,11 @@ export default {
 }
 /deep/ .ant-table-thead > tr > th,
 /deep/ .ant-table-tbody > tr > td {
+  padding-left: 8px;
   padding-right: 0;
+}
+/deep/ .max-width {
+  max-width: 116px;
+  width: 52px;
 }
 </style>

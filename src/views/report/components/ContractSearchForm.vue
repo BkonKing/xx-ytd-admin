@@ -140,6 +140,7 @@ export default {
     reset () {
       this.queryParam = {}
       this.$emit('input', this.queryParam)
+      this.$emit('search')
     },
     toggleAdvanced () {
       this.advanced = !this.advanced

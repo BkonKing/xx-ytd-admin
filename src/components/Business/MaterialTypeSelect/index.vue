@@ -55,7 +55,7 @@ export default {
   },
   data () {
     return {
-      data: this.value,
+      data: this.value || undefined,
       options: []
     }
   },

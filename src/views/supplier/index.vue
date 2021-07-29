@@ -10,7 +10,11 @@
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="审核状态">
-                <a-select v-model="queryParam.status" :disabled="tabActiveKey !== '0'" placeholder="请选择">
+                <a-select
+                  v-model="queryParam.status"
+                  :disabled="tabActiveKey !== '0'"
+                  placeholder="请选择"
+                >
                   <a-select-option
                     v-for="option in tabList"
                     :value="option.key"
@@ -64,7 +68,10 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="(!advanced && 8) || (isParentCompany ? 16 : 24)" :sm="24">
+            <a-col
+              :md="(!advanced && 8) || (isParentCompany ? 16 : 24)"
+              :sm="24"
+            >
               <span
                 class="table-page-search-submitButtons"
                 :style="
@@ -76,7 +83,12 @@
                 >
                 <a-button
                   style="margin-left: 8px"
-                  @click="() => (this.queryParam = {})"
+                  @click="
+                    () => {
+                      this.queryParam = {};
+                      this.$refs.table.refresh(true);
+                    }
+                  "
                   >重置</a-button
                 >
                 <a @click="toggleAdvanced" style="margin-left: 8px">
@@ -92,13 +104,15 @@
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
         <a-button
-         v-if="permissions.AuditPermission"
+          v-if="permissions.AuditPermission"
           type="primary"
           :disabled="!selectedRowKeys.length"
           @click="openCheck"
           >审核</a-button
         >
-        <a-button v-if="permissions.CreatePermission" @click="goEdit">新增</a-button>
+        <a-button v-if="permissions.CreatePermission" @click="goEdit"
+          >新增</a-button
+        >
       </div>
 
       <s-table
@@ -124,9 +138,29 @@
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
-            <a v-if="permissions.UpdatePermission" @click="goEdit(record)">编辑</a>
-            <a v-if="permissions.RemovePermission" @click="handleRemove(record)">删除</a>
-            <a v-if="+record.status === 0 && permissions.AuditPermission && record.auditPermission" @click="openCheck(record)">审核</a>
+            <a
+              v-if="
+                permissions.UpdatePermission && userCompanyId == record.companyId
+              "
+              @click="goEdit(record)"
+              >编辑</a
+            >
+            <a
+              v-if="
+                permissions.RemovePermission && userCompanyId == record.companyId
+              "
+              @click="handleRemove(record)"
+              >删除</a
+            >
+            <a
+              v-if="
+                +record.status === 0 &&
+                  permissions.AuditPermission &&
+                  record.auditPermission
+              "
+              @click="openCheck(record)"
+              >审核</a
+            >
           </template>
         </span>
       </s-table>
@@ -236,7 +270,7 @@ export default {
         {
           title: '操作',
           dataIndex: 'action',
-          width: '180px',
+          class: 'nowrap',
           scopedSlots: { customRender: 'action' }
         }
       ],
@@ -247,12 +281,12 @@ export default {
       advanced: false,
       // 查询参数
       queryParam: {
-        status: '',
+        status: undefined,
         projectId: '',
         companyId: '',
         supplierType: '',
         searchText: '',
-        material: '',
+        material: undefined,
         ctime: []
       },
       // 加载数据方法 必须为 Promise 对象
@@ -270,7 +304,12 @@ export default {
         if (this.tabActiveKey !== '0') {
           queryParam.status = this.tabActiveKey
         }
-        const requestParameters = Object.assign({}, parameter, this.queryParam, queryParam)
+        const requestParameters = Object.assign(
+          {},
+          parameter,
+          this.queryParam,
+          queryParam
+        )
         return getSupplierList(requestParameters)
       },
       selectedRowKeys: [],
@@ -310,9 +349,11 @@ export default {
     },
     changeColumns (key) {
       // 是否有审核时间
-      const isAudit = this.columns.findIndex(column => column.dataIndex === 'auditTime') > -1
+      const isAudit =
+        this.columns.findIndex(column => column.dataIndex === 'auditTime') > -1
       // 是否有审核状态
-      const isStatus = this.columns.findIndex(column => column.dataIndex === 'statusv') > -1
+      const isStatus =
+        this.columns.findIndex(column => column.dataIndex === 'statusv') > -1
       if (key === '1') {
         isStatus && this.columns.shift()
         !isAudit && this.columns.unshift(...checkTimec)
@@ -385,12 +426,7 @@ export default {
       this.$confirm({
         title: '删除供应商', // 用户名
         content: `确认删除 "${supplierName}" 吗？`,
-        icon: () => this.$createElement('a-icon', {
-          props: {
-            type: 'exclamation-circle',
-            theme: 'filled'
-          }
-        }),
+        icon: h => <a-icon theme="filled" type="exclamation-circle" />,
         onOk () {
           removeSupplier({
             id
@@ -405,12 +441,13 @@ export default {
       getIsAuditSet({
         auditType: 3
       }).then(({ success }) => {
-        success && this.$router.push({
-          name: 'SupplierEdit',
-          query: {
-            id
-          }
-        })
+        success &&
+          this.$router.push({
+            name: 'SupplierEdit',
+            query: {
+              id
+            }
+          })
       })
     },
     goDetail ({ id }) {

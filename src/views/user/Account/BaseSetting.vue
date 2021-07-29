@@ -75,7 +75,8 @@ export default {
     return {
       area: chinaArea,
       form: {
-        avatar: ''
+        avatar: '',
+        area: []
       },
       rules: {
         realName: [{ required: true, message: '请填写' }]
@@ -85,11 +86,11 @@ export default {
   mounted () {
     this.form = this.$store.getters.userInfo
     if (this.form.provinceId) {
-      this.form.area = [
+      this.$set(this.form, 'area', [
         this.form.provinceId,
         this.form.cityId,
         this.form.areaId
-      ]
+      ])
     }
   },
   methods: {

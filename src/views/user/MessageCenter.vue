@@ -20,7 +20,7 @@
         <a-col
           flex="auto"
           :style="{
-            color: record.isRead === '1' ? '#c0c0c0' : '',
+            color: record.isRead === '1' ? '#0000003F' : '',
             cursor: 'pointer'
           }"
           @click="openPage(record)"
@@ -28,7 +28,7 @@
         >
         <a-col
           flex="130px"
-          :style="{ color: record.isRead === '1' ? '#c0c0c0' : '' }"
+          :style="{ color: record.isRead === '1' ? '#0000003F' : '' }"
           >{{ record.ctime }}</a-col
         >
       </a-row>

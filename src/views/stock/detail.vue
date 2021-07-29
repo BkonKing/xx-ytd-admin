@@ -3,13 +3,17 @@
     <template v-slot:content>
       <a-descriptions size="small" :column="2">
         <a-descriptions-item label="所属项目">
-          <router-link to="">{{ info.projectName || "--" }}</router-link>
+          <router-link
+            :to="{ name: 'ProjectDetail', query: { id: info.projectId } }"
+            target="_blank"
+            >{{ info.projectName || "--" }}</router-link
+          >
         </a-descriptions-item>
         <a-descriptions-item label="所属公司">
           {{ info.companyName }}
         </a-descriptions-item>
         <a-descriptions-item label="备注">
-          {{ info.remarks || '--'
+          {{ info.remarks || "--"
           }}<a-button v-if="UpdatePermission" type="link" @click="openEditInfo"
             >编辑</a-button
           >
@@ -28,7 +32,7 @@
         <a-col :sm="6" :xs="24">
           <info title="期初库存" :bordered="true">
             {{ info.originalNum || 0 }}件<a-button
-               v-if="UpdatePermission"
+              v-if="UpdatePermission"
               type="link"
               @click="openEditInfo"
               >调整</a-button
@@ -112,7 +116,12 @@
               v-model="advanced"
               :md="24"
               @search="$refs.table.refresh(true)"
-              @reset="() => (this.queryParam = {})"
+              @reset="
+                () => {
+                  this.queryParam = {};
+                  this.$refs.table.refresh(true);
+                }
+              "
             ></advanced-form>
           </a-row>
         </a-form>
@@ -140,7 +149,7 @@
       ></record-detail-modal>
     </a-card>
 
-    <log-list typeId="30"></log-list>
+    <log-list typeId="45" :sourceId="id"></log-list>
 
     <a-modal
       title="编辑"

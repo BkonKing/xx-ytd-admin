@@ -16,7 +16,7 @@
             </a-col>
             <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
-                <a-form-item label="出入库时间">
+                <a-form-item :label="type === '1' ? '入库时间' : '出库时间'">
                   <a-range-picker
                     v-model="queryParam.time"
                     valueFormat="YYYY-MM-DD"
@@ -54,7 +54,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 24 : 8"
-              @reset="() => this.queryParam = {}"
+              @reset="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -129,7 +129,10 @@ const columns = [
   },
   {
     title: '领料部门',
-    dataIndex: 'department'
+    dataIndex: 'department',
+    customRender (text) {
+      return text || '--'
+    }
   },
   {
     title: '出入库人',

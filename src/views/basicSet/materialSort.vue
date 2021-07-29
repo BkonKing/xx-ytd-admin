@@ -1,5 +1,5 @@
 <template>
-  <div class="permissMenu">
+  <page-header-wrapper class="permissMenu">
     <a-row :gutter="24">
       <a-col :span="10">
         <a-card>
@@ -320,7 +320,7 @@
         </a-card>
       </a-col>
     </a-row>
-  </div>
+  </page-header-wrapper>
 </template>
 
 <script>
@@ -407,15 +407,25 @@ export default {
     // 创建初始角色
     async initSave () {
       const arr = this.inputArr3.map(item => {
+        let id = item.id
+        let parentId = item.parentId
+        if (!parentId) {
+          id = 0
+          parentId = 0
+        }
         return {
-          id: 0,
+          id,
           categoryNo: item.categoryNo,
           categoryName: item.categoryName,
           unit: item.unit,
           listOrder: item.listOrder,
-          parentId: 0
+          parentId
         }
-      })
+      }).filter(item => item.categoryName && item.categoryNo)
+      if (!arr || arr.length === 0) {
+        this.$message.warning('请输入物料信息')
+        return
+      }
       const res = await toUpdateBatchMaterial({ category: arr })
       this.getData()
       this.$nextTick(() => {
@@ -457,7 +467,7 @@ export default {
       })
       console.log('第一个', menus)
       const arr = this.inputArr2.filter(item => {
-        return item.categoryName !== ''
+        return item.categoryName && item.categoryNo
       })
       arr.forEach(item => {
         item.parentId = menus[0].parentId
@@ -522,7 +532,7 @@ export default {
           }
         })
         const arr = this.inputArr.filter(item => {
-          return item.categoryName !== ''
+          return item.categoryName && item.categoryNo
         })
         arr.forEach(item => {
           item.parentId = menus[0].parentId
@@ -556,7 +566,7 @@ export default {
           })
         }
         const arr = this.inputArr.filter(item => {
-          return item.categoryName !== ''
+          return item.categoryName && item.categoryNo
         })
         arr.forEach(item => {
           item.parentId = this.parentId

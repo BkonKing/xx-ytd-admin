@@ -58,7 +58,7 @@
                 <a-form-item label="物料">
                   <a-input
                     v-model="queryParam.serachMaterialText"
-                    placeholder="ID、名称"
+                    placeholder="编码、名称"
                   ></a-input>
                 </a-form-item>
               </a-col>
@@ -96,7 +96,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 16 : 24"
-              @reset="() => (this.queryParam = {})"
+              @reset="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -138,8 +138,11 @@
         </span>
 
         <span slot="paid" slot-scope="text, record">
-          <div v-if="+text">已付￥{{ text }}</div>
-          <div v-if="+record.unpaid">未付￥{{ record.unpaid }}</div>
+          <template v-if="record.status !== '1'">--</template>
+          <template v-else>
+            <div v-if="+text">已付￥{{ text }}</div>
+            <div v-if="+record.unpaid">未付￥{{ record.unpaid }}</div>
+          </template>
         </span>
 
         <span class="table-action" slot="action" slot-scope="text, record">
@@ -147,13 +150,13 @@
             <a @click="goDetail(record)">查看</a>
             <a
               v-if="
-                permissions.UpdatePermission || permissions.UpdatePartPermission
+                (permissions.UpdatePermission || permissions.UpdatePartPermission) && userCompanyId == record.companyId
               "
               @click="goEdit(record)"
               >编辑</a
             >
             <a
-              v-if="permissions.RemovePermission"
+              v-if="permissions.RemovePermission && userCompanyId == record.companyId"
               @click="handleRemove(record)"
               >删除</a
             >
@@ -285,7 +288,7 @@ export default {
         {
           title: '操作',
           dataIndex: 'action',
-          width: '180px',
+          class: 'nowrap',
           scopedSlots: { customRender: 'action' }
         }
       ],

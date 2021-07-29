@@ -35,7 +35,6 @@ export default {
     }
   },
   created () {
-    console.log(11111)
     this.projectId && this.getAllProMaterial()
   },
   methods: {
@@ -43,13 +42,12 @@ export default {
       getAllProMaterial({
         projectId: this.projectId
       }).then(({ data }) => {
-        console.log(123)
         this.options = this.formatMaterialData(data)
       })
     },
     onChange (value) {
-      console.log(value)
       this.$emit('change', value)
+      this.$emit('input', value)
     },
     async setOptions () {
       if (this.options && this.options.length) {

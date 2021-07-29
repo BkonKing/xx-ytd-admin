@@ -1,5 +1,5 @@
 <template>
-  <page-header-wrapper>
+  <page-header-wrapper :breadcrumb="false">
     <template v-slot:content>
       <div class="page-header-content">
         <div class="avatar">
@@ -178,6 +178,7 @@
                 class="item"
                 v-for="(item, index) in info.message"
                 :key="index"
+                @click="openPage(item)"
               >
                 [通知] {{ item.content }}
               </div>
@@ -325,6 +326,22 @@ export default {
         this.$router.push('/contract/index?tabActiveKey=' + 1)
       } else {
         this.$router.push('/supplier/index?tabActiveKey=' + 1)
+      }
+    },
+    // 待办打开新窗口
+    openPage (item) {
+      const paths = {
+        1: '/project/detail',
+        2: '/contract/detail',
+        3: '/supplier/detail',
+        4: '/order/detail'
+      }
+      const path = `${paths[item.sourceType]}?id=${item.sourceId}`
+      if (path !== this.$route.fullPath) {
+        const href = this.$router.resolve({
+          path
+        }).href
+        window.open(href, '_blank')
       }
     },
     getProjects () {
@@ -479,6 +496,7 @@ export default {
   //   }
   // }
   .item {
+    cursor: pointer;
     margin-bottom: 18px;
   }
 }

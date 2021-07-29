@@ -59,7 +59,10 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="(!advanced && 8) || (isParentCompany ? 24 : 8)" :sm="24">
+            <a-col
+              :md="(!advanced && 8) || (isParentCompany ? 24 : 8)"
+              :sm="24"
+            >
               <span
                 class="table-page-search-submitButtons"
                 :style="
@@ -90,12 +93,13 @@
         <span slot="contractNo" slot-scope="text, record">
           <router-link
             :to="{ name: 'ContractDetail', query: { id: record.id } }"
+            target="_blank"
             >{{ text }}</router-link
           >
         </span>
       </s-table>
     </a-card>
-    <log-list :typeId="10"></log-list>
+    <log-list :typeId="10" :sourceId="id"></log-list>
   </div>
 </template>
 
@@ -182,7 +186,9 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         this.queryParam.projectId = this.projectId
-        return getProjectContractList(Object.assign(parameter, this.queryParam))
+        return getProjectContractList(
+          Object.assign(parameter, this.queryParam)
+        )
       }
     }
   },
@@ -192,6 +198,7 @@ export default {
     },
     reset () {
       this.queryParam = {}
+      this.$refs.table.refresh(true)
     },
     toggleAdvanced () {
       this.advanced = !this.advanced

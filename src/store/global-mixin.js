@@ -5,7 +5,10 @@ const mixin = {
     ...mapState({
       permissions: state => state.user.permissions
     }),
-    ...mapGetters(['isParentCompany'])
+    ...mapGetters(['isParentCompany']),
+    ...mapState({
+      userCompanyId: state => state.user.info.companyId || '1'
+    })
   }
 }
 

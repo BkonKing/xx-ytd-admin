@@ -1,21 +1,23 @@
 <template>
   <a-row>
     <a-col :xs="24" :md="12" :style="{ height: '350px' }">
-      <a-form-model
-        ref="form"
-        :model="form"
-        :rules="rules"
-        layout="vertical"
-      >
+      <a-form-model ref="form" :model="form" :rules="rules" layout="vertical">
         <a-form-model-item label="登录账号" prop="account">
           <a-input v-model="form.account" disabled />
         </a-form-model-item>
         <a-form-model-item label="登录密码" prop="pwd" required>
-          <a-input-password v-model="form.pwd" placeholder="请输入" />
-          <div>限6~18个英文、数字，区分大小写</div>
+          <a-input-password
+            v-model="form.pwd"
+            v-number-input.EnNum
+            placeholder="请输入"
+            :maxLength="18"
+          />
+          <div>限6~18个字符</div>
         </a-form-model-item>
         <a-form-model-item>
-          <a-button type="primary" :disabled="!form.pwd" @click="handleSubmit">更新信息</a-button>
+          <a-button type="primary" :disabled="!form.pwd" @click="handleSubmit"
+            >更新信息</a-button
+          >
         </a-form-model-item>
       </a-form-model>
     </a-col>
@@ -30,7 +32,10 @@ export default {
         account: ''
       },
       rules: {
-        pwd: [{ required: true, message: '必填' }]
+        pwd: [
+          { required: true, message: '必填' },
+          { min: 6, message: '必须大于6位' }
+        ]
       }
     }
   },
@@ -52,7 +57,6 @@ export default {
         this.$message.success('更新成功')
       })
     }
-
   }
 }
 </script>

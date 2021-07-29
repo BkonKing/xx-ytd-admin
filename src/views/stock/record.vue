@@ -32,7 +32,11 @@
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="类型">
-                  <a-select v-model="queryParam.stockType" placeholder="请选择" :disabled="tabActiveKey !== '0'">
+                  <a-select
+                    v-model="queryParam.stockType"
+                    placeholder="请选择"
+                    :disabled="tabActiveKey !== '0'"
+                  >
                     <a-select-option
                       v-for="item in tabList"
                       :value="item.key"
@@ -104,7 +108,12 @@
               v-model="advanced"
               :md="isParentCompany ? 8 : 16"
               @search="$refs.table.refresh(true)"
-              @reset="() => (this.queryParam = {})"
+              @reset="
+                () => {
+                  this.queryParam = {};
+                  this.$refs.table.refresh(true);
+                }
+              "
             ></advanced-form>
           </a-row>
         </a-form>
@@ -140,12 +149,20 @@
           <template>
             <a @click="goDetail(record)">查看</a>
             <a
-              v-if="record.stockType !== '1' && permissions.UpdatePermission"
+              v-if="
+                record.stockType !== '1' &&
+                  permissions.UpdatePermission &&
+                  userCompanyId == record.companyId
+              "
               @click="goEdit(record)"
               >编辑</a
             >
             <a
-              v-if="record.stockType !== '1' && permissions.RemovePermission"
+              v-if="
+                record.stockType !== '1' &&
+                  permissions.RemovePermission &&
+                  userCompanyId == record.companyId
+              "
               @click="handleRemove(record)"
               >删除</a
             >
@@ -213,7 +230,7 @@ const columns = [
   {
     title: '操作',
     dataIndex: 'action',
-    width: '150px',
+    class: 'nowrap max-width',
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -313,6 +330,7 @@ export default {
       this.$confirm({
         title: '删除记录',
         content: `确定删除“出库记录ID:${id}”吗？`,
+        icon: h => <a-icon theme="filled" type="exclamation-circle" />,
         onOk () {
           removeStockCk({
             id
@@ -348,5 +366,9 @@ export default {
   /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
     width: 80px;
   }
+}
+/deep/ .max-width {
+  max-width: 180px;
+  width: 52px;
 }
 </style>

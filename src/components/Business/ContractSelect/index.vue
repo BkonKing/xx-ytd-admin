@@ -12,6 +12,8 @@
       :value="option.contractId"
       :key="option.contractId"
     >
+      {{ option.contractNo }}
+      <span style="width: 10px;display:inline-block;"></span>
       {{ option.contractName }}
     </a-select-option>
   </a-select>

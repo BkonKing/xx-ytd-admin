@@ -1,5 +1,12 @@
 <template>
   <page-header-wrapper>
+    <template v-slot:extraContent>
+      <div class="status-list">
+        <div class="text">项目</div>
+        <div class="heading">{{ data.length - 1 }}个</div>
+      </div>
+    </template>
+
     <a-card :bordered="false" class="ant-pro-components-tag-select">
       <a-form layout="inline">
         <standard-form-row
@@ -90,7 +97,11 @@
               <template slot="title">
                 <div class="project-header">
                   <span class="project-title">{{ item.projectName }}</span>
-                  <a-tag v-if="item.stageName" color="blue" class="project-stage">
+                  <a-tag
+                    v-if="item.stageName"
+                    color="blue"
+                    class="project-stage"
+                  >
                     {{ item.stageName }}
                   </a-tag>
                 </div>
@@ -189,6 +200,11 @@ export default {
       confirmLoading: false
     }
   },
+  computed: {
+    projectNum () {
+      return this.isParentCompany ? this.data.length - 1 : this.data.length
+    }
+  },
   filters: {
     fromNow (date) {
       return moment(date).fromNow()
@@ -245,8 +261,8 @@ export default {
           data.area = [obj.provinceId, obj.cityId, obj.areaId]
         }
         const glStatus = []
-        data.companyIds = obj.companyIds.map((item) => {
-          item.glStatus && glStatus.push(item.glStatus)
+        data.companyIds = obj.companyIds.map(item => {
+          item.glStatus && glStatus.push(item.companyId)
           return item.companyId
         })
         data.glStatus = glStatus
@@ -310,12 +326,13 @@ export default {
       this.$confirm({
         title: '删除项目',
         content: `确定删除“${projectName}”吗？`,
-        icon: () => this.$createElement('a-icon', {
-          props: {
-            type: 'exclamation-circle',
-            theme: 'filled'
-          }
-        }),
+        icon: () =>
+          this.$createElement('a-icon', {
+            props: {
+              type: 'exclamation-circle',
+              theme: 'filled'
+            }
+          }),
         onOk () {
           removeProject({
             id
@@ -370,6 +387,18 @@ export default {
       height: calc(100% - 24px);
       background: #e8e8e8;
     }
+  }
+}
+.status-list {
+  position: absolute;
+  right: 24px;
+  top: 16px;
+  .text {
+    color: #00000072;
+  }
+  .heading {
+    font-size: 20px;
+    color: #000000d8;
   }
 }
 .project-header {

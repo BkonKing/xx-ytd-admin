@@ -228,7 +228,6 @@ export default {
       })
     },
     onSubmit () {
-      console.log(this.form)
       this.$refs.supplierForm.validate(valid => {
         if (valid) {
           const api = this.id ? updateSupplier : addSupplier
@@ -236,10 +235,15 @@ export default {
             this.form.businessTerm = `${this.form.startDate}~${this.form.endDate}`
           }
           this.id && (this.form.id = this.id)
-          api(this.form).then(({ success }) => {
+          api(this.form).then(({ success, id }) => {
             if (success) {
               this.$message.success('提交成功')
-              this.$router.go(-1)
+              this.$router.replace({
+                name: 'SupplierDetail',
+                query: {
+                  id: this.id || id
+                }
+              })
             }
           })
         } else {

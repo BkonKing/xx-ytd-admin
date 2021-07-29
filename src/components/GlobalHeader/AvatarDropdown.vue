@@ -69,6 +69,7 @@ export default {
       }
     }
     window.onbeforeunload = function () {
+      alert(123123)
       beginTime = new Date().getTime()
     }
   },

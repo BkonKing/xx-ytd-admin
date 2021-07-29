@@ -139,9 +139,11 @@ export function toReadAllMessage () {
   })
 }
 // 清除弹窗通知接口(已验证)
-export function toClearMessage () {
+export function toClearMessage (data) {
   return request({
-    url: userApi.clearMessage
+    method: 'post',
+    url: userApi.clearMessage,
+    data
   })
 }
 // 获取弹窗消息数量接口

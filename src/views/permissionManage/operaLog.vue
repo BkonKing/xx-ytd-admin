@@ -62,7 +62,7 @@
                 :style="(bol && { float: 'right', overflow: 'hidden' }) || {}"
               >
                 <a-button type="primary" @click="search">查询</a-button>
-                <a-button @click="reset">重置</a-button>
+                <a-button style="margin-left: 8px" @click="reset">重置</a-button>
                 <a @click="toggle" style="margin-left: 8px">
                   {{ bol ? "收起" : "展开" }}
                   <a-icon :type="bol ? 'up' : 'down'"

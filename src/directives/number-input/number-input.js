@@ -43,9 +43,8 @@ function onInput (el, ele, binding, vNode, e) {
   // 支持输入的最大值和最小值的限制
   if (val !== '' && typeof binding.value === 'object') {
     let { min, max } = binding.value
-    min = parseFloat(min)
-    max = parseFloat(max)
     if (!isNaN(min)) {
+      min = typeof min === 'number' ? min : parseFloat(min)
       if (min >= 0) {
         // 不能是负数
         val = val.replace('-', '')
@@ -55,7 +54,9 @@ function onInput (el, ele, binding, vNode, e) {
       }
     }
     if (!isNaN(max)) {
+      max = typeof max === 'number' ? max : parseFloat(max)
       if (parseFloat(val) > max) {
+        console.log(max)
         val = max
       }
     }
