@@ -10,13 +10,24 @@
       <a-descriptions-item label="项目名称">
         {{ data.projectName || "--" }}
       </a-descriptions-item>
-      <a-descriptions-item :label="`${typeText}日期`">
+      <a-descriptions-item v-if="isRK" label="入库订单号">
+        <router-link
+          v-if="data.orderNo"
+          :to="{ name: 'OrderDetail', query: { id: data.orderId } }"
+          target="_blank"
+          >{{ data.orderNo }}</router-link
+        >
+        <template v-else>
+          --
+        </template>
+      </a-descriptions-item>
+      <a-descriptions-item v-if="!isRK" :label="`${typeText}日期`">
         {{ data.cktime || "--" }}
       </a-descriptions-item>
-      <a-descriptions-item label="领料部门">
+      <a-descriptions-item v-if="!isRK" label="领料部门">
         {{ data.department || "--" }}
       </a-descriptions-item>
-      <a-descriptions-item label="领料人">
+      <a-descriptions-item v-if="!isRK" label="领料人">
         {{ data.stockMen || "--" }}
       </a-descriptions-item>
       <a-descriptions-item :label="`${typeText}人`">
@@ -28,7 +39,7 @@
       <a-descriptions-item label="物料" :span="2">
         种类{{ data.materiaCount }} 数量{{ data.materiaNum }}
       </a-descriptions-item>
-      <a-descriptions-item label="上传凭证" :span="2">
+      <a-descriptions-item v-if="!isRK" label="上传凭证" :span="2">
         <t-image :images="data.stockPz"></t-image>
       </a-descriptions-item>
     </a-descriptions>
@@ -114,8 +125,11 @@ export default {
     }
   },
   computed: {
+    isRK () {
+      return this.data.stockType === '1'
+    },
     typeText () {
-      return this.data.stockType === '1' ? '入库' : '出库'
+      return this.isRK ? '入库' : '出库'
     }
   },
   watch: {
@@ -132,5 +146,10 @@ export default {
 <style lang="less" scoped>
 /deep/ .ant-form-item {
   margin-bottom: 0;
+}
+/deep/ .ant-descriptions-item-label {
+  width: 120px;
+  text-align: right;
+  vertical-align: top;
 }
 </style>

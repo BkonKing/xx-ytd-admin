@@ -54,7 +54,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 24 : 8"
-              @reset="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
+              @reset="reset"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -103,6 +103,7 @@ import {
 import { getStockLkReport, getStockCkReport } from '@/api/report'
 import RecordDetailModal from '../../stock/components/RecordDetail'
 import { changeJSON2QueryString } from '@/utils/util'
+import setCompanyId from '@/mixins/setCompanyId'
 
 const columns = [
   {
@@ -154,6 +155,7 @@ const columns = [
 
 export default {
   name: 'CLKTab',
+  mixins: [setCompanyId],
   components: {
     STable,
     RecordDetailModal,
@@ -237,9 +239,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table-page-search-wrapper {
-  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
-  }
-}
 </style>

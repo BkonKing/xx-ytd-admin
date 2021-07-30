@@ -17,12 +17,16 @@ export default {
     value: {
       type: [String, Number],
       default: ''
+    },
+    type: {
+      type: [String, Number],
+      default: ''
     }
   },
   data () {
     return {
       data: this.value || undefined,
-      // 付款情况：0=全部、1=全部已付、2=全部未付、3=部分已付/未付
+      // 开票情况：0=全部、1=全部已付、2=全部未付、3=部分已付/未付
       options: [
         {
           value: 1,
@@ -35,9 +39,16 @@ export default {
         {
           value: 3,
           text: '部分已开/未开'
+        },
+        {
+          value: 4,
+          text: '--'
         }
       ]
     }
+  },
+  created () {
+    this.type && this.options.pop()
   },
   watch: {
     value (val) {

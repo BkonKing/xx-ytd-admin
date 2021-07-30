@@ -343,7 +343,8 @@ export default {
 <style lang="less" scoped>
 .table-page-search-wrapper {
   /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 91px;
+    width: 92px;
+    flex-shrink: 0;
   }
 }
 .detail-layout {

@@ -30,38 +30,36 @@
                 <project-select v-model="queryParam.projectId"></project-select>
               </a-form-item>
             </a-col>
-            <template v-if="advanced">
-              <a-col v-if="isParentCompany" :md="8" :sm="24">
-                <a-form-item label="所属公司">
-                  <company-select
-                    v-model="queryParam.companyId"
-                  ></company-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="合同状态">
-                  <a-select
-                    v-model="queryParam.contractStatus"
-                    placeholder="请选择"
-                    :disabled="contractStatusAble"
+            <a-col v-if="isParentCompany" :md="8" :sm="24">
+              <a-form-item label="所属公司">
+                <company-select v-model="queryParam.companyId"></company-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="合同状态">
+                <a-select
+                  v-model="queryParam.contractStatus"
+                  placeholder="请选择"
+                  :disabled="contractStatusAble"
+                >
+                  <a-select-option
+                    v-for="option in contractStatusOptions"
+                    :value="option.value"
+                    :key="option.value"
                   >
-                    <a-select-option
-                      v-for="option in contractStatusOptions"
-                      :value="option.value"
-                      :key="option.value"
-                    >
-                      {{ option.text }}
-                    </a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="合同类型">
-                  <contract-type-select
-                    v-model="queryParam.categoryId"
-                  ></contract-type-select>
-                </a-form-item>
-              </a-col>
+                    {{ option.text }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="合同类型">
+                <contract-type-select
+                  v-model="queryParam.categoryId"
+                ></contract-type-select>
+              </a-form-item>
+            </a-col>
+            <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="合同">
                   <a-input
@@ -70,6 +68,8 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="订单">
                   <a-input
@@ -152,12 +152,19 @@
             <a @click="goDetail(record)">查看</a>
             <a
               v-if="
-                (permissions.UpdatePermission || permissions.UpdatePartPermission) && userCompanyId == record.companyId
+                (permissions.UpdatePermission ||
+                  permissions.UpdatePartPermission) &&
+                  userCompanyId == record.companyId
               "
               @click="goEdit(record)"
               >编辑</a
             >
-            <a v-if="permissions.RemovePermission && userCompanyId == record.companyId" @click="handleRemove(record)"
+            <a
+              v-if="
+                permissions.RemovePermission &&
+                  userCompanyId == record.companyId
+              "
+              @click="handleRemove(record)"
               >删除</a
             >
             <a
@@ -206,24 +213,12 @@ import {
   auditBatchCont
 } from '@/api/contract'
 import { getIsAuditSet } from '@/api/common'
-
-// const checkTimec = [
-//   {
-//     title: '审核时间',
-//     dataIndex: 'auditTime',
-//     scopedSlots: { customRender: 'auditTime' }
-//   }
-// ]
-
-// const checkStatusC = [
-//   {
-//     title: '审核状态',
-//     dataIndex: 'statusv'
-//   }
-// ]
+import setCompanyId from '@/mixins/setCompanyId'
+import beforeRouteLeave from '@/mixins/beforeRouteLeave'
 
 export default {
-  name: 'TableList',
+  name: 'ContractIndex',
+  mixins: [setCompanyId, beforeRouteLeave],
   components: {
     STable,
     CheckForm,
@@ -279,7 +274,8 @@ export default {
       ],
       // 查询参数
       queryParam: {
-        time: []
+        time: [],
+        companyId: ''
       },
       columns: [
         {
@@ -350,28 +346,28 @@ export default {
           title: '已付款',
           dataIndex: 'orderPayMoney',
           customRender (text) {
-            return `￥${text}`
+            return text === '--' ? '--' : `￥${text}`
           }
         },
         {
           title: '未付款',
           dataIndex: 'orderUnPayMoney',
           customRender (text) {
-            return `￥${text}`
+            return text === '--' ? '--' : `￥${text}`
           }
         },
         {
           title: '已收票金额',
           dataIndex: 'orderInvoicedMoney',
           customRender (text) {
-            return `￥${text}`
+            return text === '--' ? '--' : `￥${text}`
           }
         },
         {
           title: '未收票金额',
           dataIndex: 'orderUnInvoicedMoney',
           customRender (text) {
-            return `￥${text}`
+            return text === '--' ? '--' : `￥${text}`
           }
         },
         {
@@ -478,6 +474,7 @@ export default {
     reset () {
       this.queryParam = {}
       this.changeStatus()
+      this.setcompanyId()
       this.$refs.table.refresh(true)
     },
     changeStatus () {
@@ -591,9 +588,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table-page-search-wrapper {
-  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
-  }
-}
 </style>

@@ -19,7 +19,7 @@
               target="_blank"
               >{{ item.projectName
               }}{{
-                index === info.projectArr.length - 1 ? "" : ","
+                index === info.projectArr.length - 1 ? "" : "，"
               }}</router-link
             >
           </template>
@@ -49,8 +49,8 @@
     </template>
 
     <template v-slot:extraContent>
-      <a-row class="status-list" type="flex">
-        <a-col flex="1">
+      <a-row class="status-list" type="flex" justify="end">
+        <a-col flex="1" style="max-width: 70px">
           <div class="text">状态</div>
           <div class="heading">{{ info.statusv }}</div>
         </a-col>
@@ -77,6 +77,7 @@
       :data="info.auditLeveLog"
     ></order-steps-info>
     <log-list
+      ref="log-list"
       v-show="!isPass || tabActiveKey === '0'"
       typeId="40"
       :sourceId="id"
@@ -200,6 +201,7 @@ export default {
         this.$message.success(message)
         this.visible = false
         this.getSuppInfo()
+        this.$refs['log-list'].refresh()
       })
     },
     handleCheckCancel () {
@@ -242,5 +244,9 @@ export default {
     position: relative;
     top: 3px;
   }
+}
+
+/deep/ .ant-pro-page-header-wrap-extraContent {
+  margin-left: 20px;
 }
 </style>

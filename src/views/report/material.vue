@@ -14,33 +14,31 @@
                 <company-select v-model="queryParam.companyId"></company-select>
               </a-form-item>
             </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="创建时间">
+                <a-range-picker
+                  v-model="queryParam.time"
+                  valueFormat="YYYY-MM-DD"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="订单">
+                <a-input
+                  v-model="queryParam.orderId"
+                  placeholder="ID"
+                ></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="合同">
+                <a-input
+                  v-model="queryParam.serachContractText"
+                  placeholder="编号、名称"
+                ></a-input>
+              </a-form-item>
+            </a-col>
             <template v-if="!isParentCompany || advanced">
-              <a-col :md="8" :sm="24">
-                <a-form-item label="创建时间">
-                  <a-range-picker
-                    v-model="queryParam.time"
-                    valueFormat="YYYY-MM-DD"
-                  />
-                </a-form-item>
-              </a-col>
-            </template>
-            <template v-if="advanced">
-              <a-col :md="8" :sm="24">
-                <a-form-item label="订单">
-                  <a-input
-                    v-model="queryParam.orderId"
-                    placeholder="ID"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="合同">
-                  <a-input
-                    v-model="queryParam.serachContractText"
-                    placeholder="编号、名称"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
               <a-col :md="8" :sm="24">
                 <a-form-item label="物料">
                   <a-input
@@ -49,6 +47,8 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="供应商">
                   <a-input
@@ -61,6 +61,7 @@
                 <a-form-item label="付款情况">
                   <pay-status-select
                     v-model="queryParam.payStatus"
+                    type="1"
                   ></pay-status-select>
                 </a-form-item>
               </a-col>
@@ -68,6 +69,7 @@
                 <a-form-item label="开票情况">
                   <kp-status-select
                     v-model="queryParam.kpStatus"
+                    type="1"
                   ></kp-status-select>
                 </a-form-item>
               </a-col>
@@ -75,7 +77,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 24 : 8"
-              @reset="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
+              @reset="reset"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -125,6 +127,7 @@ import {
 } from '@/components'
 import { getMaterialReport } from '@/api/report'
 import { changeJSON2QueryString } from '@/utils/util'
+import setCompanyId from '@/mixins/setCompanyId'
 
 const columns = [
   {
@@ -183,6 +186,7 @@ const columns = [
 
 export default {
   name: 'reportMaterial',
+  mixins: [setCompanyId],
   components: {
     STable,
     ProjectSelect,
@@ -236,13 +240,18 @@ export default {
       if (!this.queryParam.projectId) {
         this.$message.warning('请选择项目')
       } else {
-        const baseUrl = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
+        const baseUrl =
+          process.env.NODE_ENV === 'production'
+            ? process.env.VUE_APP_API_BASE_URL
+            : '/api'
         const params = {
           projectId: this.queryParam.projectId,
           ids: this.selectedRowKeys.join(',')
         }
         console.log(params)
-        location.href = `${baseUrl}/operate/report/materialReportExcel?${changeJSON2QueryString(params)}`
+        location.href = `${baseUrl}/operate/report/materialReportExcel?${changeJSON2QueryString(
+          params
+        )}`
       }
     },
     goDetail ({ orderId: id }) {
@@ -262,9 +271,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table-page-search-wrapper {
-  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
-  }
-}
 </style>

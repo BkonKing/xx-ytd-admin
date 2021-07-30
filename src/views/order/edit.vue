@@ -30,9 +30,9 @@
           <a-col class="form-required-after" flex="2">规格型号</a-col>
           <a-col class="form-required-after" flex="110px">税率</a-col>
           <a-col class="form-required-after" flex="120px">采购单价(元)</a-col>
-          <a-col class="form-required-after" flex="180px">数量</a-col>
+          <a-col class="form-required-after" flex="210px">数量</a-col>
           <a-col flex="1">金额</a-col>
-          <a-col flex="100px">排序</a-col>
+          <a-col flex="85px">排序</a-col>
           <a-col flex="60px">操作</a-col>
         </a-row>
         <a-form-model
@@ -94,9 +94,9 @@
                 />
               </a-form-model-item>
             </a-col>
-            <a-col flex="180px">
+            <a-col flex="210px">
               <a-row type="flex">
-                <a-col flex="50px">
+                <a-col flex="80px">
                   <a-form-model-item prop="unit">
                     <unit-select
                       v-model="record.unit"
@@ -126,7 +126,7 @@
                 }}</span
               >
             </a-col>
-            <a-col flex="100px">
+            <a-col flex="85px">
               <a-form-model-item prop="listOrder">
                 <a-input
                   v-model="record.listOrder"
@@ -152,7 +152,7 @@
         >
           <a-col flex="6">总计</a-col>
           <a-col flex="254px"></a-col>
-          <a-col flex="180px">{{ totalNum }}</a-col>
+          <a-col flex="210px">{{ totalNum }}</a-col>
           <a-col flex="1" style="word-break: break-all;"
             >￥{{ totalMoney }}</a-col
           >
@@ -223,6 +223,7 @@ export default {
         model: [{ required: true, message: '请填写' }],
         taxRate: [{ required: true, message: '请填写' }],
         unitPrice: [{ required: true, message: '请填写' }],
+        unit: [{ required: true, message: '请选择' }],
         total: [{ required: true, message: '请填写' }]
       },
       tableData: []
@@ -287,7 +288,7 @@ export default {
         id: value
       }).then(({ data }) => {
         this.$set(this.tableData[index], 'unitOptions', data)
-        this.$set(this.tableData[index], 'unit', unit || data[0].unit)
+        this.$set(this.tableData[index], 'unit', unit || (data[0] && data[0].unit) || '')
       })
     },
     handleAdd () {

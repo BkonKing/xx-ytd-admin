@@ -30,30 +30,28 @@
                 <project-select v-model="queryParam.projectId"></project-select>
               </a-form-item>
             </a-col>
-            <template v-if="advanced">
-              <a-col v-if="isParentCompany" :md="8" :sm="24">
-                <a-form-item label="所属公司">
-                  <company-select
-                    v-model="queryParam.companyId"
-                  ></company-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="订单">
-                  <a-input
-                    v-model="queryParam.orderId"
-                    placeholder="ID"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="合同">
-                  <a-input
-                    v-model="queryParam.serachContractText"
-                    placeholder="编号、名称"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
+            <a-col v-if="isParentCompany" :md="8" :sm="24">
+              <a-form-item label="所属公司">
+                <company-select v-model="queryParam.companyId"></company-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="订单">
+                <a-input
+                  v-model="queryParam.orderId"
+                  placeholder="ID"
+                ></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="合同">
+                <a-input
+                  v-model="queryParam.serachContractText"
+                  placeholder="编号、名称"
+                ></a-input>
+              </a-form-item>
+            </a-col>
+            <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="物料">
                   <a-input
@@ -62,6 +60,8 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="供应商">
                   <a-input
@@ -96,7 +96,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 16 : 24"
-              @reset="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
+              @reset="reset"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -150,13 +150,18 @@
             <a @click="goDetail(record)">查看</a>
             <a
               v-if="
-                (permissions.UpdatePermission || permissions.UpdatePartPermission) && userCompanyId == record.companyId
+                (permissions.UpdatePermission ||
+                  permissions.UpdatePartPermission) &&
+                  userCompanyId == record.companyId
               "
               @click="goEdit(record)"
               >编辑</a
             >
             <a
-              v-if="permissions.RemovePermission && userCompanyId == record.companyId"
+              v-if="
+                permissions.RemovePermission &&
+                  userCompanyId == record.companyId
+              "
               @click="handleRemove(record)"
               >删除</a
             >
@@ -209,6 +214,8 @@ import {
   auditBatchOrder
 } from '@/api/order'
 import { getIsAuditSet } from '@/api/common'
+import setCompanyId from '@/mixins/setCompanyId'
+import beforeRouteLeave from '@/mixins/beforeRouteLeave'
 
 const checkTimec = [
   {
@@ -226,7 +233,8 @@ const checkStatusC = [
 ]
 
 export default {
-  name: 'TableList',
+  name: 'OrderIndex',
+  mixins: [setCompanyId, beforeRouteLeave],
   components: {
     STable,
     CheckForm,
@@ -252,7 +260,9 @@ export default {
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
-      queryParam: {},
+      queryParam: {
+        companyId: ''
+      },
       columns: [
         {
           title: '审核状态',
@@ -307,7 +317,9 @@ export default {
         if (this.tabActiveKey !== '0') {
           queryParam.status = this.tabActiveKey
         }
-        return getOrderList(Object.assign(parameter, this.queryParam, queryParam))
+        return getOrderList(
+          Object.assign(parameter, this.queryParam, queryParam)
+        )
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -346,9 +358,11 @@ export default {
     },
     changeColumns (key) {
       // 是否有审核时间
-      const isAudit = this.columns.findIndex(column => column.dataIndex === 'auditTime') > -1
+      const isAudit =
+        this.columns.findIndex(column => column.dataIndex === 'auditTime') > -1
       // 是否有审核状态
-      const isStatus = this.columns.findIndex(column => column.dataIndex === 'statusv') > -1
+      const isStatus =
+        this.columns.findIndex(column => column.dataIndex === 'statusv') > -1
       if (key === '1') {
         isStatus && this.columns.shift()
         !isAudit && this.columns.unshift(...checkTimec)
@@ -359,9 +373,6 @@ export default {
         isAudit && this.columns.shift()
         isStatus && this.columns.shift()
       }
-    },
-    toggleAdvanced () {
-      this.advanced = !this.advanced
     },
     openCheck ({ id, idv }) {
       if (id) {
@@ -418,12 +429,13 @@ export default {
       getIsAuditSet({
         auditType: 1
       }).then(({ success }) => {
-        success && this.$router.push({
-          name: 'OrderEdit',
-          query: {
-            id
-          }
-        })
+        success &&
+          this.$router.push({
+            name: 'OrderEdit',
+            query: {
+              id
+            }
+          })
       })
     },
     handleRemove ({ id, idv }) {
@@ -431,12 +443,13 @@ export default {
       this.$confirm({
         title: '删除订单', // 用户名
         content: `确认删除 "${idv}" 吗？`,
-        icon: () => this.$createElement('a-icon', {
-          props: {
-            type: 'exclamation-circle',
-            theme: 'filled'
-          }
-        }),
+        icon: () =>
+          this.$createElement('a-icon', {
+            props: {
+              type: 'exclamation-circle',
+              theme: 'filled'
+            }
+          }),
         onOk () {
           removeOrder({
             id
@@ -464,9 +477,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table-page-search-wrapper {
-  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
-  }
-}
 </style>

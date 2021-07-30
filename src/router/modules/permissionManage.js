@@ -17,8 +17,7 @@ export default {
       name: 'personList',
       component: () => import('@/views/permissionManage/personList'),
       meta: {
-        title: '人员列表',
-        icon: 'table'
+        title: '人员列表'
       }
     },
     {
@@ -26,8 +25,7 @@ export default {
       name: 'roleManage',
       component: () => import('@/views/permissionManage/roleManage'),
       meta: {
-        title: '角色管理',
-        icon: 'table'
+        title: '角色管理'
       }
     },
     {
@@ -35,8 +33,7 @@ export default {
       name: 'companManage',
       component: () => import('@/views/permissionManage/companManage'),
       meta: {
-        title: '公司管理',
-        icon: 'table'
+        title: '公司管理'
       }
     },
     {
@@ -44,8 +41,7 @@ export default {
       name: 'operaLog',
       component: () => import('@/views/permissionManage/operaLog'),
       meta: {
-        title: '操作日志',
-        icon: 'table'
+        title: '操作日志'
       }
     },
     {
@@ -53,8 +49,7 @@ export default {
       name: 'permissMenu',
       component: () => import('@/views/permissionManage/permissMenu'),
       meta: {
-        title: '权限菜单',
-        icon: 'table'
+        title: '权限菜单'
       }
     }
   ]

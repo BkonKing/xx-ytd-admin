@@ -18,7 +18,8 @@ export default {
       component: () => import('@/views/supplier/index'),
       meta: {
         title: '供应商',
-        hidden: true
+        hidden: true,
+        keepAlive: true
       }
     },
     {

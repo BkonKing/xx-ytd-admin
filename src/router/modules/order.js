@@ -18,7 +18,8 @@ export default {
       component: () => import('@/views/order/index'),
       meta: {
         title: '订单',
-        hidden: true
+        hidden: true,
+        keepAlive: true
       }
     },
     {

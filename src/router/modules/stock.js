@@ -16,7 +16,8 @@ export default {
       name: 'stockIndex',
       component: () => import('@/views/stock/index'),
       meta: {
-        title: '库存列表'
+        title: '库存列表',
+        keepAlive: true
       }
     },
     {

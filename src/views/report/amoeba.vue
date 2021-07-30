@@ -7,7 +7,7 @@
     >
       <a-form ref="form" layout="inline">
         <standard-form-row title="报表类型" block style="padding-bottom: 11px;">
-          <a-form-item>
+          <a-form-item style="margin-bottom: 0;">
             <tag-select v-model="types">
               <tag-select-option
                 v-for="tag in typeList"
@@ -32,7 +32,7 @@
                 ></project-select>
               </a-form-item>
             </a-col>
-            <a-col flex="1">
+            <a-col v-if="isParentCompany" flex="1">
               <a-form-item label="选择公司">
                 <company-select
                   v-model="queryParam.companyId"
@@ -50,6 +50,7 @@
                   v-model="queryParam.month"
                   valueFormat="YYYY-MM"
                   placeholder="选择月份"
+                  :disabledDate="disabledDate"
                   style="width: 100%;"
                 />
               </a-form-item>
@@ -57,7 +58,9 @@
           </a-row>
           <a-row type="flex" justify="end" style="margin-bottom: 20px;">
             <a-button type="primary" @click="validat(1)">生成报表</a-button>
-            <a-button style="margin-left: 10px;" @click="validat(0)">导出报表</a-button>
+            <a-button style="margin-left: 10px;" @click="validat(0)"
+              >导出报表</a-button
+            >
           </a-row>
         </standard-form-row>
       </a-form>
@@ -256,9 +259,9 @@
                   资<br />金<br />流<br />出
                 </td>
                 <td>{{ tr.categoryName }}</td>
-                <td>{{ tr.masterBudgets }}</td>
+                <td>{{ tr.masterBudgets || 0 }}</td>
                 <td>{{ tr.payableLastMonthTotal }}</td>
-                <td>{{ tr.monthBudget }}</td>
+                <td>{{ tr.monthBudget || 0 }}</td>
                 <td>{{ tr.monthPayTotal }}</td>
                 <td>{{ tr.allPayTotal }}</td>
                 <td>{{ tr.monthBalance || "--" }}</td>
@@ -267,6 +270,9 @@
               </tr>
             </template>
             <tr class="print-tbody-tr-border">
+              <td v-if="!completeData || !completeData.length">
+                资金流出
+              </td>
               <td>支出合计</td>
               <td>{{ masterBudgets }}</td>
               <td>{{ payableLastMonthTotal }}</td>
@@ -275,6 +281,7 @@
               <td>{{ allPayTotal }}</td>
               <td>{{ monthBalance }}</td>
               <td>{{ budgetsBalance }}</td>
+              <td v-if="!completeData || !completeData.length"></td>
             </tr>
           </tbody>
         </table>
@@ -307,6 +314,7 @@ import { getAmbReport, updateAmbReport } from '@/api/report'
 import exportTypeModal from './components/exportTypeModal'
 import clonedeep from 'lodash.clonedeep'
 import NP from 'number-precision'
+import moment from 'moment'
 const TagSelectOption = TagSelect.Option
 
 export default {
@@ -354,28 +362,16 @@ export default {
       payableLastMonthTotal: ''
     }
   },
-  computed: {
-    totalMasterBudgets () {
-      let total = 0
-      this.completeData.forEach(obj => {
-        total += parseFloat(obj.masterBudgets) || 0
-      })
-      return total || '--'
-    },
-    totalC () {
-      let total = 0
-      this.completeData.forEach(obj => {
-        total += parseFloat(obj.monthBudget) || 0
-      })
-      return total || '--'
-    }
+  created () {
+    this.queryParam.companyId = this.userCompanyId
+    this.componyName = this.$store.state.user.info.companyName
   },
   methods: {
     validat (type) {
       if (!this.queryParam.projectId) {
         this.$message.warning('请选择项目')
         return
-      } else if (!this.queryParam.companyId) {
+      } else if (!this.queryParam.companyId && this.isParentCompany) {
         this.$message.warning('请选择公司')
         return
       } else if (!this.queryParam.month) {
@@ -426,6 +422,10 @@ export default {
         }
       )
     },
+    // 动态渲染要禁用的日期
+    disabledDate (current) {
+      return current && current > moment().endOf('month')
+    },
     // 导出
     openExport () {
       this.visible = true
@@ -445,17 +445,35 @@ export default {
         let budgetsBalance = 0
         let payableLastMonthTotal = 0
         this.completeData.forEach(obj => {
-          masterBudgets = NP.plus(masterBudgets, obj.masterBudgets || 0)
-          payableTotal = NP.plus(payableTotal, obj.payableTotal || 0)
-          monthBudget = NP.plus(monthBudget, obj.monthBudget || 0)
-          monthPayTotal = NP.plus(monthPayTotal, obj.monthPayTotal || 0)
-          allPayTotal = NP.plus(allPayTotal, obj.allPayTotal || 0)
-          allUnPayTotal = NP.plus(allUnPayTotal, obj.allUnPayTotal || 0)
-          monthBalance = NP.plus(monthBalance, obj.monthBalance || 0)
-          budgetsBalance = NP.plus(budgetsBalance, obj.budgetsBalance || 0)
+          masterBudgets = NP.plus(
+            masterBudgets,
+            parseFloat(obj.masterBudgets) || 0
+          )
+          payableTotal = NP.plus(
+            payableTotal,
+            parseFloat(obj.payableTotal) || 0
+          )
+          monthBudget = NP.plus(monthBudget, parseFloat(obj.monthBudget) || 0)
+          monthPayTotal = NP.plus(
+            monthPayTotal,
+            parseFloat(obj.monthPayTotal) || 0
+          )
+          allPayTotal = NP.plus(allPayTotal, parseFloat(obj.allPayTotal) || 0)
+          allUnPayTotal = NP.plus(
+            allUnPayTotal,
+            parseFloat(obj.allUnPayTotal) || 0
+          )
+          monthBalance = NP.plus(
+            monthBalance,
+            parseFloat(obj.monthBalance) || '0'
+          )
+          budgetsBalance = NP.plus(
+            budgetsBalance,
+            parseFloat(obj.budgetsBalance) || '0'
+          )
           payableLastMonthTotal = NP.plus(
             payableLastMonthTotal,
-            obj.payableLastMonthTotal || 0
+            parseFloat(obj.payableLastMonthTotal) || 0
           )
         })
         this.masterBudgets = masterBudgets
@@ -474,11 +492,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table-page-search-wrapper {
-  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
-  }
-}
 .print-page {
   width: 100%;
   padding: 24px;
@@ -532,5 +545,12 @@ export default {
   &:focus {
     box-shadow: none;
   }
+}
+.table-page-search-wrapper
+  /deep/
+  .ant-form-inline
+  .ant-form-item
+  .ant-form-item-control-wrapper {
+  width: auto;
 }
 </style>

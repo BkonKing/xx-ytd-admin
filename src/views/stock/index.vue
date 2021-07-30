@@ -25,33 +25,31 @@
                 <company-select v-model="queryParam.companyId"></company-select>
               </a-form-item>
             </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="物料">
+                <a-input
+                  v-model="queryParam.serachMaterialText"
+                  placeholder="编码、名称"
+                ></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="规格型号">
+                <a-input
+                  v-model="queryParam.serachModelText"
+                  placeholder="请输入"
+                ></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="物料品牌">
+                <a-input
+                  v-model="queryParam.serachBrandText"
+                  placeholder="请输入"
+                ></a-input>
+              </a-form-item>
+            </a-col>
             <template v-if="!isParentCompany || advanced">
-              <a-col :md="8" :sm="24">
-                <a-form-item label="物料">
-                  <a-input
-                    v-model="queryParam.serachMaterialText"
-                    placeholder="编码、名称"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
-            </template>
-            <template v-if="advanced">
-              <a-col :md="8" :sm="24">
-                <a-form-item label="规格型号">
-                  <a-input
-                    v-model="queryParam.serachModelText"
-                    placeholder="请输入"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="物料品牌">
-                  <a-input
-                    v-model="queryParam.serachBrandText"
-                    placeholder="请输入"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
               <a-col :md="8" :sm="24">
                 <a-form-item label="备注">
                   <a-input
@@ -60,6 +58,8 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="供应商">
                   <a-input
@@ -81,12 +81,7 @@
               v-model="advanced"
               :md="isParentCompany ? 8 : 16"
               @search="$refs.table.refresh(true)"
-              @reset="
-                () => {
-                  this.queryParam = {};
-                  this.$refs.table.refresh(true);
-                }
-              "
+              @reset="reset"
             ></advanced-form>
           </a-row>
         </a-form>
@@ -181,6 +176,8 @@ import {
 import { getStockList, updateStock, removeStock } from '@/api/stock'
 import AddModal from './components/AddModal'
 import clonedeep from 'lodash.clonedeep'
+import setCompanyId from '@/mixins/setCompanyId'
+import beforeRouteLeave from '@/mixins/beforeRouteLeave'
 
 const columns = [
   {
@@ -252,7 +249,8 @@ const columns = [
 ]
 
 export default {
-  name: 'TableList',
+  name: 'stockIndex',
+  mixins: [setCompanyId, beforeRouteLeave],
   components: {
     STable,
     ProjectSelect,
@@ -287,9 +285,6 @@ export default {
     }
   },
   methods: {
-    toggleAdvanced () {
-      this.advanced = !this.advanced
-    },
     openAdd () {
       this.visible = true
     },
@@ -361,11 +356,6 @@ export default {
   .heading {
     font-size: 20px;
     color: #000000d8;
-  }
-}
-.table-page-search-wrapper {
-  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
   }
 }
 /deep/ .ant-table-thead > tr > th,

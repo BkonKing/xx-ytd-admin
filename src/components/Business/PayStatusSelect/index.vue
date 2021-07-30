@@ -17,6 +17,10 @@ export default {
     value: {
       type: [String, Number],
       default: ''
+    },
+    type: {
+      type: [String, Number],
+      default: ''
     }
   },
   data () {
@@ -35,9 +39,16 @@ export default {
         {
           value: 3,
           text: '部分已付/未付'
+        },
+        {
+          value: 4,
+          text: '--'
         }
       ]
     }
+  },
+  created () {
+    this.type && this.options.pop()
   },
   watch: {
     value (val) {

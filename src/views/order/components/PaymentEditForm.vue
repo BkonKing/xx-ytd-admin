@@ -32,10 +32,10 @@
             {{ item.materialNo }} {{ item.materialName }}
             <div class="brand">{{ item.brand }} {{ item.model }}</div>
           </a-col>
-          <a-col flex="140px">未付￥{{ parseFloat(item.unpaid) }}</a-col>
+          <a-col flex="140px">未付￥{{ parseFloat(item.unpaid) || parseFloat(item.paid) || 0 }}</a-col>
           <a-col flex="180px">
             <a-input
-              v-if="+item.unpaid"
+              v-if="+item.unpaid || +item.paid"
               v-model="item.paid"
               placeholder="请输入"
               prefix="￥"
@@ -52,7 +52,7 @@
           总计
         </a-col>
         <a-col flex="140px">未付￥{{ unpaid }}</a-col>
-        <a-col flex="180px">
+        <a-col flex="180px" style="margin-left: 12px;">
           ￥{{ total }}
         </a-col>
       </a-row>
@@ -106,7 +106,7 @@ export default {
       wrapperCol: { span: 19 },
       form: {},
       rules: {
-        payTime: [{ required: true, message: '请输入项目名称' }],
+        payTime: [{ required: true, message: '请选择付款时间' }],
         payType: [{ required: true, message: '请选择付款方式' }],
         // payDetailed: [
         //   { required: true, message: '请输入付款金额' },
@@ -157,7 +157,7 @@ export default {
     },
     setPayDetailed (data) {
       this.payDetailed = data.map(obj => {
-        obj.paid = parseFloat(obj.paid) || ''
+        obj.paid = ''
         return obj
       })
     },

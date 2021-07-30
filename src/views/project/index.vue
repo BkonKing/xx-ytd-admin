@@ -3,7 +3,7 @@
     <template v-slot:extraContent>
       <div class="status-list">
         <div class="text">项目</div>
-        <div class="heading">{{ data.length - 1 }}个</div>
+        <div class="heading">{{ projectNum }}个</div>
       </div>
     </template>
 
@@ -163,6 +163,7 @@ import moment from 'moment'
 import { TagSelect, StandardFormRow } from '@/components'
 import CardInfo from './components/CardInfo'
 import projectForm from './components/ProjectForm'
+import beforeRouteLeave from '@/mixins/beforeRouteLeave'
 import {
   getAllCompany,
   getProjectStage,
@@ -176,6 +177,8 @@ const TagSelectOption = TagSelect.Option
 // const AvatarListItem = AvatarList.AvatarItem
 
 export default {
+  name: 'ProjectIndex',
+  mixins: [beforeRouteLeave],
   components: {
     // AvatarList,
     // AvatarListItem,

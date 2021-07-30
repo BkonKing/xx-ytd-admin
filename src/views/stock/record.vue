@@ -18,43 +18,41 @@
                 <company-select v-model="queryParam.companyId"></company-select>
               </a-form-item>
             </a-col>
-            <template v-if="!isParentCompany || advanced">
-              <a-col :md="8" :sm="24">
-                <a-form-item label="出入库时间">
-                  <a-range-picker
-                    v-model="queryParam.time"
-                    valueFormat="YYYY-MM-DD"
-                    style="width: 100%;"
-                  />
-                </a-form-item>
-              </a-col>
-            </template>
-            <template v-if="advanced">
-              <a-col :md="8" :sm="24">
-                <a-form-item label="类型">
-                  <a-select
-                    v-model="queryParam.stockType"
-                    placeholder="请选择"
-                    :disabled="tabActiveKey !== '0'"
+            <a-col :md="8" :sm="24">
+              <a-form-item label="出入库时间">
+                <a-range-picker
+                  v-model="queryParam.time"
+                  valueFormat="YYYY-MM-DD"
+                  style="width: 100%;"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="类型">
+                <a-select
+                  v-model="queryParam.stockType"
+                  placeholder="请选择"
+                  :disabled="tabActiveKey !== '0'"
+                >
+                  <a-select-option
+                    v-for="item in tabList"
+                    :value="item.key"
+                    :key="item.key"
                   >
-                    <a-select-option
-                      v-for="item in tabList"
-                      :value="item.key"
-                      :key="item.key"
-                    >
-                      {{ item.tab }}
-                    </a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="物料">
-                  <a-input
-                    v-model="queryParam.serachMaterialText"
-                    placeholder="编码、名称"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
+                    {{ item.tab }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="物料">
+                <a-input
+                  v-model="queryParam.serachMaterialText"
+                  placeholder="编码、名称"
+                ></a-input>
+              </a-form-item>
+            </a-col>
+            <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="规格型号">
                   <a-input
@@ -63,6 +61,8 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="物料品牌">
                   <a-input
@@ -108,12 +108,7 @@
               v-model="advanced"
               :md="isParentCompany ? 8 : 16"
               @search="$refs.table.refresh(true)"
-              @reset="
-                () => {
-                  this.queryParam = {};
-                  this.$refs.table.refresh(true);
-                }
-              "
+              @reset="reset"
             ></advanced-form>
           </a-row>
         </a-form>
@@ -187,6 +182,7 @@ import {
 } from '@/components'
 import { getStockClkList, removeStockCk } from '@/api/stock'
 import RecordDetailModal from './components/RecordDetail'
+import setCompanyId from '@/mixins/setCompanyId'
 
 const columns = [
   {
@@ -237,6 +233,7 @@ const columns = [
 
 export default {
   name: 'TableList',
+  mixins: [setCompanyId],
   components: {
     STable,
     RecordDetailModal,
@@ -303,9 +300,6 @@ export default {
       this.queryParam.stockType = key
       this.$refs.table.refresh(true)
     },
-    toggleAdvanced () {
-      this.advanced = !this.advanced
-    },
     goAdd () {
       this.$router.push({
         name: 'stockEdit'
@@ -362,11 +356,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table-page-search-wrapper {
-  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
-  }
-}
 /deep/ .max-width {
   max-width: 180px;
   width: 52px;

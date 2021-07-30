@@ -117,6 +117,7 @@
       :data="info.auditLeveLog"
     ></c-steps-info>
     <log-list
+      ref="log-list"
       v-show="!isPass || tabActiveKey === '0'"
       typeId="20"
       :sourceId="id"
@@ -241,6 +242,7 @@ export default {
         this.$message.success(message)
         this.visible = false
         this.getContractInfo()
+        this.$refs['log-list'].refresh()
       })
     },
     handleCheckCancel () {

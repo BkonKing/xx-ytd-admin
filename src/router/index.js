@@ -39,6 +39,9 @@ export const constantRoutes = [{
   children: [{
     path: '/user/login',
     name: 'login',
+    meta: {
+      title: '登录'
+    },
     component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
   }]
 },

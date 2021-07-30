@@ -52,7 +52,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 24 : 8"
-              @reset="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
+              @reset="reset"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -102,6 +102,7 @@ import {
 } from '@/components'
 import { changeJSON2QueryString } from '@/utils/util'
 import { getSuppReport } from '@/api/report'
+import setCompanyId from '@/mixins/setCompanyId'
 
 const columns = [
   {
@@ -143,6 +144,7 @@ const columns = [
 
 export default {
   name: 'reportSupplier',
+  mixins: [setCompanyId],
   components: {
     STable,
     ProjectSelect,
@@ -236,9 +238,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table-page-search-wrapper {
-  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
-  }
-}
 </style>

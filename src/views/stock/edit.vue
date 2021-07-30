@@ -1,6 +1,6 @@
 <template>
   <page-header-wrapper :title="title">
-    <a-card title="基本信息" style="margin-top: 24px;">
+    <a-card title="基本信息" class="base-info-card" style="margin-top: 24px;">
       <a-form-model
         ref="form"
         :model="form"
@@ -15,16 +15,19 @@
           ></project-select>
         </a-form-model-item>
         <a-form-model-item required prop="department" label="领料部门">
-          <a-input v-model="form.department"></a-input>
+          <a-input v-model="form.department" :maxLength="20"></a-input>
         </a-form-model-item>
         <a-form-model-item required prop="stockMen" label="领料人">
-          <a-input v-model="form.stockMen"></a-input>
+          <a-input v-model="form.stockMen" :maxLength="15"></a-input>
         </a-form-model-item>
         <a-form-model-item required prop="clktime" label="出库日期">
           <a-date-picker
             v-model="form.clktime"
-            valueFormat="YYYY-MM-DD"
-          ></a-date-picker>
+            :show-time="{defaultValue:moment('00:00:00','HH:mm:ss')}"
+            placeholder="请选择"
+            valueFormat="YYYY-MM-DD HH:mm:ss"
+            style="width: 100%;"
+          />
         </a-form-model-item>
         <a-form-model-item label="上传凭证" prop="stockPz">
           <upload-image v-model="form.stockPz" maxLength="10"></upload-image>
@@ -35,7 +38,7 @@
       <div class="edit-table">
         <a-row class="edit-table-header" type="flex">
           <a-col flex="2">物料</a-col>
-          <a-col flex="280px">数量</a-col>
+          <a-col flex="320px">数量</a-col>
           <a-col flex="1">物料用途</a-col>
           <a-col flex="100px">排序</a-col>
           <a-col flex="60px">操作</a-col>
@@ -56,13 +59,15 @@
                   :projectId="form.projectId"
                   :ref="`material${index}`"
                   @change="value => handleChange(value, index)"
-                  @input="$refs[`tableForm${index}`][0].validateField('materialIdArr')"
+                  @input="
+                    $refs[`tableForm${index}`][0].validateField('materialIdArr')
+                  "
                 ></material-type-select>
               </a-form-model-item>
             </a-col>
-            <a-col flex="280px">
+            <a-col flex="320px">
               <a-row type="flex">
-                <a-col flex="50px">
+                <a-col flex="90px">
                   <a-form-model-item prop="unit">
                     <a-select
                       v-model="record.unit"
@@ -96,7 +101,7 @@
                   </a-form-model-item>
                 </a-col>
                 <a-col flex="100px">
-                  <a-form-model-item>
+                  <a-form-model-item style="color: #0000003F;">
                     库存
                     {{ record.currentNum }}
                   </a-form-model-item>
@@ -123,11 +128,11 @@
               </a-form-model-item>
             </a-col>
             <a-col flex="60px">
-              <span>
-                <a-popconfirm title="是否要删除此行？" @confirm="remove(index)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </span>
+              <a
+                style="display: block;margin-top: 9px;line-height: 1;"
+                @click="remove(index)"
+                >删除</a
+              >
             </a-col>
           </a-row>
         </a-form-model>
@@ -135,14 +140,16 @@
           v-if="tableData && tableData.length"
           class="table-total"
           type="flex"
+          style="border-bottom: 1px solid #e8e8e8;"
         >
-          <a-col flex="6">总计</a-col>
-          <a-col flex="180px"></a-col>
-          <a-col flex="180px">{{ totalNum }}</a-col>
+          <a-col flex="2">总计</a-col>
+          <a-col flex="101px"></a-col>
+          <a-col flex="219px">{{ totalNum }}</a-col>
+          <a-col flex="1"></a-col>
           <a-col flex="160px"></a-col>
         </a-row>
         <a-button
-          style="width: 100%; margin-top: 16px; margin-bottom: 8px"
+          style="width: 100%; margin-top: 16px;"
           type="dashed"
           icon="plus"
           @click="handleAdd"
@@ -162,6 +169,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import FooterToolBar from '@/components/FooterToolbar'
 import NP from 'number-precision'
 import { UploadImage, ProjectSelect } from '@/components'
@@ -206,7 +214,8 @@ export default {
         stockNum: [{ required: true, message: '请填写' }]
         // stockNum: [{ required: true, message: '请填写' }],
       },
-      tableData: []
+      tableData: [],
+      moment
     }
   },
   computed: {
@@ -299,6 +308,9 @@ export default {
         this.$set(this.tableData[index], 'currentNum', data[0].currentNum)
       })
     },
+    changeDatePicker (date, dateString) {
+      console.log(date)
+    },
     unitChange (value, index) {
       const targetOption = this.tableData[index].unitOptions.find(
         obj => obj.unit === value
@@ -363,6 +375,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.base-info-card {
+  /deep/ .ant-card-body {
+    padding-bottom: 3px;
+  }
+}
 .edit-table {
   &-header {
     background: #fafafa;

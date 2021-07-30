@@ -42,11 +42,7 @@ const errorHandler = (error) => {
         description: 'Authorization verification failed'
       })
       if (token) {
-        store.dispatch('Logout').then(() => {
-          setTimeout(() => {
-            window.location.reload()
-          }, 1500)
-        })
+        router.push({ name: 'login' })
       }
     }
   }
@@ -86,7 +82,6 @@ request.interceptors.response.use((response) => {
   } = data
   if (+code === 401) {
     if (router.currentRoute.name !== 'login') {
-      Message.error(message)
       router.push({ name: 'login' })
     }
   } else if (code != '200') {

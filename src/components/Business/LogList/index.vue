@@ -229,6 +229,9 @@ export default {
         this.queryParam.logType = parseInt(this.typeId)
       }
       this.$refs.table.refresh(true)
+    },
+    refresh () {
+      this.$refs.table.refresh()
     }
   }
 }

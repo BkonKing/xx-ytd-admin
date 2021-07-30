@@ -41,9 +41,11 @@ export default {
         adminId: this.id,
         allots: this.checkedKeys.concat(this.halfCheckedKeys).join(',')
       })
-      this.$emit('success')
-      this.$message.success(res.message)
-      this.isShow = false
+      if (res.success) {
+        this.$emit('success')
+        this.$message.success('提交成功')
+        this.isShow = false
+      }
     },
     // 选中节点时候触发
     onSelect (selectedKeys, info) {

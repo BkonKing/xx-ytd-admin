@@ -11,9 +11,8 @@
           <div>{{ step.leveTime }}</div>
           <div
             v-if="
-              !step.status &&
-                current + 1 === index &&
-                data[index] && +data[index].status === 1 &&
+              !+step.status &&
+                current === index &&
                 index !== data.length - 1
             "
           >

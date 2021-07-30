@@ -29,6 +29,7 @@
                 <a-form-item label="付款情况">
                   <pay-status-select
                     v-model="queryParam.payStatus"
+                    type="1"
                   ></pay-status-select>
                 </a-form-item>
               </a-col>
@@ -44,7 +45,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 8 : 16"
-              @reset="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
+              @reset="reset"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -122,6 +123,7 @@ import {
 import exportTypeModal from './components/exportTypeModal'
 import { getStockList, updatePaidRepBz } from '@/api/report'
 import cloneDeep from 'lodash.clonedeep'
+import setCompanyId from '@/mixins/setCompanyId'
 
 const columns = [
   {
@@ -131,31 +133,30 @@ const columns = [
   },
   {
     title: '订单ID',
-    dataIndex: 'idv',
-    width: '12%'
+    dataIndex: 'idv'
   },
   {
     title: '供应商ID',
     dataIndex: 'supplierId',
-    width: '11%'
+    width: '9%'
   },
   {
     title: '供应商',
     dataIndex: 'supplierName',
     scopedSlots: { customRender: 'supplierName' },
-    width: '15%'
+    width: '14%'
   },
   {
     title: '合同金额',
     dataIndex: 'contractMoney',
     scopedSlots: { customRender: 'contractMoney' },
-    width: '12%'
+    width: '11%'
   },
   {
     title: '已付款金额',
     dataIndex: 'paid',
     sort: true,
-    width: '12%',
+    width: '11%',
     customRender (text) {
       return +text ? `￥${text}` : '--'
     }
@@ -173,7 +174,7 @@ const columns = [
     title: '备注',
     dataIndex: 'bbBz',
     scopedSlots: { customRender: 'remarks' },
-    width: '15%'
+    width: '14%'
   },
   {
     title: '操作',
@@ -184,6 +185,7 @@ const columns = [
 
 export default {
   name: 'reportPaid',
+  mixins: [setCompanyId],
   components: {
     STable,
     ProjectSelect,
@@ -256,11 +258,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table-page-search-wrapper {
-  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
-  }
-}
 /deep/ .ant-table-thead > tr > th,
 /deep/ .ant-table-tbody > tr > td {
   padding-right: 0;

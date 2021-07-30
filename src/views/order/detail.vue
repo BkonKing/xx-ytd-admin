@@ -124,7 +124,8 @@
       v-show="!isPass || tabActiveKey === '1'"
       :data="info.auditLeveLog"
     ></order-info>
-    <log-list
+   <log-list
+      ref="log-list"
       v-show="!isPass || tabActiveKey === '0'"
       typeId="30"
       :sourceId="id"
@@ -241,6 +242,7 @@ export default {
         this.$message.success(message)
         this.visible = false
         this.getOrderInfo()
+        this.$refs['log-list'].refresh()
       })
     },
     handleCheckCancel () {

@@ -18,12 +18,13 @@ export default {
       component: () => import('@/views/contract/index'),
       meta: {
         title: '合同',
-        hidden: true
+        hidden: true,
+        keepAlive: true
       }
     },
     {
       path: '/contract/index1',
-      name: 'contractIndex1',
+      name: 'ContractIndex1',
       redirect: '/contract/index',
       component: RouteView,
       meta: {

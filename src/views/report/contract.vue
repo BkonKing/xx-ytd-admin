@@ -2,11 +2,93 @@
   <page-header-wrapper>
     <a-card class="search-card" style="margin-top: 24px" :bordered="false">
       <div class="table-page-search-wrapper">
-        <contract-search-form
-          v-model="queryParam"
-          ref="contractSearchForm"
-          @search="$refs.table.refresh(true)"
-        ></contract-search-form>
+        <a-form layout="inline">
+          <a-row :gutter="48">
+            <a-col :md="8" :sm="24">
+              <a-form-item label="所属项目">
+                <project-select v-model="queryParam.projectId"></project-select>
+              </a-form-item>
+            </a-col>
+            <a-col v-if="isParentCompany" :md="8" :sm="24">
+              <a-form-item label="所属公司">
+                <company-select v-model="queryParam.companyId"></company-select>
+              </a-form-item>
+            </a-col>
+            <template v-if="!isParentCompany || advanced">
+              <a-col :md="8" :sm="24">
+                <a-form-item label="合同状态">
+                  <a-select
+                    v-model="queryParam.contractStatus"
+                    placeholder="请选择"
+                  >
+                    <a-select-option
+                      v-for="option in contractStatusOptions"
+                      :value="option.value"
+                      :key="option.value"
+                    >
+                      {{ option.text }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </template>
+            <template v-if="advanced">
+              <a-col :md="8" :sm="24">
+                <a-form-item label="合同类型">
+                  <contract-type-select
+                    v-model="queryParam.categoryId"
+                  ></contract-type-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="订单">
+                  <a-input
+                    v-model="queryParam.orderId"
+                    placeholder="ID"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="合同">
+                  <a-input
+                    v-model="queryParam.serachText"
+                    placeholder="编号、名称"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="供应商">
+                  <a-input
+                    v-model="queryParam.serachSupplierText"
+                    placeholder="ID、名称"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="付款情况">
+                  <pay-status-select
+                    v-model="queryParam.payStatus"
+                    type="1"
+                  ></pay-status-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="创建时间">
+                  <a-range-picker
+                    v-model="queryParam.time"
+                    valueFormat="YYYY-MM-DD"
+                  />
+                </a-form-item>
+              </a-col>
+            </template>
+            <advanced-form
+              v-model="advanced"
+              :md="isParentCompany ? 24 : 8"
+              @search="$refs.table.refresh(true)"
+              @reset="reset"
+            ></advanced-form>
+          </a-row>
+        </a-form>
       </div>
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
@@ -31,9 +113,9 @@
         :rowSelectionPaging="true"
         showPagination="auto"
       >
-        <div slot="orderNum" slot-scope="text" style="min-width: 48px;">{{
-          text
-        }}</div>
+        <div slot="orderNum" slot-scope="text" style="min-width: 48px;">
+          {{ text }}
+        </div>
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
             <a @click="goDetail(record)">查看</a>
@@ -45,10 +127,17 @@
 </template>
 
 <script>
-import { STable } from '@/components'
+import {
+  STable,
+  ProjectSelect,
+  CompanySelect,
+  ContractTypeSelect,
+  PayStatusSelect,
+  AdvancedForm
+} from '@/components'
 import { getContractReport } from '@/api/report'
 import { changeJSON2QueryString } from '@/utils/util'
-import ContractSearchForm from './components/ContractSearchForm'
+import setCompanyId from '@/mixins/setCompanyId'
 
 const columns = [
   {
@@ -97,15 +186,39 @@ const columns = [
 
 export default {
   name: 'reportContract',
+  mixins: [setCompanyId],
   components: {
     STable,
-    ContractSearchForm
+    ProjectSelect,
+    CompanySelect,
+    ContractTypeSelect,
+    PayStatusSelect,
+    AdvancedForm
   },
   data () {
     this.columns = columns
     return {
       // 高级搜索 展开/关闭
       advanced: false,
+      // 合同状态：0=全部、1=正常、2=延期、3=终止
+      contractStatusOptions: [
+        {
+          value: 0,
+          text: '全部'
+        },
+        {
+          value: 1,
+          text: '正常'
+        },
+        {
+          value: 2,
+          text: '延期'
+        },
+        {
+          value: 3,
+          text: '终止'
+        }
+      ],
       // 查询参数
       queryParam: {
         contractStatus: '',
@@ -182,9 +295,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table-page-search-wrapper {
-  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
-  }
-}
 </style>

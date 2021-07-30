@@ -69,7 +69,6 @@ export default {
       }
     }
     window.onbeforeunload = function () {
-      alert(123123)
       beginTime = new Date().getTime()
     }
   },
@@ -85,7 +84,6 @@ export default {
           logout().then(() => {
             window.localStorage.removeItem('access_token')
             window.localStorage.setItem('toLogout', true)
-            this.$message.success('退出登录成功')
             this.$router.push({ name: 'login' })
           })
         },

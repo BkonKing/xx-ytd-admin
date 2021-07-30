@@ -51,7 +51,8 @@ import {
   LocaleProvider,
   Tree,
   TreeSelect,
-  Cascader
+  Cascader,
+  Empty
 } from 'ant-design-vue'
 import Viser from 'viser-vue'
 
@@ -117,6 +118,7 @@ Vue.use(LocaleProvider)
 Vue.use(Tree)
 Vue.use(TreeSelect)
 Vue.use(Cascader)
+Vue.use(Empty)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message

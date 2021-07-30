@@ -99,7 +99,7 @@
         </span>
       </s-table>
     </a-card>
-    <log-list :typeId="10" :sourceId="id"></log-list>
+    <log-list :typeId="10" :sourceId="projectId"></log-list>
   </div>
 </template>
 

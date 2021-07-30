@@ -18,7 +18,8 @@ export default {
       component: () => import('@/views/project/index'),
       meta: {
         title: '项目列表',
-        hidden: true
+        hidden: true,
+        keepAlive: true
       }
     },
     {

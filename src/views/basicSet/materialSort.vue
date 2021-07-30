@@ -65,21 +65,20 @@
                   placeholder="名称"
                 ></a-input>
                 <a-select
-                   v-model="item.unit"
-                    mode="tags"
-                    style="width: 350px"
-                    :token-separators="[',']"
-
+                  v-model="item.unit"
+                  mode="tags"
+                  style="width: 350px"
+                  :token-separators="[',']"
+                  placeholder="单位"
+                >
+                  <a-select-option
+                    v-for="(item, index) in selectList"
+                    :key="item.id + ''"
+                    :disabled="index === 0"
                   >
-                    <a-select-option
-                      v-for="(item,index) in selectList"
-                      :key="item.id+''"
-                      :disabled='index===0'
-
-                    >
-                      {{item.dw}}
-                    </a-select-option>
-                  </a-select>
+                    {{ item.dw }}
+                  </a-select-option>
+                </a-select>
                 <a-input
                   v-model="item.listOrder"
                   style="width:120px"
@@ -133,19 +132,18 @@
                     placeholder="名称"
                   ></a-input>
                   <a-select
-                   v-model="item.unit"
+                    v-model="item.unit"
                     mode="tags"
                     style="width: 350px"
                     :token-separators="[',']"
-
+                    placeholder="单位"
                   >
                     <a-select-option
-                      v-for="(item,index) in selectList"
-                      :key="item.id+''"
-                      :disabled='index===0'
-
+                      v-for="(item, index) in selectList"
+                      :key="item.id + ''"
+                      :disabled="index === 0"
                     >
-                      {{item.dw}}
+                      {{ item.dw }}
                     </a-select-option>
                   </a-select>
                   <a-input
@@ -176,21 +174,20 @@
                   placeholder="名称"
                 ></a-input>
                 <a-select
-                   v-model="item.unit"
-                    mode="tags"
-                    style="width: 350px"
-                    :token-separators="[',']"
-
+                  v-model="item.unit"
+                  mode="tags"
+                  style="width: 350px"
+                  :token-separators="[',']"
+                  placeholder="单位"
+                >
+                  <a-select-option
+                    v-for="(item, index) in selectList"
+                    :key="item.id + ''"
+                    :disabled="index === 0"
                   >
-                    <a-select-option
-                      v-for="(item,index) in selectList"
-                      :key="item.id+''"
-                      :disabled='index===0'
-
-                    >
-                      {{item.dw}}
-                    </a-select-option>
-                  </a-select>
+                    {{ item.dw }}
+                  </a-select-option>
+                </a-select>
                 <a-input
                   v-model="item.listOrder"
                   style="width:120px"
@@ -242,19 +239,18 @@
                     placeholder="名称"
                   ></a-input>
                   <a-select
-                   v-model="item.unit"
+                    v-model="item.unit"
                     mode="tags"
                     style="width: 350px"
                     :token-separators="[',']"
-
+                    placeholder="单位"
                   >
                     <a-select-option
-                      v-for="(item,index) in selectList"
-                      :key="item.id+''"
-                      :disabled='index===0'
-
+                      v-for="(item, index) in selectList"
+                      :key="item.id + ''"
+                      :disabled="index === 0"
                     >
-                      {{item.dw}}
+                      {{ item.dw }}
                     </a-select-option>
                   </a-select>
                   <a-input
@@ -284,22 +280,21 @@
                   style="width:120px"
                   placeholder="名称"
                 ></a-input>
-               <a-select
-                   v-model="item.unit"
-                    mode="tags"
-                    style="width: 350px"
-                    :token-separators="[',']"
-
+                <a-select
+                  v-model="item.unit"
+                  mode="tags"
+                  style="width: 350px"
+                  :token-separators="[',']"
+                  placeholder="单位"
+                >
+                  <a-select-option
+                    v-for="(item, index) in selectList"
+                    :key="item.id + ''"
+                    :disabled="index === 0"
                   >
-                    <a-select-option
-                      v-for="(item,index) in selectList"
-                      :key="item.id+''"
-                      :disabled='index===0'
-
-                    >
-                      {{item.dw}}
-                    </a-select-option>
-                  </a-select>
+                    {{ item.dw }}
+                  </a-select-option>
+                </a-select>
                 <a-input
                   v-model="item.listOrder"
                   style="width:120px"
@@ -367,7 +362,12 @@ export default {
       inputArr3: [],
       initBol: true,
       showInit: true,
-      selectList: [{ id: Math.random() * 999, dw: '可输入单个词，结尾加enter键自动创建一个单位' }]
+      selectList: [
+        {
+          id: Math.random() * 999,
+          dw: '可输入单个词，结尾加enter键自动创建一个单位'
+        }
+      ]
     }
   },
   watch: {
@@ -406,27 +406,34 @@ export default {
   methods: {
     // 创建初始角色
     async initSave () {
-      const arr = this.inputArr3.map(item => {
-        let id = item.id
-        let parentId = item.parentId
-        if (!parentId) {
-          id = 0
-          parentId = 0
-        }
-        return {
-          id,
-          categoryNo: item.categoryNo,
-          categoryName: item.categoryName,
-          unit: item.unit,
-          listOrder: item.listOrder,
-          parentId
-        }
-      }).filter(item => item.categoryName && item.categoryNo)
+      const arr = this.inputArr3
+        .map(item => {
+          let id = item.id
+          let parentId = item.parentId
+          if (!parentId) {
+            id = 0
+            parentId = 0
+          }
+          return {
+            id,
+            categoryNo: item.categoryNo,
+            categoryName: item.categoryName,
+            unit: item.unit,
+            listOrder: item.listOrder,
+            parentId
+          }
+        })
+        .filter(item => item.categoryName && item.categoryNo)
       if (!arr || arr.length === 0) {
         this.$message.warning('请输入物料信息')
         return
       }
+      if (!arr.every(item => item.unit && item.unit.length)) {
+        this.$message.warning('请为物料设置单位')
+        return
+      }
       const res = await toUpdateBatchMaterial({ category: arr })
+      this.inputArr3 = res.data
       this.getData()
       this.$nextTick(() => {
         this.initBol = true
@@ -467,8 +474,12 @@ export default {
       })
       console.log('第一个', menus)
       const arr = this.inputArr2.filter(item => {
-        return item.categoryName && item.categoryNo
+        return item.categoryName && item.categoryNo && item.unit && item.unit.length
       })
+      if (arr.every(item => item.unit && item.unit.length)) {
+        this.$message.warning('请为物料设置单位')
+        return
+      }
       arr.forEach(item => {
         item.parentId = menus[0].parentId
         item.id = 0
@@ -534,6 +545,10 @@ export default {
         const arr = this.inputArr.filter(item => {
           return item.categoryName && item.categoryNo
         })
+        if (!arr.every(item => item.unit && item.unit.length)) {
+          this.$message.warning('请为物料设置单位')
+          return
+        }
         arr.forEach(item => {
           item.parentId = menus[0].parentId
           item.id = 0
@@ -568,6 +583,10 @@ export default {
         const arr = this.inputArr.filter(item => {
           return item.categoryName && item.categoryNo
         })
+        if (!arr.every(item => item.unit && item.unit.length)) {
+          this.$message.warning('请为物料设置单位')
+          return
+        }
         arr.forEach(item => {
           item.parentId = this.parentId
           item.id = 0
@@ -802,7 +821,7 @@ export default {
     }
   }
   .addArea {
-    width: 544px;
+    width: 100%;
     height: 32px;
     border-radius: 4px;
     border: 2px dashed #eeeeee;

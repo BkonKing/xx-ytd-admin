@@ -19,18 +19,21 @@
                   <span v-else-if="+shortInfo.tz.count > 99">99+</span>
                 </div>
               </template>
-              <a-row
-                v-for="(item, index) in shortInfo.tz.list"
-                :key="index"
-                class="message-item"
-                type="flex"
-                :class="{ 'is-read-message-item': item.isRead === '1' }"
-              >
-                <a-col flex="1" @click="openPage(item)">
-                  <div class="message-item-title">{{ item.title }}</div>
-                  <div class="message-item-content">{{ item.content }}</div>
-                </a-col>
-              </a-row>
+              <template v-if="shortInfo.tz.list && shortInfo.tz.list.length">
+                <a-row
+                  v-for="(item, index) in shortInfo.tz.list"
+                  :key="index"
+                  class="message-item"
+                  type="flex"
+                  :class="{ 'is-read-message-item': item.isRead === '1' }"
+                >
+                  <a-col flex="1" @click="openPage(item)">
+                    <div class="message-item-title">{{ item.title }}</div>
+                    <div class="message-item-content">{{ item.content }}</div>
+                  </a-col>
+                </a-row>
+              </template>
+              <a-empty v-else description="暂无通知" />
             </a-tab-pane>
             <a-tab-pane key="2">
               <template slot="tab">
@@ -42,24 +45,27 @@
                   <span v-else-if="+shortInfo.xx.count > 99">99+</span>
                 </div>
               </template>
-              <a-row
-                v-for="(item, index) in shortInfo.xx.list"
-                :key="index"
-                class="message-item"
-                type="flex"
-                :class="{ 'is-read-message-item': item.isRead === '1' }"
-              >
-                <a-col
-                  v-if="false"
-                  flex="32px"
-                  style="margin-right: 10px;"
-                  @click="openPage(item)"
-                ></a-col>
-                <a-col flex="1" @click="openPage(item)">
-                  <div class="message-item-title">{{ item.title }}</div>
-                  <div class="message-item-content">{{ item.content }}</div>
-                </a-col>
-              </a-row>
+              <template v-if="shortInfo.xx.list && shortInfo.xx.list.length">
+                <a-row
+                  v-for="(item, index) in shortInfo.xx.list"
+                  :key="index"
+                  class="message-item"
+                  type="flex"
+                  :class="{ 'is-read-message-item': item.isRead === '1' }"
+                >
+                  <a-col
+                    v-if="false"
+                    flex="32px"
+                    style="margin-right: 10px;"
+                    @click="openPage(item)"
+                  ></a-col>
+                  <a-col flex="1" @click="openPage(item)">
+                    <div class="message-item-title">{{ item.title }}</div>
+                    <div class="message-item-content">{{ item.content }}</div>
+                  </a-col>
+                </a-row>
+              </template>
+              <a-empty v-else description="暂无消息" />
             </a-tab-pane>
             <a-tab-pane key="3">
               <template slot="tab">
@@ -71,23 +77,28 @@
                   <span v-else-if="+shortInfo.db.count > 99">99+</span>
                 </div>
               </template>
-              <a-row
-                v-for="(item, index) in shortInfo.db.list"
-                :key="index"
-                class="message-item"
-                type="flex"
-                :class="{ 'is-read-message-item': item.isRead === '1' }"
-              >
-                <a-col flex="1" @click="openPage(item)">
-                  <div class="message-item-title">{{ item.title }}</div>
-                  <div class="message-item-content">{{ item.content }}</div>
-                </a-col>
-              </a-row>
+              <template v-if="shortInfo.db.list && shortInfo.db.list.length">
+                <a-row
+                  v-for="(item, index) in shortInfo.db.list"
+                  :key="index"
+                  class="message-item"
+                  type="flex"
+                  :class="{ 'is-read-message-item': item.isRead === '1' }"
+                >
+                  <a-col flex="1" @click="openPage(item)">
+                    <div class="message-item-title">{{ item.title }}</div>
+                    <div class="message-item-content">{{ item.content }}</div>
+                  </a-col>
+                </a-row>
+              </template>
+              <a-empty v-else description="暂无待办" />
             </a-tab-pane>
           </a-tabs>
         </div>
         <a-row class="message-btn-box" type="flex">
-          <a-col class="message-btn" :span="12" @click="clear">清除{{active | activeText}}</a-col>
+          <a-col class="message-btn" :span="12" @click="clear"
+            >清除{{ active | activeText }}</a-col
+          >
           <a-col class="message-btn" :span="12" @click="viewMore"
             >查看更多</a-col
           >
@@ -121,7 +132,7 @@ export default {
       shortInfo: '',
       count: 0,
       timer: null,
-      active: '1'
+      active: '3'
     }
   },
   watch: {
@@ -246,11 +257,11 @@ export default {
   .is-read-message-item {
     .message-item-title {
       font-size: 14px;
-      color: #0000003F;
+      color: #0000003f;
     }
     .message-item-content {
       font-size: 12px;
-      color: #0000003F;
+      color: #0000003f;
     }
   }
   .message-btn {
@@ -263,6 +274,10 @@ export default {
   .message-btn + .message-btn {
     border-left: 1px solid #e8e8e8;
   }
+}
+/deep/ .ant-empty {
+  height: 100%;
+  padding-top: 85px;
 }
 </style>
 

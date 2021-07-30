@@ -45,7 +45,7 @@
             <advanced-form
               v-model="advanced"
               :md="isParentCompany ? 8 : 16"
-              @reset="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
+              @reset="reset"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -84,6 +84,7 @@ import {
 } from '@/components'
 import { changeJSON2QueryString } from '@/utils/util'
 import { getStockReport } from '@/api/report'
+import setCompanyId from '@/mixins/setCompanyId'
 
 const columns = [
   {
@@ -150,6 +151,7 @@ const columns = [
 
 export default {
   name: 'StockTab',
+  mixins: [setCompanyId],
   components: {
     STable,
     ProjectSelect,
@@ -198,11 +200,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table-page-search-wrapper {
-  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
-  }
-}
 /deep/ .ant-table-thead > tr > th,
 /deep/ .ant-table-tbody > tr > td {
   padding-right: 0;

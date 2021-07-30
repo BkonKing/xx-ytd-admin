@@ -29,29 +29,27 @@
                 <project-select v-model="queryParam.projectId"></project-select>
               </a-form-item>
             </a-col>
-            <template v-if="advanced">
-              <a-col v-if="isParentCompany" :md="8" :sm="24">
-                <a-form-item label="所属公司">
-                  <company-select
-                    v-model="queryParam.companyId"
-                  ></company-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="类型">
-                  <supplier-type-select
-                    v-model="queryParam.supplierType"
-                  ></supplier-type-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="供应商">
-                  <a-input
-                    v-model="queryParam.searchText"
-                    placeholder="ID、名称"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
+            <a-col v-if="isParentCompany" :md="8" :sm="24">
+              <a-form-item label="所属公司">
+                <company-select v-model="queryParam.companyId"></company-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="类型">
+                <supplier-type-select
+                  v-model="queryParam.supplierType"
+                ></supplier-type-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="供应商">
+                <a-input
+                  v-model="queryParam.searchText"
+                  placeholder="ID、名称"
+                ></a-input>
+              </a-form-item>
+            </a-col>
+            <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="供应物料">
                   <material-type-select
@@ -59,6 +57,8 @@
                   ></material-type-select>
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="创建时间">
                   <a-range-picker
@@ -68,35 +68,12 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col
-              :md="(!advanced && 8) || (isParentCompany ? 16 : 24)"
-              :sm="24"
-            >
-              <span
-                class="table-page-search-submitButtons"
-                :style="
-                  (advanced && { float: 'right', overflow: 'hidden' }) || {}
-                "
-              >
-                <a-button type="primary" @click="$refs.table.refresh(true)"
-                  >查询</a-button
-                >
-                <a-button
-                  style="margin-left: 8px"
-                  @click="
-                    () => {
-                      this.queryParam = {};
-                      this.$refs.table.refresh(true);
-                    }
-                  "
-                  >重置</a-button
-                >
-                <a @click="toggleAdvanced" style="margin-left: 8px">
-                  {{ advanced ? "收起" : "展开" }}
-                  <a-icon :type="advanced ? 'up' : 'down'" />
-                </a>
-              </span>
-            </a-col>
+            <advanced-form
+              v-model="advanced"
+              :md="isParentCompany ? 16 : 24"
+              @search="$refs.table.refresh(true)"
+              @reset="reset"
+            ></advanced-form>
           </a-row>
         </a-form>
       </div>
@@ -140,14 +117,16 @@
             <a @click="goDetail(record)">查看</a>
             <a
               v-if="
-                permissions.UpdatePermission && userCompanyId == record.companyId
+                permissions.UpdatePermission &&
+                  userCompanyId == record.companyId
               "
               @click="goEdit(record)"
               >编辑</a
             >
             <a
               v-if="
-                permissions.RemovePermission && userCompanyId == record.companyId
+                permissions.RemovePermission &&
+                  userCompanyId == record.companyId
               "
               @click="handleRemove(record)"
               >删除</a
@@ -191,7 +170,8 @@ import {
   CompanySelect,
   SupplierTypeSelect,
   MaterialTypeSelect,
-  TimeWait
+  TimeWait,
+  AdvancedForm
 } from '@/components'
 import {
   getSupplierList,
@@ -200,6 +180,8 @@ import {
   auditBatchSupp
 } from '@/api/supplier'
 import { getIsAuditSet } from '@/api/common'
+import setCompanyId from '@/mixins/setCompanyId'
+import beforeRouteLeave from '@/mixins/beforeRouteLeave'
 
 const checkTimec = [
   {
@@ -218,6 +200,7 @@ const checkStatusC = [
 
 export default {
   name: 'SupplierIndex',
+  mixins: [setCompanyId, beforeRouteLeave],
   components: {
     STable,
     CheckForm,
@@ -225,7 +208,8 @@ export default {
     CompanySelect,
     SupplierTypeSelect,
     MaterialTypeSelect,
-    TimeWait
+    TimeWait,
+    AdvancedForm
   },
   data () {
     return {
@@ -365,9 +349,6 @@ export default {
         isStatus && this.columns.shift()
       }
     },
-    toggleAdvanced () {
-      this.advanced = !this.advanced
-    },
     openCheck ({ id, supplierName }) {
       if (id) {
         this.checkId = id
@@ -467,9 +448,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table-page-search-wrapper {
-  /deep/ .ant-form-inline .ant-form-item > .ant-form-item-label {
-    width: 80px;
-  }
-}
 </style>

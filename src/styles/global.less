@@ -51,8 +51,9 @@ body {
 }
 // 数据列表 搜索条件
 .table-page-search-wrapper {
-  /deep/ .ant-form-item-label {
-    min-width: 88px;
+  .ant-form-inline .ant-form-item > .ant-form-item-label {
+    min-width: 80px;
+    flex-shrink: 0;
   }
   .ant-form-inline {
     .ant-form-item {
@@ -62,6 +63,7 @@ body {
 
       .ant-form-item-control-wrapper {
         flex: 1 1;
+        width: 0;
         display: inline-block;
         vertical-align: middle;
       }
@@ -237,4 +239,8 @@ div.ant-pro-grid-content.wide {
 // 强制不换行
 .nowrap {
   white-space: nowrap;
+}
+
+.ant-card-body > .ant-form-horizontal:last-child > .ant-form-item:last-child {
+  margin-bottom: 0;
 }

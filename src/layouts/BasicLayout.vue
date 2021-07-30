@@ -15,7 +15,7 @@
     <template v-slot:menuHeaderRender>
       <div>
         <logo-svg />
-        <h1>{{ userInfo.shortCompanyName ||title }}</h1>
+        <h1>{{ userInfo.shortCompanyName || title }}</h1>
       </div>
     </template>
     <!-- 1.0.0+ 版本 pro-layout 提供 API,
@@ -63,9 +63,11 @@ import GlobalFooter from '@/components/GlobalFooter'
 import LogoSvg from '../assets/logo.svg?inline'
 import { mapGetters } from 'vuex'
 import { getMenu } from '@/api/user'
+import { appMixin } from '@/store/mixin'
 
 export default {
   name: 'BasicLayout',
+  mixins: [appMixin],
   components: {
     // SettingDrawer,
     RightContent,
@@ -105,10 +107,7 @@ export default {
         hideCopyButton: false
       },
       // 媒体查询
-      query: {},
-
-      // 是否手机模式
-      isMobile: false
+      query: {}
     }
   },
   computed: {
