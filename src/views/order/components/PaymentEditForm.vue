@@ -32,7 +32,7 @@
             {{ item.materialNo }} {{ item.materialName }}
             <div class="brand">{{ item.brand }} {{ item.model }}</div>
           </a-col>
-          <a-col flex="140px">未付￥{{ parseFloat(item.unpaid) || parseFloat(item.paid) || 0 }}</a-col>
+          <a-col flex="140px">未付￥{{ parseFloat(item.unpaid) || 0 }}</a-col>
           <a-col flex="180px">
             <a-input
               v-if="+item.unpaid || +item.paid"
@@ -60,10 +60,10 @@
     <a-form-model-item label="付款凭证" prop="payPz">
       <upload-image v-model="form.payPz" maxLength="8"></upload-image>
     </a-form-model-item>
-    <a-form-model-item label="是否开票" prop="isKp" required>
+    <a-form-model-item label="开票情况" prop="isKp" required>
       <a-select v-model="form.isKp" placeholder="请选择">
-        <a-select-option value="1">是</a-select-option>
-        <a-select-option value="0">否</a-select-option>
+        <a-select-option value="1">已开</a-select-option>
+        <a-select-option value="0">未开</a-select-option>
       </a-select>
     </a-form-model-item>
     <a-form-model-item label="开票凭证" prop="kpPz">
@@ -75,7 +75,8 @@
 <script>
 import { UploadImage } from '@/components'
 import { getPayType } from '@/api/contract'
-// import { GreaterZero } from '@/utils/formValidator'
+import NP from 'number-precision'
+
 export default {
   name: 'PaymentEditForm',
   components: {
@@ -85,17 +86,20 @@ export default {
     material: {
       type: Array,
       default: () => []
-    },
-    unpaid: {
-      type: [String, Number],
-      default: ''
     }
   },
   computed: {
+    unpaid () {
+      let num = 0
+      this.payDetailed.forEach(obj => {
+        num = NP.plus(num, obj.unpaid || 0)
+      })
+      return num
+    },
     total () {
       let num = 0
       this.payDetailed.forEach(obj => {
-        num += parseFloat(obj.paid) || 0
+        num = NP.plus(num, obj.paid || 0)
       })
       return num
     }
@@ -112,7 +116,7 @@ export default {
         //   { required: true, message: '请输入付款金额' },
         //   { validator: GreaterZero, trigger: 'blur' }
         // ],
-        isKp: [{ required: true, message: '请选择是否开票' }]
+        isKp: [{ required: true, message: '请选择开票情况' }]
       },
       payTypeOptions: [],
       payDetailed: this.material
@@ -148,10 +152,10 @@ export default {
     },
     setFieldsValue (data) {
       this.form = data
-      console.log(data.payDetailed)
       this.payDetailed = this.material.map((obj, index) => {
-        console.log(data.payDetailed[index].paid)
-        obj.paid = parseFloat(data.payDetailed[index].paid)
+        const paid = data.payDetailed[index].paid
+        obj.unpaid = NP.plus(obj.unpaid, paid)
+        obj.paid = parseFloat(paid)
         return obj
       })
     },
@@ -164,6 +168,7 @@ export default {
     resetFields () {
       this.$refs.projectForm.resetFields()
       this.form = {}
+      this.payDetailed = []
     }
   },
   watch: {

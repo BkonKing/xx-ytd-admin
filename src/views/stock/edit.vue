@@ -215,6 +215,7 @@ export default {
         // stockNum: [{ required: true, message: '请填写' }],
       },
       tableData: [],
+      reTableIndexs: [],
       moment
     }
   },
@@ -363,6 +364,14 @@ export default {
           api(params).then(() => {
             this.$message.success('提交成功')
             this.$router.go(-1)
+          }).catch((res) => {
+            if (res.code === 202) {
+              const text = res.date.map(index => index + 1)
+              // this.reTableIndexs = res.date
+              this.$message.warning(`物料第${text.join('，')}条重复创建，请合并为一行`)
+            } else {
+              this.$message.error(res.message)
+            }
           })
         })
         .catch(() => {})

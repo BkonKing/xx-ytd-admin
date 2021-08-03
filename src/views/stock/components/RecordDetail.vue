@@ -39,7 +39,7 @@
       <a-descriptions-item label="物料" :span="2">
         种类{{ data.materiaCount }} 数量{{ data.materiaNum }}
       </a-descriptions-item>
-      <a-descriptions-item v-if="!isRK" label="上传凭证" :span="2">
+      <a-descriptions-item label="上传凭证" :span="2">
         <t-image :images="data.stockPz"></t-image>
       </a-descriptions-item>
     </a-descriptions>

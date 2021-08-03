@@ -281,7 +281,7 @@ export default {
       toUpdateCompany(data)
         .then(({ success }) => {
           if (success) {
-            this.$message.success('修改项目成功')
+            this.$message.success('提交成功')
             this.getData()
             this.visible = false
           }

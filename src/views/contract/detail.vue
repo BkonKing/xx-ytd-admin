@@ -88,14 +88,14 @@
         </a-col>
         <a-col flex="1">
           <info
-            :title="`已收票（${info.orderInvoicedNum}个订单）`"
+            :title="`已开票（${info.orderInvoicedNum}个订单）`"
             :value="`￥${info.orderInvoicedMoney}`"
             :bordered="true"
           />
         </a-col>
         <a-col flex="1">
           <info
-            :title="`未收票付款（${info.orderUnInvoicedNum}个订单）`"
+            :title="`未开票付款（${info.orderUnInvoicedNum}个订单）`"
             :value="`￥${info.orderUnInvoicedMoney}`"
           />
         </a-col>

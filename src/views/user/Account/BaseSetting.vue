@@ -6,8 +6,8 @@
           <a-form-model-item label="姓名" prop="realName" required>
             <a-input
               v-model="form.realName"
-              :maxLength="10"
-              placeholder="请输入1~10个字符"
+              :maxLength="15"
+              placeholder="请输入1~15个字"
             />
           </a-form-model-item>
           <a-form-model-item label="手机号" prop="mobile">
@@ -34,7 +34,7 @@
             <a-input v-model="form.address" :maxLength="100" />
           </a-form-model-item>
           <a-form-model-item>
-            <a-button type="primary" @click="handleSubmit">更新信息</a-button>
+            <a-button type="primary" :disabled="!isChange" @click="handleSubmit">更新信息</a-button>
           </a-form-model-item>
         </a-form-model>
       </a-col>
@@ -80,10 +80,19 @@ export default {
       },
       rules: {
         realName: [{ required: true, message: '请填写' }]
-      }
+      },
+      isChange: false
     }
   },
-  mounted () {
+  watch: {
+    form: {
+      handler (val) {
+        val && (this.isChange = true)
+      },
+      deep: true
+    }
+  },
+  created () {
     this.form = this.$store.getters.userInfo
     if (this.form.provinceId) {
       this.$set(this.form, 'area', [
@@ -92,6 +101,12 @@ export default {
         this.form.areaId
       ])
     }
+    if (!this.form.avatar) {
+      this.form.avatar = 'https://ytdwz.tosolomo.com/library/img/user-avatar.png'
+    }
+    this.$nextTick(() => {
+      this.isChange = false
+    })
   },
   methods: {
     setavatar (url) {
@@ -114,6 +129,7 @@ export default {
         this.form.areaId = area[2]
       }
       updateBasicSet(this.form).then(() => {
+        this.isChange = false
         this.$message.success('更新成功')
         this.$store.dispatch('GetInfo')
       })

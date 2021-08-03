@@ -1,15 +1,25 @@
 <template>
   <a-card :bordered="false" title="付款信息" style="margin-top: 24px;">
-    <s-table ref="table" size="default" :columns="columns" :data="loadData">
+    <s-table
+      ref="table"
+      rowKey="id"
+      size="default"
+      :columns="columns"
+      :data="loadData"
+    >
       <span slot="index" slot-scope="text, record, index">
         {{ data.records.length - index }}
       </span>
       <span slot="payPz" slot-scope="text, record">
-        <a v-if="+text !== 0" @click="previewImage(record.payPz)">{{ text }}张</a>
+        <a v-if="+text !== 0" @click="previewImage(record.payPz)"
+          >{{ text }}张</a
+        >
         <template v-else>--</template>
       </span>
       <span slot="kpPz" slot-scope="text, record">
-        <a v-if="+text !== 0" @click="previewImage(record.kpPz)">{{ text }}张</a>
+        <a v-if="+text !== 0" @click="previewImage(record.kpPz)"
+          >{{ text }}张</a
+        >
         <template v-else>--</template>
       </span>
       <span class="table-action" slot="action" slot-scope="text, recode">
@@ -217,7 +227,7 @@ export default {
       updateOrderPay({ ...data, orderId: this.id })
         .then(({ success }) => {
           if (success) {
-            this.$message.success('修改项目成功')
+            this.$message.success('提交成功')
             this.$refs.table.refresh()
             this.$emit('changePay')
             this.visible = false

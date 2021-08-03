@@ -100,7 +100,7 @@
         </div>
         <div style="width: 20%;">￥{{ payData.data.allMoney }}</div>
         <div>
-          已开{{ payData.kpNum }} (￥{{ payData.data.kpMoney }})， 未开{{
+          已开{{ payData.data.kpNum }} (￥{{ payData.data.kpMoney }})， 未开{{
             payData.data.unKpNum
           }}
           (￥{{ payData.data.unKpMoney }})

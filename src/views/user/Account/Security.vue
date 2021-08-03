@@ -12,10 +12,13 @@
             placeholder="请输入"
             :maxLength="18"
           />
-          <div>限6~18个字符</div>
+          <div class="pwd-alert">限6~18个字符</div>
         </a-form-model-item>
         <a-form-model-item>
-          <a-button type="primary" :disabled="!form.pwd" @click="handleSubmit"
+          <a-button
+            type="primary"
+            :disabled="!form.pwd || !isChange"
+            @click="handleSubmit"
             >更新信息</a-button
           >
         </a-form-model-item>
@@ -29,14 +32,21 @@ export default {
   data () {
     return {
       form: {
-        account: ''
+        account: '',
+        pwd: ''
       },
       rules: {
         pwd: [
           { required: true, message: '必填' },
           { min: 6, message: '必须大于6位' }
         ]
-      }
+      },
+      isChange: false
+    }
+  },
+  watch: {
+    'form.pwd' (val) {
+      val && (this.isChange = true)
     }
   },
   mounted () {
@@ -55,10 +65,17 @@ export default {
     updateSecuritySet () {
       updateSecuritySet(this.form).then(() => {
         this.$message.success('更新成功')
+        this.isChange = false
       })
     }
   }
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.pwd-alert {
+  margin-top: 4px;
+  line-height: 22px;
+  color: #00000072;
+}
+</style>

@@ -19,8 +19,8 @@
           </a-form-item>
         </standard-form-row>
         <standard-form-row title="其它选项" last>
-          <a-row type="flex" :gutter="48">
-            <a-col flex="1">
+          <a-row :gutter="48">
+            <a-col :span="8">
               <a-form-item label="选择项目">
                 <project-select
                   v-model="queryParam.projectId"
@@ -32,7 +32,7 @@
                 ></project-select>
               </a-form-item>
             </a-col>
-            <a-col v-if="isParentCompany" flex="1">
+            <a-col v-if="isParentCompany" :span="8">
               <a-form-item label="选择公司">
                 <company-select
                   v-model="queryParam.companyId"
@@ -44,7 +44,7 @@
                 ></company-select>
               </a-form-item>
             </a-col>
-            <a-col flex="1">
+            <a-col :span="8">
               <a-form-item label="选择月份">
                 <a-month-picker
                   v-model="queryParam.month"
@@ -259,9 +259,9 @@
                   资<br />金<br />流<br />出
                 </td>
                 <td>{{ tr.categoryName }}</td>
-                <td>{{ tr.masterBudgets || 0 }}</td>
+                <td>{{ tr.masterBudgets }}</td>
                 <td>{{ tr.payableLastMonthTotal }}</td>
-                <td>{{ tr.monthBudget || 0 }}</td>
+                <td>{{ tr.monthBudget }}</td>
                 <td>{{ tr.monthPayTotal }}</td>
                 <td>{{ tr.allPayTotal }}</td>
                 <td>{{ tr.monthBalance || "--" }}</td>
@@ -424,7 +424,7 @@ export default {
     },
     // 动态渲染要禁用的日期
     disabledDate (current) {
-      return current && current > moment().endOf('month')
+      return current && current > moment().date(0)
     },
     // 导出
     openExport () {
@@ -444,7 +444,15 @@ export default {
         let monthBalance = 0
         let budgetsBalance = 0
         let payableLastMonthTotal = 0
+        let isNullMasterBudgets = true // 所有的预算金额全部都是空字符串
+        let isNullMonthBudget = true // 所有的本月计划数都是空字符串
+        let isNullMonthBalance = true // 整体本月差异全部都是——
+        let isNullBudgetsBalance = true // 整体预算差异金额全部都是——
         this.completeData.forEach(obj => {
+          obj.masterBudgets !== '' && (isNullMasterBudgets = false)
+          obj.monthBudget !== '' && (isNullMonthBudget = false)
+          obj.monthBalance !== '——' && (isNullMonthBalance = false)
+          obj.budgetsBalance !== '——' && (isNullBudgetsBalance = false)
           masterBudgets = NP.plus(
             masterBudgets,
             parseFloat(obj.masterBudgets) || 0
@@ -465,25 +473,25 @@ export default {
           )
           monthBalance = NP.plus(
             monthBalance,
-            parseFloat(obj.monthBalance) || '0'
+            parseFloat(obj.monthBalance) || 0
           )
           budgetsBalance = NP.plus(
             budgetsBalance,
-            parseFloat(obj.budgetsBalance) || '0'
+            parseFloat(obj.budgetsBalance) || 0
           )
           payableLastMonthTotal = NP.plus(
             payableLastMonthTotal,
             parseFloat(obj.payableLastMonthTotal) || 0
           )
         })
-        this.masterBudgets = masterBudgets
+        this.masterBudgets = isNullMasterBudgets ? '' : masterBudgets
         this.payableTotal = payableTotal
-        this.monthBudget = monthBudget
+        this.monthBudget = isNullMonthBudget ? '' : monthBudget
         this.monthPayTotal = monthPayTotal
         this.allPayTotal = allPayTotal
         this.allUnPayTotal = allUnPayTotal
-        this.monthBalance = monthBalance
-        this.budgetsBalance = budgetsBalance
+        this.monthBalance = isNullMonthBalance ? '——' : monthBalance
+        this.budgetsBalance = isNullBudgetsBalance ? '——' : budgetsBalance
         this.payableLastMonthTotal = payableLastMonthTotal
       }
     }
@@ -515,6 +523,7 @@ export default {
   word-break: break-all;
   padding: 8px;
   overflow-wrap: break-word;
+  text-align: center;
 }
 .print-table > thead > .print-thead-tr-border > th,
 .print-table > tbody > .print-tbody-tr-border > td {
@@ -542,6 +551,7 @@ export default {
   padding: 0;
   height: 22px;
   border: none;
+  text-align: center;
   &:focus {
     box-shadow: none;
   }

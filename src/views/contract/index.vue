@@ -275,7 +275,9 @@ export default {
       // 查询参数
       queryParam: {
         time: [],
-        companyId: ''
+        companyId: undefined,
+        status: undefined,
+        contractStatus: undefined
       },
       columns: [
         {
@@ -472,7 +474,12 @@ export default {
       }
     },
     reset () {
-      this.queryParam = {}
+      this.queryParam = {
+        time: [],
+        companyId: undefined,
+        status: undefined,
+        contractStatus: undefined
+      }
       this.changeStatus()
       this.setcompanyId()
       this.$refs.table.refresh(true)

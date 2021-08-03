@@ -137,7 +137,7 @@ const columns = [
   },
   {
     title: '供应商ID',
-    dataIndex: 'supplierId',
+    dataIndex: 'supplierIdv',
     width: '9%'
   },
   {

@@ -87,6 +87,9 @@ export function addStockCk (data) {
   return request({
     url: stock.addStockCk,
     method: 'post',
+    headers: {
+      noToast: true
+    },
     data
   })
 }
@@ -96,6 +99,9 @@ export function updateStockCk (data) {
   return request({
     url: stock.updateStockCk,
     method: 'post',
+    headers: {
+      noToast: true
+    },
     data
   })
 }

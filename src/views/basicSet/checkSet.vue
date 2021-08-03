@@ -17,39 +17,47 @@
         <a-form-model-item label="审核人员">
           <div class="text">同一级审核，多人时，任意一人同意即可</div>
           <div class="checkInputs">
-            <div
-              class="item"
-              v-for="(item, index) in orderCheck.arr"
-              :key="index"
-            >
-              <a-input
-                :disabled="true"
-                :defaultValue="index | jibie"
-                style="width:88px"
-              ></a-input>
-              <span style="padding:0 10px">--</span>
-              <a-select
-                v-model="item.level"
-                mode="multiple"
-                style="width:330px"
-                placeholder="请选择"
-                option-label-prop="label"
+            <a-form-model ref="orderCheck" :model="orderCheck">
+              <div
+                class="item"
+                v-for="(item, index) in orderCheck.arr"
+                :key="index"
               >
-                <a-select-option
-                  v-for="(item, i) in orderPeopleObj[index]"
-                  :key="i"
-                  :value="item.id"
-                  :label="item.realName"
+                <a-input
+                  :disabled="true"
+                  :defaultValue="index | jibie"
+                  style="width:88px"
+                ></a-input>
+                <span class="separate-span">--</span>
+                <a-form-model-item
+                  :prop="`arr.${index}.level`"
+                  :rules="checkRules"
+                  style="margin-bottom: 0;"
                 >
-                  {{ item.realName }}
-                </a-select-option>
-              </a-select>
-              <a-icon
-                type="minus-circle"
-                class="icon"
-                @click="del(index, 'orderCheck')"
-              />
-            </div>
+                  <a-select
+                    v-model="item.level"
+                    mode="multiple"
+                    style="width:330px"
+                    placeholder="请选择"
+                    option-label-prop="label"
+                  >
+                    <a-select-option
+                      v-for="(item, i) in orderPeopleObj[index]"
+                      :key="i"
+                      :value="item.id"
+                      :label="item.realName"
+                    >
+                      {{ item.realName }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-model-item>
+                <a-icon
+                  type="minus-circle"
+                  class="icon"
+                  @click="del(index, 'orderCheck')"
+                />
+              </div>
+            </a-form-model>
           </div>
           <div
             class="addArea"
@@ -68,39 +76,47 @@
         <a-form-model-item label="审核人员">
           <div class="text">同一级审核，多人时，任意一人同意即可</div>
           <div class="checkInputs">
-            <div
-              class="item"
-              v-for="(item, index) in contractCheck.arr"
-              :key="index"
-            >
-              <a-input
-                :disabled="true"
-                :defaultValue="index | jibie"
-                style="width:88px"
-              ></a-input>
-              <span style="padding:0 10px">--</span>
-              <a-select
-                v-model="item.level"
-                mode="multiple"
-                style="width:330px"
-                placeholder="请选择"
-                option-label-prop="label"
+            <a-form-model ref="contractCheck" :model="contractCheck">
+              <div
+                class="item"
+                v-for="(item, index) in contractCheck.arr"
+                :key="index"
               >
-                <a-select-option
-                  v-for="(item, index) in contractPeoPleObj[index]"
-                  :key="index"
-                  :value="item.id"
-                  :label="item.realName"
+                <a-input
+                  :disabled="true"
+                  :defaultValue="index | jibie"
+                  style="width:88px"
+                ></a-input>
+                <span class="separate-span">--</span>
+                <a-form-model-item
+                  :prop="`arr.${index}.level`"
+                  :rules="checkRules"
+                  style="margin-bottom: 0;"
                 >
-                  {{ item.realName }}
-                </a-select-option>
-              </a-select>
-              <a-icon
-                type="minus-circle"
-                class="icon"
-                @click="del(index, 'contractCheck')"
-              />
-            </div>
+                  <a-select
+                    v-model="item.level"
+                    mode="multiple"
+                    style="width:330px"
+                    placeholder="请选择"
+                    option-label-prop="label"
+                  >
+                    <a-select-option
+                      v-for="(item, index) in contractPeoPleObj[index]"
+                      :key="index"
+                      :value="item.id"
+                      :label="item.realName"
+                    >
+                      {{ item.realName }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-model-item>
+                <a-icon
+                  type="minus-circle"
+                  class="icon"
+                  @click="del(index, 'contractCheck')"
+                />
+              </div>
+            </a-form-model>
           </div>
           <div
             class="addArea"
@@ -119,39 +135,47 @@
         <a-form-model-item label="审核人员">
           <div class="text">同一级审核，多人时，任意一人同意即可</div>
           <div class="checkInputs">
-            <div
-              class="item"
-              v-for="(item, index) in supplierCheck.arr"
-              :key="index"
-            >
-              <a-input
-                :disabled="true"
-                :defaultValue="index | jibie"
-                style="width:88px"
-              ></a-input>
-              <span style="padding:0 10px">--</span>
-              <a-select
-                v-model="item.level"
-                mode="multiple"
-                style="width:330px"
-                placeholder="请选择"
-                option-label-prop="label"
+            <a-form-model ref="supplierCheck" :model="supplierCheck">
+              <div
+                class="item"
+                v-for="(item, index) in supplierCheck.arr"
+                :key="index"
               >
-                <a-select-option
-                  v-for="(item, i) in supplierPeoPleObj[index]"
-                  :key="i"
-                  :value="item.id"
-                  :label="item.realName"
+                <a-input
+                  :disabled="true"
+                  :defaultValue="index | jibie"
+                  style="width:88px"
+                ></a-input>
+                <span class="separate-span">--</span>
+                <a-form-model-item
+                  :prop="`arr.${index}.level`"
+                  :rules="checkRules"
+                  style="margin-bottom: 0;"
                 >
-                  {{ item.realName }}
-                </a-select-option>
-              </a-select>
-              <a-icon
-                type="minus-circle"
-                class="icon"
-                @click="del(index, 'supplierCheck')"
-              />
-            </div>
+                  <a-select
+                    v-model="item.level"
+                    mode="multiple"
+                    style="width:330px"
+                    placeholder="请选择"
+                    option-label-prop="label"
+                  >
+                    <a-select-option
+                      v-for="(item, i) in supplierPeoPleObj[index]"
+                      :key="i"
+                      :value="item.id"
+                      :label="item.realName"
+                    >
+                      {{ item.realName }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-model-item>
+                <a-icon
+                  type="minus-circle"
+                  class="icon"
+                  @click="del(index, 'supplierCheck')"
+                />
+              </div>
+            </a-form-model>
           </div>
           <div
             class="addArea"
@@ -229,7 +253,11 @@ export default {
       bol: true,
       orderPeoPleList: [], // 订单审核人员
       contractPeoPleList: [], // 合同审核人员
-      supplierPeoPleList: [] // 供应商审核人员
+      supplierPeoPleList: [], // 供应商审核人员
+      checkRules: {
+        required: true,
+        message: '请选择审核人员'
+      }
     }
   },
   watch: {
@@ -299,38 +327,51 @@ export default {
     },
     // 保存
     save () {
-      this.$refs.form.validate(result => {
-        if (result) {
-          const setData = []
-          setData[0] = {}
-          setData[0].auditType = 1
-          setData[0].auditHours = this.form.auditHours1
-          const setData0 = this.convertData(this.orderCheck.arr)
-          Object.assign(setData[0], setData0)
+      Promise.all([
+        this.formValidate('form'),
+        this.formValidate('orderCheck'),
+        this.formValidate('contractCheck'),
+        this.formValidate('supplierCheck')
+      ]).then(() => {
+        const setData = []
+        setData[0] = {}
+        setData[0].auditType = 1
+        setData[0].auditHours = this.form.auditHours1
+        const setData0 = this.convertData(this.orderCheck.arr)
+        Object.assign(setData[0], setData0)
 
-          setData[1] = {}
-          setData[1].auditType = 2
-          setData[1].auditHours = this.form.auditHours2
-          const setData1 = this.convertData(this.contractCheck.arr)
-          Object.assign(setData[1], setData1)
+        setData[1] = {}
+        setData[1].auditType = 2
+        setData[1].auditHours = this.form.auditHours2
+        const setData1 = this.convertData(this.contractCheck.arr)
+        Object.assign(setData[1], setData1)
 
-          setData[2] = {}
-          setData[2].auditType = 3
-          setData[2].auditHours = this.form.auditHours3
-          const setData2 = this.convertData(this.supplierCheck.arr)
-          Object.assign(setData[2], setData2)
+        setData[2] = {}
+        setData[2].auditType = 3
+        setData[2].auditHours = this.form.auditHours3
+        const setData2 = this.convertData(this.supplierCheck.arr)
+        Object.assign(setData[2], setData2)
 
-          toUpdateSetData({
-            setData: setData
-          }).then(res => {
-            this.$message.success('提交成功')
-            this.$nextTick(() => {
-              this.bol = true
-            })
+        toUpdateSetData({
+          setData: setData
+        }).then(res => {
+          this.$message.success('提交成功')
+          this.$nextTick(() => {
+            this.bol = true
           })
-        } else {
-          return false
-        }
+        })
+      })
+    },
+    formValidate (form) {
+      return new Promise((resolve, reject) => {
+        this.$refs[form].validate(valid => {
+          if (valid) {
+            resolve()
+          } else {
+            reject(new Error(false))
+            return false
+          }
+        })
       })
     },
     // 保存前用户信息数据转换
@@ -369,7 +410,7 @@ export default {
       LevelKey.forEach((key, index) => {
         data[key].length > 0 &&
           arr.push({
-            id: Math.random() * 999,
+            id: '',
             level: data[key].map(item => {
               return item.adminId
             })
@@ -396,14 +437,14 @@ export default {
     // 增加审核人员
     add (item) {
       this[item].arr.push({
-        id: Math.random() * 999,
+        id: '',
         level: []
       })
     },
     // 删除审核人员
     del (index, item) {
       if (this[item].arr.length === 1) {
-        this[item].arr = [{ id: Math.random() * 999, level: [] }]
+        this[item].arr = [{ id: '', level: [] }]
         return
       }
       this[item].arr.splice(index, 1)
@@ -458,12 +499,18 @@ export default {
   .checkInputs {
     .item {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       margin-bottom: 12px;
       .icon {
         margin-left: 10px;
+        margin-top: 7px;
         font-size: 16px;
         color: rgba(0, 0, 0, 0.427450980392157);
+      }
+      .separate-span {
+        height: 32px;
+        line-height: 32px;
+        padding: 0 10px;
       }
     }
   }
