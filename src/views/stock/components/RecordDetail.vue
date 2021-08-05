@@ -3,7 +3,7 @@
     :title="`查看-${typeText}单`"
     :visible="visible"
     :footer="null"
-    width="80%"
+    width="900px"
     @cancel="visible = false"
   >
     <a-descriptions size="small" :column="2">
@@ -37,7 +37,9 @@
         {{ data.ctime || "--" }}
       </a-descriptions-item>
       <a-descriptions-item label="物料" :span="2">
-        种类{{ data.materiaCount }} 数量{{ data.materiaNum }}
+        种类{{ data.materiaCount }}<span style="margin-left: 14px"></span>数量{{
+          data.materiaNum
+        }}
       </a-descriptions-item>
       <a-descriptions-item label="上传凭证" :span="2">
         <t-image :images="data.stockPz"></t-image>
@@ -62,9 +64,9 @@
           {{ record.materialNo }} {{ text }} </router-link
         >/{{ record.brand }}/{{ record.model }}
       </span>
-      <span slot="stockNum" slot-scope="text, record">
+      <div slot="stockNum" slot-scope="text, record" style="min-width: 70px;">
         {{ text }} {{ record.unitv }}
-      </span>
+      </div>
     </a-table>
     <a-row
       class="table-total-row"
@@ -72,8 +74,8 @@
       align="middle"
       style="border-bottom: 1px solid #e8e8e8;"
     >
-      <div style="width: calc(40% + 80px);">总计</div>
-      <div>{{ data.materiaNum }}</div>
+      <a-col flex="1">总计</a-col>
+      <a-col :flex="`0 0 ${isRK ? '21.9%' : '57%'}`">{{ data.materiaNum }}</a-col>
     </a-row>
   </a-modal>
 </template>
@@ -103,19 +105,19 @@ export default {
           title: '序号',
           dataIndex: 'id',
           scopedSlots: { customRender: 'index' },
-          width: '80px'
+          width: '8%'
         },
         {
           title: '物料',
           dataIndex: 'materialName',
           scopedSlots: { customRender: 'materialName' },
-          width: '40%'
+          width: '35%'
         },
         {
           title: '数量',
           dataIndex: 'stockNum',
           scopedSlots: { customRender: 'stockNum' },
-          width: '150px'
+          width: '12%'
         },
         {
           title: '物料用途',
@@ -138,6 +140,20 @@ export default {
     },
     visible (val) {
       this.$emit('input', val)
+    },
+    isRK (val) {
+      const index = this.columns.findIndex(
+        column => column.dataIndex === 'remarks'
+      )
+      // 入库单不显示物料用途
+      if (val && index > 0) {
+        this.columns.pop()
+      } else if (!val && index === -1) {
+        this.columns.push({
+          title: '物料用途',
+          dataIndex: 'remarks'
+        })
+      }
     }
   }
 }
@@ -151,5 +167,9 @@ export default {
   width: 120px;
   text-align: right;
   vertical-align: top;
+}
+/deep/ .ant-descriptions-small .ant-descriptions-row > th,
+/deep/ .ant-descriptions-small .ant-descriptions-row > td {
+  padding-bottom: 16px;
 }
 </style>

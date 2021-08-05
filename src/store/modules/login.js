@@ -1,9 +1,9 @@
 
 const login = {
   state: {
-    accountInfo: JSON.parse(window.localStorage.getItem('accountInfo')) || {},
-    isAutoLogin: !!window.localStorage.getItem('autoLogin'),
-    isLogout: !!window.localStorage.getItem('toLogout')
+    accountInfo: JSON.parse(localStorage.getItem('accountInfo')) || {},
+    isAutoLogin: localStorage.getItem('autoLogin') === 'true' || false,
+    isLogout: localStorage.getItem('toLogout') === 'true' || false
   },
 
   mutations: {
@@ -16,6 +16,7 @@ const login = {
     },
     setLogout (state, value) {
       state.isLogout = value
+      localStorage.setItem('toLogout', value)
     }
   },
 

@@ -86,69 +86,6 @@ import { changeJSON2QueryString } from '@/utils/util'
 import { getStockReport } from '@/api/report'
 import setCompanyId from '@/mixins/setCompanyId'
 
-const columns = [
-  {
-    title: '库存ID',
-    dataIndex: 'id',
-    width: '64px'
-  },
-  {
-    title: '所属项目',
-    dataIndex: 'projectName'
-  },
-  {
-    title: '物料名称',
-    dataIndex: 'materialName'
-  },
-  {
-    title: '物料品牌',
-    dataIndex: 'brand'
-  },
-  {
-    title: '规格型号',
-    dataIndex: 'model'
-  },
-  {
-    title: '单位',
-    dataIndex: 'unitv'
-  },
-  {
-    title: '现有库存',
-    dataIndex: 'currentNum',
-    sort: true,
-    width: '94px'
-  },
-  {
-    title: '期初库存',
-    dataIndex: 'originalNum',
-    sort: true,
-    scopedSlots: { customRender: 'originalNum' },
-    width: '94px'
-  },
-  {
-    title: '总入库',
-    dataIndex: 'totalLknum',
-    sorter: true,
-    width: '80px'
-  },
-  {
-    title: '总出库',
-    dataIndex: 'totalCknum',
-    sorter: true,
-    width: '80px'
-  },
-  {
-    title: '备注',
-    dataIndex: 'remarks',
-    scopedSlots: { customRender: 'remarks' }
-  },
-  {
-    title: '操作',
-    width: '65px',
-    scopedSlots: { customRender: 'action' }
-  }
-]
-
 export default {
   name: 'StockTab',
   mixins: [setCompanyId],
@@ -159,14 +96,93 @@ export default {
     AdvancedForm
   },
   data () {
-    this.columns = columns
     return {
       labelCol: { span: 7 },
       wrapperCol: { span: 14 },
       // 高级搜索 展开/关闭
-      advanced: false,
+      advanced: true,
       // 查询参数
       queryParam: {},
+      columns: [
+        {
+          title: '库存ID',
+          dataIndex: 'id',
+          width: '52px'
+        },
+        {
+          title: '所属项目',
+          dataIndex: 'projectName',
+          width: '12%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '物料名称',
+          dataIndex: 'materialName',
+          width: '12%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '物料品牌',
+          dataIndex: 'brand',
+          width: '12%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '规格型号',
+          dataIndex: 'model',
+          width: '12%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '单位',
+          dataIndex: 'unitv',
+          width: '50px'
+        },
+        {
+          title: '现有库存',
+          dataIndex: 'currentNum',
+          sort: true,
+          width: '84px'
+        },
+        {
+          title: '期初库存',
+          dataIndex: 'originalNum',
+          sort: true,
+          scopedSlots: { customRender: 'originalNum' },
+          width: '84px'
+        },
+        {
+          title: '总入库',
+          dataIndex: 'totalLknum',
+          sorter: true,
+          width: '70px'
+        },
+        {
+          title: '总出库',
+          dataIndex: 'totalCknum',
+          sorter: true,
+          width: '70px'
+        },
+        {
+          title: '备注',
+          dataIndex: 'remarks',
+          width: '140px',
+          scopedSlots: { customRender: 'remarks' }
+        },
+        {
+          title: '操作',
+          class: 'nowrap max-width',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
@@ -175,16 +191,18 @@ export default {
     }
   },
   methods: {
-    toggleAdvanced () {
-      this.advanced = !this.advanced
-    },
     // 导出
     exportReport () {
       if (!this.queryParam.projectId) {
         this.$message.warning('请选择项目')
       } else {
-        const baseUrl = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
-        location.href = `${baseUrl}/operate/report/stockReportExcel?${changeJSON2QueryString(this.queryParam)}`
+        const baseUrl =
+          process.env.NODE_ENV === 'production'
+            ? process.env.VUE_APP_API_BASE_URL
+            : '/api'
+        location.href = `${baseUrl}/operate/report/stockReportExcel?${changeJSON2QueryString(
+          this.queryParam
+        )}`
       }
     },
     goDetail ({ id }) {
@@ -202,6 +220,12 @@ export default {
 <style lang="less" scoped>
 /deep/ .ant-table-thead > tr > th,
 /deep/ .ant-table-tbody > tr > td {
+  padding-left: 8px;
   padding-right: 0;
+}
+/deep/ .max-width {
+  max-width: 52px;
+  width: 52px;
+  padding-right: 8px !important;
 }
 </style>

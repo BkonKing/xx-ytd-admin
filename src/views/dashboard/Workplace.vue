@@ -72,7 +72,7 @@
             :body-style="{ padding: 0 }"
           >
             <a slot="extra" @click="$router.push('/project/index')">全部项目</a>
-            <div v-if="info != ''">
+            <div v-if="info.project && info.project.length">
               <a-card-grid
                 v-for="(item, i) in info.project"
                 :key="i"
@@ -119,6 +119,11 @@
                 </a-card>
               </a-card-grid>
             </div>
+            <a-empty
+              v-else
+              :image="simpleImage"
+              description="暂无项目"
+            ></a-empty>
           </a-card>
 
           <a-card :loading="loading" title="动态" :bordered="false">
@@ -148,6 +153,7 @@
           :xs="24"
         >
           <a-card
+            v-if="info.navigation && info.navigation.length"
             title="便捷导航"
             style="margin-bottom: 24px"
             :bordered="false"
@@ -174,14 +180,21 @@
               </div>
             </template>
             <div class="members">
-              <div
-                class="item"
-                v-for="(item, index) in info.message"
-                :key="index"
-                @click="openPage(item)"
-              >
-                [通知] {{ item.content }}
-              </div>
+              <template v-if="info.message && info.message.length">
+                <div
+                  class="item"
+                  v-for="(item, index) in info.message"
+                  :key="index"
+                  @click="openPage(item)"
+                >
+                  [通知] {{ item.content }}
+                </div>
+              </template>
+              <a-empty
+                v-else
+                :image="simpleImage"
+                description="暂无待办通知"
+              ></a-empty>
             </div>
           </a-card>
         </a-col>
@@ -191,6 +204,7 @@
 </template>
 
 <script>
+import { Empty } from 'ant-design-vue'
 import { timeFix } from '@/utils/util'
 import { mapState } from 'vuex'
 import { PageHeaderWrapper } from 'xx-ant-design-vue-pro-layout'
@@ -256,7 +270,6 @@ export default {
       }
     }
   },
-
   computed: {
     ...mapState({
       nickname: state => state.user.nickname,
@@ -273,17 +286,10 @@ export default {
       return this.$store.getters.userInfo
     }
   },
+  beforeCreate () {
+    this.simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
+  },
   created () {
-    // this.user = this.userInfo
-    // this.avatar = this.userInfo.avatar
-
-    // getRoleList().then(res => {
-    //   // console.log('workplace -> call getRoleList()', res)
-    // })
-
-    // getServiceList().then(res => {
-    //   // console.log('workplace -> call getServiceList()', res)
-    // })
     toWorkbench().then(({ data }) => {
       this.info = data
       this.$nextTick(() => {

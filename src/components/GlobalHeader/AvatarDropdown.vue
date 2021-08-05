@@ -59,14 +59,14 @@ export default {
       if (differTime <= 5) {
         if (!window.localStorage.getItem('autoLogin')) {
           console.log('这是关闭')
-          window.localStorage.removeItem('access_token')
-          window.localStorage.setItem('toLogout', true)
+          localStorage.removeItem('access_token')
+          this.$store.commit('setLogout', true)
           // 退出登录跳到首页
           this.$router.push({ name: 'login' })
         }
-      } else {
+      }/*  else {
         console.log('这是刷新')
-      }
+      } */
     }
     window.onbeforeunload = function () {
       beginTime = new Date().getTime()
@@ -82,8 +82,8 @@ export default {
         content: '是否退出登录？',
         onOk: () => {
           logout().then(() => {
-            window.localStorage.removeItem('access_token')
-            window.localStorage.setItem('toLogout', true)
+            localStorage.removeItem('access_token')
+            this.$store.commit('setLogout', true)
             this.$router.push({ name: 'login' })
           })
         },

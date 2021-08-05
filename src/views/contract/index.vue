@@ -135,9 +135,12 @@
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
         showPagination="auto"
-        :scroll="{ x: 2500 }"
+        :scroll="{ x: 'auto' }"
         style="width: 100%"
       >
+        <Ellipsis slot="projectName" slot-scope="text" :lines="2" :length="100" tooltip
+          >{{ text }}{{ text }}{{ text }}{{ text }}</Ellipsis
+        >
         <span slot="auditTime" slot-scope="text, record">
           <time-wait
             v-if="text"
@@ -204,7 +207,8 @@ import {
   CompanySelect,
   ContractTypeSelect,
   PayStatusSelect,
-  AdvancedForm
+  AdvancedForm,
+  Ellipsis
 } from '@/components'
 import {
   getContractList,
@@ -227,7 +231,8 @@ export default {
     CompanySelect,
     ContractTypeSelect,
     PayStatusSelect,
-    AdvancedForm
+    AdvancedForm,
+    Ellipsis
   },
   data () {
     return {
@@ -282,26 +287,45 @@ export default {
       columns: [
         {
           title: '所属项目',
-          dataIndex: 'projectName'
+          width: '120px',
+          dataIndex: 'projectName',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
         },
         {
           title: '合同编号',
+          class: 'nowrap',
+          width: 'auto',
           dataIndex: 'contractNo'
         },
         {
           title: '合同名称',
-          dataIndex: 'contractName'
+          width: '140px',
+          dataIndex: 'contractName',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
         },
         {
           title: '类型',
-          dataIndex: 'categoryName'
+          width: '140px',
+          dataIndex: 'categoryName',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
         },
         {
           title: '供应商',
-          dataIndex: 'supplierName'
+          width: '140px',
+          dataIndex: 'supplierName',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
         },
         {
           title: '金额',
+          class: 'nowrap',
           dataIndex: 'contractMoney',
           sorter: true,
           customRender (text) {
@@ -310,10 +334,12 @@ export default {
         },
         {
           title: '总量',
+          class: 'nowrap',
           dataIndex: 'contractTotal'
         },
         {
           title: '税率',
+          class: 'nowrap',
           dataIndex: 'taxRate',
           customRender (text) {
             const number = parseFloat(text)
@@ -322,10 +348,12 @@ export default {
         },
         {
           title: '签订日期',
+          width: '120px',
           dataIndex: 'signDate'
         },
         {
           title: '有效期',
+          width: '190px',
           dataIndex: 'startDate',
           customRender (text, row) {
             return `${text}~${row.endDate}`
@@ -333,19 +361,23 @@ export default {
         },
         {
           title: '结算方式',
+          width: '120px',
           dataIndex: 'settleTypeName'
         },
         {
           title: '付款方式',
+          width: '100px',
           dataIndex: 'payTypeName'
         },
         {
           title: '订单',
+          class: 'nowrap',
           dataIndex: 'orderNum',
           sorter: true
         },
         {
           title: '已付款',
+          class: 'nowrap',
           dataIndex: 'orderPayMoney',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
@@ -353,6 +385,7 @@ export default {
         },
         {
           title: '未付款',
+          class: 'nowrap',
           dataIndex: 'orderUnPayMoney',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
@@ -360,6 +393,7 @@ export default {
         },
         {
           title: '已收票金额',
+          class: 'nowrap',
           dataIndex: 'orderInvoicedMoney',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
@@ -367,6 +401,7 @@ export default {
         },
         {
           title: '未收票金额',
+          class: 'nowrap',
           dataIndex: 'orderUnInvoicedMoney',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
@@ -374,29 +409,38 @@ export default {
         },
         {
           title: '审核状态',
+          width: '100px',
           dataIndex: 'statusv'
         },
         {
           title: '合同状态',
+          width: '100px',
           dataIndex: 'contractStatusv'
         },
         {
           title: '审核时间',
           dataIndex: 'auditTime',
+          width: '130px',
           scopedSlots: { customRender: 'auditTime' }
         },
         {
           title: '备注',
-          dataIndex: 'remarks'
+          width: '150px',
+          dataIndex: 'remarks',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
         },
         {
           title: '创建时间',
+          width: '110px',
           dataIndex: 'ctime'
         },
         {
           title: '操作',
           dataIndex: 'id',
           fixed: 'right',
+          class: 'nowrap',
           scopedSlots: { customRender: 'action' }
         }
       ],
@@ -595,4 +639,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/ .ant-table-row-cell-last {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+/deep/ .ant-table-fixed-right .nowrap {
+  padding-left: 8px;
+  padding-right: 8px;
+}
 </style>

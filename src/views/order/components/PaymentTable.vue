@@ -39,12 +39,12 @@
       style="border-bottom: 1px solid #e8e8e8;"
     >
       <div style="width: 41%;">总计({{ `${data.unKpNum + data.kpNum}` }})</div>
-      <div style="width: 20%;">￥{{ data.allMoney }}</div>
+      <div style="width: 20%;">￥{{ parseFloat(data.allMoney) ? data.allMoney : 0 }}</div>
       <div>
-        已开{{ data.kpNum }} (￥{{ data.kpMoney }})，未开{{
+        已开{{ data.kpNum }} (￥{{ parseFloat(data.kpMoney) ? data.kpMoney : 0 }})，未开{{
           data.unKpNum
         }}
-        (￥{{ data.unKpMoney }})
+        (￥{{ parseFloat(data.unKpMoney) ? data.unKpMoney : 0 }})
       </div>
     </a-row>
     <a-button
@@ -59,9 +59,10 @@
       :title="title"
       :visible="visible"
       :confirm-loading="confirmLoading"
-      :width="640"
+      :width="660"
       :maskClosable="false"
       :keyboard="false"
+      class="payment-form-modal"
       @ok="handleOk"
       @cancel="closeModal"
     >
@@ -267,4 +268,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="less">
+.payment-form-modal .ant-modal-body {
+  padding-bottom: 7px;
+}
+</style>

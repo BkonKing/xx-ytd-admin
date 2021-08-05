@@ -6,7 +6,7 @@
       :bordered="false"
     >
       <a-form ref="form" layout="inline">
-        <standard-form-row title="报表类型" block style="padding-bottom: 11px;">
+        <standard-form-row class="type-row" title="报表类型" block style="padding-bottom: 11px;">
           <a-form-item style="margin-bottom: 0;">
             <tag-select v-model="types">
               <tag-select-option
@@ -18,7 +18,7 @@
             </tag-select>
           </a-form-item>
         </standard-form-row>
-        <standard-form-row title="其它选项" last>
+        <standard-form-row class="other-row" title="其它选项" last>
           <a-row :gutter="48">
             <a-col :span="8">
               <a-form-item label="选择项目">
@@ -33,7 +33,7 @@
               </a-form-item>
             </a-col>
             <a-col v-if="isParentCompany" :span="8">
-              <a-form-item label="选择公司">
+              <a-form-item label="选择公司" >
                 <company-select
                   v-model="queryParam.companyId"
                   @change="
@@ -266,7 +266,7 @@
                 <td>{{ tr.allPayTotal }}</td>
                 <td>{{ tr.monthBalance || "--" }}</td>
                 <td>{{ tr.budgetsBalance || "--" }}</td>
-                <td v-if="index === 0" :rowspan="completeData.length + 1"></td>
+                <td></td>
               </tr>
             </template>
             <tr class="print-tbody-tr-border">
@@ -282,6 +282,7 @@
               <td>{{ monthBalance }}</td>
               <td>{{ budgetsBalance }}</td>
               <td v-if="!completeData || !completeData.length"></td>
+              <td></td>
             </tr>
           </tbody>
         </table>
@@ -558,9 +559,11 @@ export default {
 }
 .table-page-search-wrapper
   /deep/
-  .ant-form-inline
-  .ant-form-item
+  .type-row
   .ant-form-item-control-wrapper {
   width: auto;
+}
+.other-row /deep/ .ant-form-item-control-wrappe {
+  width: 0;
 }
 </style>

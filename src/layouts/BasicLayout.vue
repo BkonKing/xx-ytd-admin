@@ -14,7 +14,8 @@
     -->
     <template v-slot:menuHeaderRender>
       <div>
-        <logo-svg />
+        <img v-if="userInfo.companyLogo" :src="userInfo.companyLogo" alt="公司logo">
+        <img v-else src="@/assets/company.png">
         <h1>{{ userInfo.shortCompanyName || title }}</h1>
       </div>
     </template>
@@ -60,7 +61,6 @@ import {
 import defaultSettings from '@/settings'
 import RightContent from '@/components/GlobalHeader/RightContent'
 import GlobalFooter from '@/components/GlobalFooter'
-import LogoSvg from '../assets/logo.svg?inline'
 import { mapGetters } from 'vuex'
 import { getMenu } from '@/api/user'
 import { appMixin } from '@/store/mixin'
@@ -71,8 +71,7 @@ export default {
   components: {
     // SettingDrawer,
     RightContent,
-    GlobalFooter,
-    LogoSvg
+    GlobalFooter
   },
   data () {
     return {

@@ -26,13 +26,11 @@
         {{ data.signDate }}
       </a-descriptions-item>
       <a-descriptions-item label="合同照片">
-        {{ data.contractPzNum }}张
-        <a-button
+        {{ data.contractPzNum }}张<a
           v-if="data.contractPzNum > 0"
-          type="link"
-          style="height: 21px;"
+          class="two-blank"
           @click="previewImage(data.contractPz)"
-          >查看</a-button
+          >查看</a
         >
       </a-descriptions-item>
       <a-descriptions-item label="合同金额">
@@ -57,7 +55,7 @@
         {{ data.materialName }}
       </a-descriptions-item>
       <a-descriptions-item label="备注" :span="3">
-        {{ data.remarks || '--' }}
+        {{ data.remarks || "--" }}
       </a-descriptions-item>
     </a-descriptions>
   </a-card>
@@ -82,4 +80,18 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="less" scoped>
+/deep/ .ant-descriptions-item {
+  > span {
+    vertical-align: top;
+  }
+}
+/deep/ .ant-descriptions-view tbody > tr:last-child {
+  .ant-descriptions-item {
+    padding-bottom: 0;
+    .ant-descriptions-item-content {
+      width: calc(100% - 70px);
+    }
+  }
+}
+</style>

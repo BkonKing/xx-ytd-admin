@@ -45,18 +45,18 @@
           </a-descriptions>
         </a-col>
         <a-col flex="242px" style="margin-left: 88px;text-align: right;">
-          <a-row class="status-list">
-            <a-col :xs="12" :sm="12">
-              <div class="text">阶段</div>
-              <div class="heading">{{ projectInfo.stageName || "无" }}</div>
-            </a-col>
-            <a-col :xs="12" :sm="12">
+          <div class="status-list">
+            <div>
+              <div class="text" style="padding-left: 0;">阶段</div>
+              <div class="heading" style="padding-left: 0;">{{ projectInfo.stageName || "无" }}</div>
+            </div>
+            <div style="flex: 0 0 100px;">
               <div class="text">参与公司</div>
               <div class="heading">
                 {{ projectInfo.relationCompanyNum || 0 }}家
               </div>
-            </a-col>
-          </a-row></a-col
+            </div>
+          </div></a-col
         >
       </a-row>
       <a-row type="flex">

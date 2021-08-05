@@ -47,7 +47,12 @@
             <advanced-form
               v-model="advanced"
               :md="8"
-              @reset="() => {this.queryParam = {};this.$refs.table.refresh(true)}"
+              @reset="
+                () => {
+                  this.queryParam = {};
+                  this.$refs.table.refresh(true);
+                }
+              "
               @search="$refs.orderTable.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -62,8 +67,11 @@
         showPagination="auto"
       >
         <span slot="paid" slot-scope="text, record">
-          <div v-if="+text">已付￥{{ text }}</div>
-          <div v-if="+record.unpaid">未付￥{{ record.unpaid }}</div>
+          <template v-if="record.status !== '1'">--</template>
+          <template v-else>
+            <div v-if="+text">已付￥{{ text }}</div>
+            <div v-if="+record.unpaid">未付￥{{ record.unpaid }}</div>
+          </template>
         </span>
         <span slot="action" slot-scope="text">
           <a @click="goOrderDetail(text)">查看</a>

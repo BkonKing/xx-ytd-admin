@@ -104,44 +104,6 @@ import { changeJSON2QueryString } from '@/utils/util'
 import { getSuppReport } from '@/api/report'
 import setCompanyId from '@/mixins/setCompanyId'
 
-const columns = [
-  {
-    title: '所属项目',
-    dataIndex: 'projectName',
-    width: '20%'
-  },
-  {
-    title: '供应商ID',
-    dataIndex: 'idv',
-    width: '110px'
-  },
-  {
-    title: '供应商',
-    dataIndex: 'supplierName',
-    width: '15%'
-  },
-  {
-    title: '类型',
-    dataIndex: 'supplierTypeName',
-    width: '10%'
-  },
-  {
-    title: '统一社会信用代码',
-    dataIndex: 'socialCode',
-    width: '175px'
-  },
-  {
-    title: '供应物料',
-    dataIndex: 'materialName'
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    width: '65px',
-    scopedSlots: { customRender: 'action' }
-  }
-]
-
 export default {
   name: 'reportSupplier',
   mixins: [setCompanyId],
@@ -154,11 +116,10 @@ export default {
     AdvancedForm
   },
   data () {
-    this.columns = columns
     return {
       confirmLoading: false,
       // 高级搜索 展开/关闭
-      advanced: false,
+      advanced: true,
       // 查询参数
       queryParam: {
         status: '',
@@ -169,6 +130,55 @@ export default {
         material: '',
         ctime: []
       },
+      columns: [
+        {
+          title: '所属项目',
+          dataIndex: 'projectName',
+          width: '20%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '供应商ID',
+          dataIndex: 'idv',
+          class: 'nowrap'
+        },
+        {
+          title: '供应商',
+          dataIndex: 'supplierName',
+          width: '15%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '类型',
+          dataIndex: 'supplierTypeName',
+          width: '10%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '统一社会信用代码',
+          dataIndex: 'socialCode',
+          class: 'nowrap'
+        },
+        {
+          title: '供应物料',
+          dataIndex: 'materialName',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          width: '65px',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.ctime

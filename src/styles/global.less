@@ -2,7 +2,7 @@
 
 html,
 body,
-#app, 
+#app,
 #root {
   height: 100%;
 }
@@ -238,9 +238,29 @@ div.ant-pro-grid-content.wide {
 
 // 强制不换行
 .nowrap {
-  white-space: nowrap;
+  word-break: keep-all !important;
+  white-space: nowrap !important;
+}
+
+// 两个空格
+.two-blank {
+  margin-left: 14px;
 }
 
 .ant-card-body > .ant-form-horizontal:last-child > .ant-form-item:last-child {
   margin-bottom: 0;
+}
+
+// 两行省略
+.two-Multi {
+  .textOverflowMultiLine();
+}
+
+// 详情头部右边状态
+.status-list {
+  display: flex;
+  justify-content: flex-end;
+  .text,.heading {
+    padding-left: 40px;
+  }
 }

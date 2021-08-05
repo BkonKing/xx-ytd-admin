@@ -9,7 +9,7 @@
       :pagination="false"
     >
       <span slot="material" slot-scope="text, record">
-        {{ record.materialNo }} {{ text }}
+        <div class="two-Multi">{{ record.materialNo }} {{ text }}</div>
       </span>
       <span slot="taxRate" slot-scope="text">
         {{ +text ? `${parseFloat(text)}%` : "无" }}
@@ -35,7 +35,7 @@
       <div style="width: 62%;">总计</div>
       <div style="width: 8%;">{{ number }}</div>
       <div style="width: 10%;">￥{{ money }}</div>
-      <div style="width: 20%;">已付￥{{ paid }}，未付￥{{ unpaid }}</div>
+      <div style="width: 20%;">已付￥{{ parseFloat(paid) ? paid : 0 }}，未付￥{{ parseFloat(unpaid) ? unpaid : 0 }}</div>
     </a-row>
   </a-card>
 </template>
@@ -85,12 +85,18 @@ export default {
         {
           title: '物料品牌',
           dataIndex: 'brand',
-          width: '14%'
+          width: '14%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
         },
         {
           title: '规格型号',
           dataIndex: 'model',
-          width: '14%'
+          width: '14%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
         },
         {
           title: '税率',

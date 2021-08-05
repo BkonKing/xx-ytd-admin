@@ -121,7 +121,7 @@
             v-if="record.editable"
             v-model="record.remarks"
             :maxLength="100"
-            style="width: 96px;"
+            style="min-width: 96px;"
           />
           <template v-else>
             {{ text }}
@@ -179,75 +179,6 @@ import clonedeep from 'lodash.clonedeep'
 import setCompanyId from '@/mixins/setCompanyId'
 import beforeRouteLeave from '@/mixins/beforeRouteLeave'
 
-const columns = [
-  {
-    title: '库存ID',
-    dataIndex: 'id',
-    width: '52px'
-  },
-  {
-    title: '所属项目',
-    dataIndex: 'projectName',
-    width: '10%'
-  },
-  {
-    title: '物料名称',
-    dataIndex: 'materialName',
-    scopedSlots: { customRender: 'materialName' }
-  },
-  {
-    title: '物料品牌',
-    dataIndex: 'brand',
-    width: '10%'
-  },
-  {
-    title: '规格型号',
-    dataIndex: 'model',
-    width: '10%'
-  },
-  {
-    title: '单位',
-    dataIndex: 'unitv',
-    width: '50px'
-  },
-  {
-    title: '现有库存',
-    dataIndex: 'currentNum',
-    sorter: true,
-    width: '86px'
-  },
-  {
-    title: '期初库存',
-    dataIndex: 'originalNum',
-    sorter: true,
-    width: '86px',
-    scopedSlots: { customRender: 'originalNum' }
-  },
-  {
-    title: '总入库',
-    dataIndex: 'totalLknum',
-    sorter: true,
-    width: '74px'
-  },
-  {
-    title: '总出库',
-    dataIndex: 'totalCknum',
-    sorter: true,
-    width: '74px'
-  },
-  {
-    title: '备注',
-    dataIndex: 'remarks',
-    width: '140px',
-    scopedSlots: { customRender: 'remarks' }
-  },
-  {
-    title: '操作',
-    class: 'nowrap max-width',
-    scopedSlots: { customRender: 'action' }
-  }
-]
-
 export default {
   name: 'stockIndex',
   mixins: [setCompanyId, beforeRouteLeave],
@@ -259,7 +190,6 @@ export default {
     AdvancedForm
   },
   data () {
-    this.columns = columns
     return {
       labelCol: { span: 7 },
       wrapperCol: { span: 14 },
@@ -269,6 +199,87 @@ export default {
       advanced: false,
       // 查询参数
       queryParam: {},
+      columns: [
+        {
+          title: '库存ID',
+          dataIndex: 'id',
+          width: '52px'
+        },
+        {
+          title: '所属项目',
+          dataIndex: 'projectName',
+          width: '11%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '物料名称',
+          dataIndex: 'materialName',
+          scopedSlots: { customRender: 'materialName' },
+          width: '11%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '物料品牌',
+          dataIndex: 'brand',
+          width: '11%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '规格型号',
+          dataIndex: 'model',
+          width: '11%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '单位',
+          dataIndex: 'unitv',
+          width: '50px'
+        },
+        {
+          title: '现有库存',
+          dataIndex: 'currentNum',
+          sorter: true,
+          width: '84px'
+        },
+        {
+          title: '期初库存',
+          dataIndex: 'originalNum',
+          sorter: true,
+          width: '84px',
+          scopedSlots: { customRender: 'originalNum' }
+        },
+        {
+          title: '总入库',
+          dataIndex: 'totalLknum',
+          sorter: true,
+          width: '70px'
+        },
+        {
+          title: '总出库',
+          dataIndex: 'totalCknum',
+          sorter: true,
+          width: '70px'
+        },
+        {
+          title: '备注',
+          dataIndex: 'remarks',
+          width: '140px',
+          scopedSlots: { customRender: 'remarks' }
+        },
+        {
+          title: '操作',
+          class: 'nowrap max-width',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
       tableData: [],
       cacheData: [],
       currentNums: 0,

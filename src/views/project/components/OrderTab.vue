@@ -89,8 +89,11 @@
           >
         </span>
         <span slot="paid" slot-scope="text, record">
-          <div v-if="+text">已付￥{{ text }}</div>
-          <div v-if="+record.unpaid">未付￥{{ record.unpaid }}</div>
+          <template v-if="record.status !== '1'">--</template>
+          <template v-else>
+            <div v-if="+text">已付￥{{ text }}</div>
+            <div v-if="+record.unpaid">未付￥{{ record.unpaid }}</div>
+          </template>
         </span>
       </s-table>
     </a-card>
@@ -133,7 +136,7 @@
             <advanced-form
               v-model="payAdvanced"
               :md="isParentCompany ? 16 : 24"
-              @reset="this.payParams = {}"
+              @reset="() => this.payParams = {}"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>

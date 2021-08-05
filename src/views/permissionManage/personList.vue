@@ -156,7 +156,7 @@ export default {
           return res
         })
       },
-      roleId: '', // 角色id
+      roleId: undefined, // 角色id
       searchText: '', // 姓名、手机号关键字
       allRole: []
     }
@@ -182,7 +182,7 @@ export default {
     },
     // 重置
     reset () {
-      this.roleId = ''
+      this.roleId = undefined
       this.searchText = ''
       this.$refs.table.refresh(true)
     },

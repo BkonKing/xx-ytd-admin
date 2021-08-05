@@ -25,15 +25,15 @@
     <a-card title="物料信息" style="margin-top: 24px;">
       <div class="edit-table">
         <a-row class="edit-table-header" type="flex">
-          <a-col class="form-required-after" flex="2">物料</a-col>
-          <a-col class="form-required-after" flex="2">物料品牌</a-col>
-          <a-col class="form-required-after" flex="2">规格型号</a-col>
+          <a-col class="form-required-after" flex="1">物料</a-col>
+          <a-col class="form-required-after" flex="1">物料品牌</a-col>
+          <a-col class="form-required-after" flex="1">规格型号</a-col>
           <a-col class="form-required-after" flex="110px">税率</a-col>
           <a-col class="form-required-after" flex="120px">采购单价(元)</a-col>
-          <a-col class="form-required-after" flex="210px">数量</a-col>
+          <a-col class="form-required-after" flex="180px">数量</a-col>
           <a-col flex="1">金额</a-col>
-          <a-col flex="85px">排序</a-col>
-          <a-col flex="60px">操作</a-col>
+          <a-col flex="78px">排序</a-col>
+          <a-col flex="50px">操作</a-col>
         </a-row>
         <a-form-model
           v-for="(record, index) in tableData"
@@ -44,7 +44,7 @@
           class="edit-table-body"
         >
           <a-row type="flex">
-            <a-col flex="2">
+            <a-col flex="1" style="width: 0">
               <a-form-model-item prop="materialId" required>
                 <material-type-select
                   v-model="record.materialId"
@@ -53,21 +53,23 @@
                 ></material-type-select>
               </a-form-model-item>
             </a-col>
-            <a-col flex="2">
+            <a-col flex="1">
               <a-form-model-item prop="brand" required>
                 <a-input
                   v-model="record.brand"
                   placeholder="请输入"
                   :maxLength="50"
+                  style="width: 100%;"
                 />
               </a-form-model-item>
             </a-col>
-            <a-col flex="2">
+            <a-col flex="1">
               <a-form-model-item prop="model" required>
                 <a-input
                   v-model="record.model"
                   placeholder="请输入"
                   :maxLength="50"
+                  style="width: 100%;"
                 />
               </a-form-model-item>
             </a-col>
@@ -75,7 +77,7 @@
               <a-form-model-item prop="taxRate" required>
                 <a-input
                   v-model="record.taxRate"
-                  v-number-input="{decimal: 2,min: 0, max: 100}"
+                  v-number-input="{ decimal: 2, min: 0, max: 100 }"
                   placeholder="请输入"
                   suffix="%"
                   :disabled="isDisabled"
@@ -94,7 +96,7 @@
                 />
               </a-form-model-item>
             </a-col>
-            <a-col flex="210px">
+            <a-col flex="180px">
               <a-row type="flex">
                 <a-col flex="80px">
                   <a-form-model-item prop="unit">
@@ -108,25 +110,28 @@
                 </a-col>
                 <a-col flex="1">
                   <a-form-model-item prop="total" required>
-                    <a-input-number
+                    <a-input
                       v-model="record.total"
-                      v-number-input
+                      v-number-input="{min:0}"
                       placeholder="请输入"
-                      :min="0"
                       :disabled="isDisabled"
+                      style="width: 100%;"
                     />
                   </a-form-model-item>
                 </a-col>
               </a-row>
             </a-col>
             <a-col flex="1">
-              <span style="word-break: break-all;"
+              <span class="td-block" style="word-break: break-all;"
                 >￥{{
-                  NPTimes(record.unitPrice, parseFloat(record.total) || 0).toFixed(2)
+                  NPTimes(
+                    record.unitPrice,
+                    parseFloat(record.total) || 0
+                  ).toFixed(2)
                 }}</span
               >
             </a-col>
-            <a-col flex="85px">
+            <a-col flex="78px">
               <a-form-model-item prop="listOrder">
                 <a-input
                   v-model="record.listOrder"
@@ -136,12 +141,8 @@
                 />
               </a-form-model-item>
             </a-col>
-            <a-col flex="60px">
-              <span>
-                <a-popconfirm title="是否要删除此行？" @confirm="remove(index)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </span>
+            <a-col flex="50px">
+              <a class="td-block" @click="remove(index)">删除</a>
             </a-col>
           </a-row>
         </a-form-model>
@@ -150,13 +151,15 @@
           class="table-total"
           type="flex"
         >
-          <a-col flex="6">总计</a-col>
-          <a-col flex="254px"></a-col>
-          <a-col flex="210px">{{ totalNum }}</a-col>
+          <a-col flex="1">总计</a-col>
+          <a-col flex="1"></a-col>
+          <a-col flex="1"></a-col>
+          <a-col flex="230px"></a-col>
+          <a-col flex="180px" style="padding-left: 100px;">{{ totalNum }}</a-col>
           <a-col flex="1" style="word-break: break-all;"
             >￥{{ totalMoney }}</a-col
           >
-          <a-col flex="160px"></a-col>
+          <a-col flex="128px"></a-col>
         </a-row>
         <a-button
           style="width: 100%; margin-top: 16px; margin-bottom: 8px"
@@ -235,7 +238,7 @@ export default {
       this.tableData.forEach(obj => {
         num += this.NPTimes(obj.unitPrice, obj.total)
       })
-      return num
+      return num.toFixed(2)
     },
     totalNum () {
       let num = 0
@@ -288,7 +291,11 @@ export default {
         id: value
       }).then(({ data }) => {
         this.$set(this.tableData[index], 'unitOptions', data)
-        this.$set(this.tableData[index], 'unit', unit || (data[0] && data[0].unit) || '')
+        this.$set(
+          this.tableData[index],
+          'unit',
+          unit || (data[0] && data[0].unit) || ''
+        )
       })
     },
     handleAdd () {
@@ -300,7 +307,7 @@ export default {
         unitPrice: '',
         unit: '',
         unitOptions: [],
-        total: 0,
+        total: '',
         listOrder: ''
       })
     },
@@ -370,6 +377,13 @@ export default {
                 id: this.id || id
               }
             })
+          }).catch((res) => {
+            if (res.code === 202) {
+              const text = res.data.map(index => index + 1)
+              this.$message.warning(`物料第${text.join('，')}条重复创建，请合并为一行`)
+            } else {
+              this.$message.error(res.message)
+            }
           })
         })
         .catch(() => {})
@@ -387,14 +401,14 @@ export default {
     background: #fafafa;
     border-bottom: 1px solid #e8e8e8;
     > .ant-col {
-      padding: 12px 8px;
+      padding: 12px 4px 12px 8px;
     }
   }
   &-body {
     > .ant-row-flex {
       border-bottom: 1px solid #e8e8e8;
       > .ant-col {
-        padding: 6px 8px;
+        padding: 6px 4px 6px 8px;
       }
     }
   }
@@ -404,8 +418,15 @@ export default {
   }
 }
 .table-total {
+  font-weight: bold;
   .ant-col {
     padding: 6px 8px;
   }
+}
+
+.td-block {
+  display: block;
+  margin-top: 9px;
+  line-height: 1;
 }
 </style>

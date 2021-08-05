@@ -63,7 +63,7 @@ export default {
   },
   watch: {
     value (val) {
-      this.data = val
+      this.data = val || undefined
     },
     data (val) {
       this.$emit('input', val)

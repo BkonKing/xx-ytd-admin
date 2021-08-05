@@ -184,53 +184,6 @@ import { getStockClkList, removeStockCk } from '@/api/stock'
 import RecordDetailModal from './components/RecordDetail'
 import setCompanyId from '@/mixins/setCompanyId'
 
-const columns = [
-  {
-    title: '记录ID',
-    dataIndex: 'id'
-  },
-  {
-    title: '类型',
-    dataIndex: 'stockTypeV'
-  },
-  {
-    title: '所属项目',
-    dataIndex: 'projectName'
-  },
-  {
-    title: '物料',
-    dataIndex: 'materiaCount',
-    sorter: true
-  },
-  {
-    title: '数量',
-    dataIndex: 'materiaNum',
-    sorter: true
-  },
-  {
-    title: '领料部门',
-    dataIndex: 'department',
-    customRender (text) {
-      return text || '--'
-    }
-  },
-  {
-    title: '出入库人',
-    dataIndex: 'clkAdmin',
-    sort: true
-  },
-  {
-    title: '出入库时间',
-    dataIndex: 'ctime'
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    class: 'nowrap max-width',
-    scopedSlots: { customRender: 'action' }
-  }
-]
-
 export default {
   name: 'TableList',
   mixins: [setCompanyId],
@@ -242,7 +195,6 @@ export default {
     AdvancedForm
   },
   data () {
-    this.columns = columns
     return {
       tabList: [
         { key: '0', tab: '全部' },
@@ -256,10 +208,65 @@ export default {
       advanced: false,
       // 查询参数
       queryParam: {
-        stockType: '',
+        stockType: undefined,
         startDate: '',
         endDate: ''
       },
+      columns: [
+        {
+          title: '记录ID',
+          class: 'nowrap',
+          dataIndex: 'id'
+        },
+        {
+          title: '类型',
+          class: 'nowrap',
+          dataIndex: 'stockTypeV'
+        },
+        {
+          title: '所属项目',
+          dataIndex: 'projectName',
+          width: '20%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '物料',
+          class: 'nowrap',
+          dataIndex: 'materiaCount',
+          sorter: true
+        },
+        {
+          title: '数量',
+          class: 'nowrap',
+          dataIndex: 'materiaNum',
+          sorter: true
+        },
+        {
+          title: '领料部门',
+          width: '10%',
+          dataIndex: 'department',
+          customRender (text) {
+            return text || '--'
+          }
+        },
+        {
+          title: '出入库人',
+          dataIndex: 'clkAdmin',
+          sort: true
+        },
+        {
+          title: '出入库时间',
+          dataIndex: 'ctime'
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          class: 'nowrap max-width',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time

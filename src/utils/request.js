@@ -15,8 +15,7 @@ import router from '@/router'
 const request = axios.create({
   headers: {
     Authorization: window.localStorage.getItem('access_token'),
-    'Content-Type': 'application/x-www-form-urlencoded',
-    Projectid: Cookies.get('project_id')
+    'Content-Type': 'application/x-www-form-urlencoded'
   },
   // API 请求的默认前缀
   baseURL: process.env.VUE_APP_API_BASE_URL ? process.env.VUE_APP_API_BASE_URL : '/api',
@@ -42,6 +41,8 @@ const errorHandler = (error) => {
         description: 'Authorization verification failed'
       })
       if (token) {
+        localStorage.removeItem('access_token')
+        store.commit('setLogout', true)
         router.push({ name: 'login' })
       }
     }
@@ -82,6 +83,8 @@ request.interceptors.response.use((response) => {
   } = data
   if (+code === 401) {
     if (router.currentRoute.name !== 'login') {
+      localStorage.removeItem('access_token')
+      store.commit('setLogout', true)
       router.push({ name: 'login' })
     }
   } else if (code != '200') {

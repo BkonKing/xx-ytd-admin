@@ -39,7 +39,11 @@
 
     <!-- actions -->
     <template v-slot:extra>
-      <a-button v-if="UpdatePermission && userCompanyId == info.companyId" @click="goEdit">编辑</a-button>
+      <a-button
+        v-if="UpdatePermission && userCompanyId == info.companyId"
+        @click="goEdit"
+        >编辑</a-button
+      >
       <a-button
         v-if="info.status === '0' && info.auditPermission"
         type="primary"
@@ -49,16 +53,16 @@
     </template>
 
     <template v-slot:extraContent>
-      <a-row class="status-list" type="flex" justify="end">
-        <a-col flex="1" style="max-width: 70px">
+      <div class="status-list">
+        <div style="flex: 0 0 110px;">
           <div class="text">状态</div>
           <div class="heading">{{ info.statusv }}</div>
-        </a-col>
-        <a-col v-if="isPass" flex="1">
+        </div>
+        <div v-if="isPass">
           <div class="text">合同金额</div>
           <div class="heading">¥ {{ info.contractMoney }}</div>
-        </a-col>
-      </a-row>
+        </div>
+      </div>
     </template>
 
     <order-steps

@@ -105,54 +105,6 @@ import RecordDetailModal from '../../stock/components/RecordDetail'
 import { changeJSON2QueryString } from '@/utils/util'
 import setCompanyId from '@/mixins/setCompanyId'
 
-const columns = [
-  {
-    title: '记录ID',
-    dataIndex: 'id'
-  },
-  {
-    title: '类型',
-    dataIndex: 'stockTypeV'
-  },
-  {
-    title: '所属项目',
-    dataIndex: 'projectName'
-  },
-  {
-    title: '物料',
-    dataIndex: 'materiaCount',
-    sorter: true
-  },
-  {
-    title: '数量',
-    dataIndex: 'materiaNum',
-    sorter: true
-  },
-  {
-    title: '领料部门',
-    dataIndex: 'department',
-    customRender (text) {
-      return text || '--'
-    }
-  },
-  {
-    title: '出入库人',
-    dataIndex: 'clkAdmin',
-    sort: true
-  },
-  {
-    title: '出入库时间',
-    dataIndex: 'ctime',
-    width: '170px'
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    width: '65px',
-    scopedSlots: { customRender: 'action' }
-  }
-]
-
 export default {
   name: 'CLKTab',
   mixins: [setCompanyId],
@@ -171,14 +123,71 @@ export default {
     }
   },
   data () {
-    this.columns = columns
     return {
       // 审核弹窗
       visible: false,
       // 高级搜索 展开/关闭
-      advanced: false,
+      advanced: true,
       // 查询参数
       queryParam: {},
+      columns: [
+        {
+          title: '记录ID',
+          dataIndex: 'id'
+        },
+        {
+          title: '类型',
+          dataIndex: 'stockTypeV',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '所属项目',
+          dataIndex: 'projectName',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '物料',
+          dataIndex: 'materiaCount',
+          sorter: true,
+          class: 'nowrap',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '数量',
+          dataIndex: 'materiaNum',
+          class: 'nowrap',
+          sorter: true
+        },
+        {
+          title: '领料部门',
+          dataIndex: 'department',
+          customRender (text) {
+            return text || '--'
+          }
+        },
+        {
+          title: '出入库人',
+          dataIndex: 'clkAdmin',
+          sort: true
+        },
+        {
+          title: '出入库时间',
+          dataIndex: 'ctime',
+          width: '170px'
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          width: '65px',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
@@ -209,9 +218,6 @@ export default {
     }
   },
   methods: {
-    toggleAdvanced () {
-      this.advanced = !this.advanced
-    },
     // 导出
     exportReport () {
       if (!this.queryParam.projectId) {

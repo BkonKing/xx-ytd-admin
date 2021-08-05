@@ -2,7 +2,7 @@
   <a-card
     v-if="data && data.length"
     :bordered="false"
-    title="审批信息"
+    title="审核信息"
     style="margin-top: 24px;"
   >
     <a-descriptions

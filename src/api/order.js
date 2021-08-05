@@ -28,6 +28,9 @@ export function addOrder (data) {
   return request({
     url: order.addOrder,
     method: 'post',
+    headers: {
+      noToast: true
+    },
     data
   })
 }
@@ -37,6 +40,9 @@ export function updateOrder (data) {
   return request({
     url: order.updateOrder,
     method: 'post',
+    headers: {
+      noToast: true
+    },
     data
   })
 }

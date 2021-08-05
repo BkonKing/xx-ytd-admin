@@ -39,24 +39,24 @@
     </template>
 
     <template v-slot:extraContent>
-      <a-row class="status-list" type="flex">
-        <a-col flex="1">
+      <div class="status-list">
+        <div>
           <div class="text">审核状态</div>
           <div class="heading">{{ info.statusv }}</div>
-        </a-col>
-        <a-col flex="1">
+        </div>
+        <div>
           <div class="text">合同状态</div>
           <div class="heading">{{ info.contractStatusv }}</div>
-        </a-col>
-        <a-col flex="1">
+        </div>
+        <div>
           <div class="text">合同金额</div>
           <div class="heading">￥{{ info.contractMoney }}</div>
-        </a-col>
-        <a-col flex="1">
+        </div>
+        <div>
           <div class="text">合同总量</div>
           <div class="heading">{{ info.contractTotal }}</div>
-        </a-col>
-      </a-row>
+        </div>
+      </div>
     </template>
 
     <a-card
@@ -265,12 +265,12 @@ export default {
   margin-left: 44px;
 }
 .text {
-  padding-left: 10px;
+  // padding-left: 10px;
   color: rgba(0, 0, 0, 0.45);
 }
 
 .heading {
-  padding-left: 10px;
+  // padding-left: 10px;
   color: rgba(0, 0, 0, 0.85);
   font-size: 20px;
   // word-break: break-all;
@@ -297,8 +297,6 @@ export default {
 .mobile {
   .detail-layout {
     margin-left: unset;
-  }
-  .text {
   }
   .status-list {
     text-align: left;

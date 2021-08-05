@@ -69,13 +69,14 @@
       >
         <template slot="supplierName" slot-scope="text, record">
           <router-link
+            class="two-Multi"
             :to="{ name: 'SupplierDetail', query: { id: record.supplierId } }"
             >{{ text }}</router-link
           >
         </template>
         <template slot="contractMoney" slot-scope="text, record">
           <router-link
-          v-if="+text"
+            v-if="+text"
             :to="{ name: 'ContractDetail', query: { id: record.contractId } }"
             >￥{{ text }}</router-link
           >
@@ -91,9 +92,7 @@
         <template slot="action" slot-scope="text, record, index">
           <span class="table-action" v-if="record.editable">
             <a @click="save(index, record)">保存</a>
-            <a-popconfirm title="是否取消？" @confirm="cancel(index)">
-              <a>取消</a>
-            </a-popconfirm>
+            <a @click="cancel(index)">取消</a>
           </span>
           <span class="table-action" v-else>
             <a v-if="permissions.UpdatePermission" @click="handleEdit(index)"
@@ -125,64 +124,6 @@ import { getInvoicedReport, updateInvoicedRepBz } from '@/api/report'
 import cloneDeep from 'lodash.clonedeep'
 import setCompanyId from '@/mixins/setCompanyId'
 
-const columns = [
-  {
-    title: '所属项目',
-    dataIndex: 'projectName',
-    width: '9%'
-  },
-  {
-    title: '订单ID',
-    dataIndex: 'idv'
-  },
-  {
-    title: '供应商ID',
-    dataIndex: 'supplierIdv',
-    width: '9%'
-  },
-  {
-    title: '供应商',
-    dataIndex: 'supplierName',
-    scopedSlots: { customRender: 'supplierName' },
-    width: '14%'
-  },
-  {
-    title: '合同金额',
-    dataIndex: 'contractMoney',
-    scopedSlots: { customRender: 'contractMoney' },
-    width: '11%'
-  },
-  {
-    title: '已开票金额',
-    dataIndex: 'invoiced',
-    sort: true,
-    width: '11%',
-    customRender (text) {
-      return +text ? `￥${text}` : '--'
-    }
-  },
-  {
-    title: '未开票金额',
-    dataIndex: 'notInvoiced',
-    sort: true,
-    width: '12%',
-    customRender (text) {
-      return +text ? `￥${text}` : '--'
-    }
-  },
-  {
-    title: '备注',
-    dataIndex: 'bbBz',
-    scopedSlots: { customRender: 'remarks' },
-    width: '14%'
-  },
-  {
-    title: '操作',
-    width: '90px',
-    scopedSlots: { customRender: 'action' }
-  }
-]
-
 export default {
   name: 'reportInvoiced',
   mixins: [setCompanyId],
@@ -195,15 +136,75 @@ export default {
     AdvancedForm
   },
   data () {
-    this.columns = columns
     return {
       labelCol: { span: 7 },
       wrapperCol: { span: 14 },
       visible: false,
       // 高级搜索 展开/关闭
-      advanced: false,
+      advanced: true,
       // 查询参数
       queryParam: {},
+      columns: [
+        {
+          title: '所属项目',
+          dataIndex: 'projectName',
+          width: '15%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '订单ID',
+          dataIndex: 'idv',
+          class: 'nowrap'
+        },
+        {
+          title: '供应商ID',
+          dataIndex: 'supplierIdv',
+          class: 'nowrap'
+        },
+        {
+          title: '供应商',
+          dataIndex: 'supplierName',
+          scopedSlots: { customRender: 'supplierName' },
+          class: 'nowrap'
+        },
+        {
+          title: '合同金额',
+          dataIndex: 'contractMoney',
+          scopedSlots: { customRender: 'contractMoney' },
+          class: 'nowrap'
+        },
+        {
+          title: '已开票金额',
+          dataIndex: 'invoiced',
+          sort: true,
+          class: 'nowrap',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '未开票金额',
+          dataIndex: 'notInvoiced',
+          sort: true,
+          class: 'nowrap',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '备注',
+          dataIndex: 'bbBz',
+          scopedSlots: { customRender: 'remarks' },
+          width: '14%'
+        },
+        {
+          title: '操作',
+          width: '90px',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
       tableData: [],
       cacheData: [],
       // 加载数据方法 必须为 Promise 对象

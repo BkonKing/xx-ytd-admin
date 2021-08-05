@@ -73,7 +73,8 @@
                 </div>
               </template>
               <template slot="avatar">
-                <a-avatar size="large" :src="item.companyLogo" />
+                <a-avatar v-if="item.companyLogo" size="large" :src="item.companyLogo" />
+                <img v-else src="@/assets/company.png" style="width: 48px; height: 48px;">
               </template>
             </a-card-meta>
             <template slot="actions">

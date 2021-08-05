@@ -5,6 +5,13 @@
   word-break: break-all;
 }
 
+.textOverflowMultiLine(@line: 2) {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: @line;
+  -webkit-box-orient: vertical;
+}
+
 .textOverflowMulti(@line: 3, @bg: #fff) {
   position: relative;
   max-height: @line * 1.5em;

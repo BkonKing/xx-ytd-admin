@@ -91,9 +91,9 @@ export default {
   },
 
   created () {
-    // console.log(this.$store.state.login.isAutoLogin)
+    console.log(this.$store.state.login.isAutoLogin, this.$store.state.login.isLogout)
     this.autoLogin = this.$store.state.login.isAutoLogin
-    if (!window.localStorage.getItem('access_token')) {
+    if (!localStorage.getItem('access_token')) {
       if (this.autoLogin) {
         const accountInfo = this.$store.state.login.accountInfo
         this.form = JSON.parse(JSON.stringify(accountInfo))

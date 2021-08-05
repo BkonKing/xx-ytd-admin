@@ -19,6 +19,7 @@
                 <a-range-picker
                   v-model="queryParam.time"
                   valueFormat="YYYY-MM-DD"
+                  style="width: 100%;"
                 />
               </a-form-item>
             </a-col>
@@ -129,61 +130,6 @@ import { getMaterialReport } from '@/api/report'
 import { changeJSON2QueryString } from '@/utils/util'
 import setCompanyId from '@/mixins/setCompanyId'
 
-const columns = [
-  {
-    title: '所属项目',
-    dataIndex: 'projectName'
-  },
-  {
-    title: '订单ID',
-    dataIndex: 'idv',
-    width: '172px'
-  },
-  {
-    title: '供应商',
-    dataIndex: 'supplierName'
-  },
-  {
-    title: '物料名称',
-    dataIndex: 'materialName'
-  },
-  {
-    title: '物料品牌',
-    dataIndex: 'brand'
-  },
-  {
-    title: '规格型号',
-    dataIndex: 'model'
-  },
-  {
-    title: '税率',
-    dataIndex: 'taxRate',
-    width: '70px'
-  },
-  {
-    title: '单价',
-    dataIndex: 'unitPrice',
-    sorter: true,
-    customRender (text) {
-      return +text ? `￥${text}` : '--'
-    }
-  },
-  {
-    title: '金额',
-    dataIndex: 'allPrice',
-    sorter: true,
-    customRender (text) {
-      return +text ? `￥${text}` : '--'
-    }
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    width: '65px',
-    scopedSlots: { customRender: 'action' }
-  }
-]
-
 export default {
   name: 'reportMaterial',
   mixins: [setCompanyId],
@@ -196,13 +142,88 @@ export default {
     AdvancedForm
   },
   data () {
-    this.columns = columns
     return {
       confirmLoading: false,
       // 高级搜索 展开/关闭
       advanced: false,
       // 查询参数
       queryParam: {},
+      columns: [
+        {
+          title: '所属项目',
+          dataIndex: 'projectName',
+          width: '10%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '订单ID',
+          dataIndex: 'idv',
+          class: 'nowrap'
+        },
+        {
+          title: '供应商',
+          dataIndex: 'supplierName',
+          width: '10%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '物料名称',
+          dataIndex: 'materialName',
+          width: '10%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '物料品牌',
+          dataIndex: 'brand',
+          width: '10%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '规格型号',
+          dataIndex: 'model',
+          width: '10%',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '税率',
+          dataIndex: 'taxRate',
+          class: 'nowrap'
+        },
+        {
+          title: '单价',
+          dataIndex: 'unitPrice',
+          class: 'nowrap',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '金额',
+          dataIndex: 'allPrice',
+          class: 'nowrap',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          width: '65px',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
@@ -232,9 +253,6 @@ export default {
     }
   },
   methods: {
-    toggleAdvanced () {
-      this.advanced = !this.advanced
-    },
     // 导出
     exportReport () {
       if (!this.queryParam.projectId) {
@@ -270,5 +288,4 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

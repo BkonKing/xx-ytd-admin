@@ -25,14 +25,13 @@
           {{ info.companyName }}
         </a-descriptions-item>
         <a-descriptions-item label="订单凭证">
-          {{ info.orderPzNum }}张
-          <a-button
+          {{ info.orderPzNum }}张<a
             v-if="+info.orderPzNum"
-            type="link"
+            class="two-blank"
             @click="previewImage(info.orderPz)"
           >
             查看
-          </a-button>
+          </a>
         </a-descriptions-item>
         <a-descriptions-item label="合同名称">
           <router-link
@@ -42,8 +41,7 @@
           >
         </a-descriptions-item>
         <a-descriptions-item label="创建人">
-          {{ info.createAdmin }}
-          {{ info.ctime }}
+          {{ info.createAdmin }}<span class="two-blank"></span>{{ info.ctime }}
         </a-descriptions-item>
       </a-descriptions>
     </template>
@@ -64,16 +62,16 @@
     </template>
 
     <template v-slot:extraContent>
-      <a-row class="status-list" type="flex">
-        <a-col flex="1">
+      <div class="status-list">
+        <div style="flex: 0 0 110px;">
           <div class="text">状态</div>
           <div class="heading">{{ info.statusv }}</div>
-        </a-col>
-        <a-col flex="1">
+        </div>
+        <div>
           <div class="text">订单金额</div>
-          <div class="heading">¥ {{ info.orderPrice }}</div>
-        </a-col>
-      </a-row>
+          <div class="heading">¥{{ info.orderPrice }}</div>
+        </div>
+      </div>
     </template>
     <a-card
       v-if="isPass"
@@ -124,7 +122,7 @@
       v-show="!isPass || tabActiveKey === '1'"
       :data="info.auditLeveLog"
     ></order-info>
-   <log-list
+    <log-list
       ref="log-list"
       v-show="!isPass || tabActiveKey === '0'"
       typeId="30"
@@ -296,8 +294,6 @@ export default {
 .mobile {
   .detail-layout {
     margin-left: unset;
-  }
-  .text {
   }
   .status-list {
     text-align: left;

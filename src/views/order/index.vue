@@ -266,11 +266,15 @@ export default {
       columns: [
         {
           title: '审核状态',
+          class: 'nowrap',
           dataIndex: 'statusv'
         },
         {
           title: '所属项目',
-          dataIndex: 'projectName'
+          dataIndex: 'projectName',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
         },
         {
           title: '订单ID',
@@ -279,11 +283,13 @@ export default {
         {
           title: '物料数量',
           dataIndex: 'materialNum',
+          class: 'nowrap',
           sorter: true
         },
         {
           title: '金额',
           dataIndex: 'orderPrice',
+          class: 'nowrap',
           sorter: true
         },
         {

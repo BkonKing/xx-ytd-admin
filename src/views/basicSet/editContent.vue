@@ -8,7 +8,7 @@
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
       >
-        <a-form-model-item label="消息类型">
+        <a-form-model-item label="消息类型" style="margin-bottom: 6px;">
           {{ info.messageName }}
         </a-form-model-item>
         <a-form-model-item label="标签说明">
@@ -84,7 +84,7 @@
               </a-tooltip>
             </span>
           </template>
-          <div style="width: 440px;">{{ info.webSendName }}</div>
+          <div style="width: 440px;">{{ info.webSendName || '--' }}</div>
         </a-form-model-item>
         <a-form-model-item v-if="+other">
           <template slot="label">
@@ -123,6 +123,7 @@
         <a-form-model-item label="内容模板" required>
           <div class="inputBox">
             <a-form-model-item
+              class="no-required"
               label="流程编号"
               prop="lcbh"
               :label-col="labelColSpan"
@@ -130,6 +131,7 @@
               <a-textarea v-model="form.lcbh" placeholder="请输入" auto-size />
             </a-form-model-item>
             <a-form-model-item
+              class="no-required"
               label="流程名称"
               prop="lcmc"
               :label-col="labelColSpan"
@@ -138,6 +140,7 @@
             </a-form-model-item>
 
             <a-form-model-item
+              class="no-required"
               label="流程摘要"
               prop="lczy"
               :label-col="labelColSpan"
@@ -146,7 +149,7 @@
             </a-form-model-item>
             <a-form-model-item
               label="备注"
-              class="lcbz"
+              class="lcbz no-required"
               prop="lcbz"
               :label-col="labelColSpan"
             >
@@ -169,7 +172,7 @@
               </a-tooltip>
             </span>
           </template>
-          <div style="width: 440px;">{{ info.wxSendName }}</div>
+          <div style="width: 440px;">{{ info.wxSendName || '--' }}</div>
         </a-form-model-item>
         <a-form-model-item v-if="+other">
           <template slot="label">
@@ -344,6 +347,20 @@ export default {
 
 <style lang="less" scoped>
 .editContent {
+  .no-required {
+    &.ant-form-item {
+      margin-bottom: 0;
+    }
+    /deep/ .ant-form-item-label {
+      text-align: left;
+    }
+    /deep/ .ant-form-item-required {
+      color: #00000072;
+      &::before {
+        content: "" !important;
+      }
+    }
+  }
   .box {
     display: flex;
     width: 460px;
@@ -387,6 +404,9 @@ export default {
       border: none;
       box-shadow: none;
     }
+  }
+  /deep/ .ant-form-item {
+    margin-bottom: 15px;
   }
 }
 </style>

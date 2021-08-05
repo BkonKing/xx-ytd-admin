@@ -39,7 +39,7 @@
               v-model="item.paid"
               placeholder="请输入"
               prefix="￥"
-              v-number-input="{ decimal: 1, min: 0, max: item.unpaid }"
+              v-number-input="{ min: 0, max: item.unpaid }"
               :maxLength="20"
               :key="`paid${index}`"
             >
@@ -52,12 +52,14 @@
           总计
         </a-col>
         <a-col flex="140px">未付￥{{ unpaid }}</a-col>
-        <a-col flex="180px" style="margin-left: 12px;">
-          ￥{{ total }}
-        </a-col>
+        <a-col flex="180px" style="margin-left: 12px;"> ￥{{ total }} </a-col>
       </a-row>
     </a-form-model-item>
-    <a-form-model-item label="付款凭证" prop="payPz">
+    <a-form-model-item
+      label="付款凭证"
+      prop="payPz"
+      style="margin-bottom: 7px;"
+    >
       <upload-image v-model="form.payPz" maxLength="8"></upload-image>
     </a-form-model-item>
     <a-form-model-item label="开票情况" prop="isKp" required>
@@ -66,7 +68,7 @@
         <a-select-option value="0">未开</a-select-option>
       </a-select>
     </a-form-model-item>
-    <a-form-model-item label="开票凭证" prop="kpPz">
+    <a-form-model-item label="开票凭证" prop="kpPz" style="margin-bottom: 0;">
       <upload-image v-model="form.kpPz" maxLength="8"></upload-image>
     </a-form-model-item>
   </a-form-model>
@@ -196,5 +198,6 @@ export default {
 }
 .pay-row-strong {
   font-weight: bold;
+  color: rgba(0, 0, 0, 0.85);
 }
 </style>

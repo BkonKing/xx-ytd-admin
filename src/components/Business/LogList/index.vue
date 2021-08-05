@@ -136,7 +136,7 @@ export default {
         {
           title: '操作时间',
           dataIndex: 'ctime',
-          width: '165px'
+          width: '170px'
         },
         {
           title: '模块',

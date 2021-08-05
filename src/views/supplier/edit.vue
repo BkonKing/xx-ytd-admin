@@ -11,7 +11,7 @@
         <a-form-model-item label="供应商名称" prop="supplierName" required>
           <a-input
             v-model="form.supplierName"
-            :maxLength="50"
+            :maxLength="25"
             placeholder="名称"
           />
         </a-form-model-item>
@@ -35,6 +35,7 @@
                 <a-input
                   v-model="form.contactsMen"
                   placeholder="姓名"
+                  :maxLength="15"
                 ></a-input>
               </a-form-model-item>
             </a-col>
@@ -62,11 +63,16 @@
         <a-form-model-item label="法人代表" prop="legalPerson" required>
           <a-input
             v-model="form.legalPerson"
-            :maxLength="50"
+            :maxLength="15"
             placeholder="请输入"
           />
         </a-form-model-item>
-        <a-form-model-item label="法人身份证" prop="legalPersonPz" required>
+        <a-form-model-item
+          label="法人身份证"
+          prop="legalPersonPz"
+          style="margin-bottom: 4px;"
+          required
+        >
           <upload-image
             v-model="form.legalPersonPz"
             maxLength="5"
@@ -106,7 +112,12 @@
             </a-col>
           </a-row>
         </a-form-model-item>
-        <a-form-model-item label="营业执照" prop="licensePz" required>
+        <a-form-model-item
+          label="营业执照"
+          prop="licensePz"
+          style="margin-bottom: 4px;"
+          required
+        >
           <upload-image
             v-model="form.licensePz"
             maxLength="5"
@@ -116,21 +127,26 @@
         <a-form-model-item label="注册资金" prop="registeredCapital">
           <a-input
             v-model="form.registeredCapital"
-            :maxLength="50"
+            :maxLength="15"
             placeholder="请输入"
             suffix="元人民币"
-            v-number-input
+            v-number-input="{min: 0}"
           />
         </a-form-model-item>
         <a-form-model-item label="注册地址" prop="registeredAddress">
           <a-textarea
             v-model="form.registeredAddress"
-            :maxLength="200"
+            :maxLength="100"
             placeholder="请输入"
             :rows="4"
           />
         </a-form-model-item>
-        <a-form-model-item label="资质证件" prop="qualificationsPz" required>
+        <a-form-model-item
+          label="资质证件"
+          prop="qualificationsPz"
+          style="margin-bottom: 0;"
+          required
+        >
           <upload-image
             v-model="form.qualificationsPz"
             maxLength="5"
@@ -315,5 +331,8 @@ export default {
     color: rgba(0, 0, 0, 0.45);
     font-size: 12px;
   }
+}
+/deep/ .ant-card-body {
+  padding-bottom: 4px;
 }
 </style>

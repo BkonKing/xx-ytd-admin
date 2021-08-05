@@ -149,7 +149,7 @@ export default {
         if (res.code === 200) {
           this.inputArr = res.data
           this.idArr = []
-          this.$message.success(res.message)
+          this.$message.success('提交成功')
         }
       } else {
         this.inputArr = []

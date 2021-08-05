@@ -37,8 +37,8 @@
     <a-card title="物料信息" style="margin-top: 24px;">
       <div class="edit-table">
         <a-row class="edit-table-header" type="flex">
-          <a-col flex="2">物料</a-col>
-          <a-col flex="320px">数量</a-col>
+          <a-col class="form-required-after" flex="2">物料</a-col>
+          <a-col class="form-required-after" flex="320px">数量</a-col>
           <a-col flex="1">物料用途</a-col>
           <a-col flex="100px">排序</a-col>
           <a-col flex="60px">操作</a-col>
@@ -394,7 +394,7 @@ export default {
     background: #fafafa;
     border-bottom: 1px solid #e8e8e8;
     > .ant-col {
-      padding: 16px;
+      padding: 16px 8px;
     }
   }
   &-body {

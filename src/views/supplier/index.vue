@@ -223,28 +223,38 @@ export default {
       columns: [
         {
           title: '审核状态',
+          class: 'nowrap',
           dataIndex: 'statusv'
         },
         {
           title: '供应商ID',
+          class: 'nowrap',
           dataIndex: 'idv'
         },
         {
           title: '供应商',
-          dataIndex: 'supplierName'
+          dataIndex: 'supplierName',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
         },
         {
           title: '类型',
-          dataIndex: 'supplierTypeName'
+          dataIndex: 'supplierTypeName',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
         },
         {
           title: '供应物料',
           dataIndex: 'materialCount',
+          class: 'nowrap',
           sorter: true
         },
         {
           title: '合同',
           dataIndex: 'contractCount',
+          class: 'nowrap',
           sorter: true
         },
         {

@@ -80,9 +80,9 @@
       <a-cascader
         v-model="form.area"
         :options="area"
-        placeholder="请选择地址"
+        placeholder="请选择"
       />
-      <a-form-model-item prop="address"
+      <a-form-model-item prop="address" style="margin-top: 24px"
         ><a-textarea v-model="form.address" rows="4" placeholder="详细地址" />
       </a-form-model-item>
     </a-form-model-item>
@@ -115,7 +115,7 @@
             <a-input
               v-model="form.adminRealname"
               placeholder="姓名"
-              :maxLength="20"
+              :maxLength="15"
             ></a-input>
           </a-form-model-item>
         </a-col>
@@ -183,7 +183,7 @@ export default {
         // adminPassword: [{ required: true, message: '请输入管理员登录密码' }],
         adminRealname: [{ required: true, message: '请输入管理员真实姓名' }],
         adminMobile: [{ required: true, message: '请输入管理员手机号' }],
-        shortName: [{ required: true, message: '请输入公司简称' }],
+        shortName: [{ required: true, message: '请输入公司中文简称' }],
         shortEng: [{ required: true, message: '请输入公司英文简称' }]
       },
       area: chinaArea,

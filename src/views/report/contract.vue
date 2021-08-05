@@ -14,40 +14,38 @@
                 <company-select v-model="queryParam.companyId"></company-select>
               </a-form-item>
             </a-col>
-            <template v-if="!isParentCompany || advanced">
-              <a-col :md="8" :sm="24">
-                <a-form-item label="合同状态">
-                  <a-select
-                    v-model="queryParam.contractStatus"
-                    placeholder="请选择"
+            <a-col :md="8" :sm="24">
+              <a-form-item label="合同状态">
+                <a-select
+                  v-model="queryParam.contractStatus"
+                  placeholder="请选择"
+                >
+                  <a-select-option
+                    v-for="option in contractStatusOptions"
+                    :value="option.value"
+                    :key="option.value"
                   >
-                    <a-select-option
-                      v-for="option in contractStatusOptions"
-                      :value="option.value"
-                      :key="option.value"
-                    >
-                      {{ option.text }}
-                    </a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-            </template>
-            <template v-if="advanced">
-              <a-col :md="8" :sm="24">
-                <a-form-item label="合同类型">
-                  <contract-type-select
-                    v-model="queryParam.categoryId"
-                  ></contract-type-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="订单">
-                  <a-input
-                    v-model="queryParam.orderId"
-                    placeholder="ID"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
+                    {{ option.text }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="合同类型">
+                <contract-type-select
+                  v-model="queryParam.categoryId"
+                ></contract-type-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="8" :sm="24">
+              <a-form-item label="订单">
+                <a-input
+                  v-model="queryParam.orderId"
+                  placeholder="ID"
+                ></a-input>
+              </a-form-item>
+            </a-col>
+            <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="合同">
                   <a-input
@@ -56,6 +54,8 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
+            </template>
+            <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="供应商">
                   <a-input
@@ -139,51 +139,6 @@ import { getContractReport } from '@/api/report'
 import { changeJSON2QueryString } from '@/utils/util'
 import setCompanyId from '@/mixins/setCompanyId'
 
-const columns = [
-  {
-    title: '合同状态',
-    dataIndex: 'contractStatusv',
-    width: '92px'
-  },
-  {
-    title: '所属项目',
-    dataIndex: 'projectName'
-  },
-  {
-    title: '合同名称',
-    dataIndex: 'contractName'
-  },
-  {
-    title: '合同编号',
-    dataIndex: 'contractNo'
-  },
-  {
-    title: '订单',
-    dataIndex: 'orderNum',
-    sorter: true,
-    scopedSlots: { customRender: 'orderNum' }
-  },
-  {
-    title: '金额',
-    dataIndex: 'contractMoney',
-    sorter: true,
-    customRender (text) {
-      return +text ? `￥${text}` : '--'
-    }
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'ctime',
-    width: '162px'
-  },
-  {
-    title: '操作',
-    dataIndex: 'id',
-    width: '64px',
-    scopedSlots: { customRender: 'action' }
-  }
-]
-
 export default {
   name: 'reportContract',
   mixins: [setCompanyId],
@@ -196,7 +151,6 @@ export default {
     AdvancedForm
   },
   data () {
-    this.columns = columns
     return {
       // 高级搜索 展开/关闭
       advanced: false,
@@ -221,7 +175,7 @@ export default {
       ],
       // 查询参数
       queryParam: {
-        contractStatus: '',
+        contractStatus: undefined,
         projectId: '',
         companyId: '',
         categoryId: '',
@@ -231,6 +185,61 @@ export default {
         payStatus: '',
         time: []
       },
+      columns: [
+        {
+          title: '合同状态',
+          dataIndex: 'contractStatusv',
+          class: 'nowrap'
+        },
+        {
+          title: '所属项目',
+          dataIndex: 'projectName',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '合同名称',
+          dataIndex: 'contractName',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '合同编号',
+          dataIndex: 'contractNo',
+          customRender: (text) => {
+            return <div class="two-Multi">{text}</div>
+          }
+        },
+        {
+          title: '订单',
+          dataIndex: 'orderNum',
+          class: 'nowrap',
+          sorter: true,
+          scopedSlots: { customRender: 'orderNum' }
+        },
+        {
+          title: '金额',
+          dataIndex: 'contractMoney',
+          class: 'nowrap',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '创建时间',
+          class: 'nowrap',
+          dataIndex: 'ctime'
+        },
+        {
+          title: '操作',
+          dataIndex: 'id',
+          width: '64px',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
@@ -294,5 +303,4 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>
