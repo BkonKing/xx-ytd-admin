@@ -132,11 +132,11 @@ export function getAllRoles () {
   })
 }
 // 所有项目接口(已验证)
-export function toGetAllProject () {
+export function toGetAllProject (params) {
   return request({
     url: permissionApi.getAllProject,
-    method: 'post'
-
+    method: 'get',
+    params
   })
 }
 // 公司管理接口(已验证)

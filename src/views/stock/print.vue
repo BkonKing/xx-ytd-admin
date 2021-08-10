@@ -23,6 +23,7 @@
               <th width="10%">规格</th>
               <th width="10%">单位</th>
               <th width="10%">数量</th>
+              <th width="10%">单位</th>
               <th width="10%">金额</th>
               <th width="10%">备注</th>
             </tr>
@@ -33,23 +34,20 @@
             >
               <td>{{ item.xh }}</td>
               <td>{{ item.materialNo }}</td>
-              <td>{{ item.brand }}</td>
-              <td>{{ item.materialName }}</td>
-              <td>{{ item.model }}</td>
+              <td style="text-align: left;">{{ item.brand }}</td>
+              <td style="text-align: left;">{{ item.materialName }}</td>
+              <td style="text-align: left;">{{ item.model }}</td>
               <td>{{ item.unitv }}</td>
               <td>{{ item.stockNum }}</td>
-              <td><span style="float: left">￥</span
-                ><span style="float: right;margin-right: 30px;">-</span></td>
-              <td></td>
+              <td style="text-align: left;">￥{{ item.unitPrice }}</td>
+              <td style="text-align: left;">￥{{ item.materialPrice }}</td>
+              <td style="text-align: left;"></td>
             </tr>
             <tr class="print-tbody-tr-border">
               <td colspan="2">合计（大写）:</td>
-              <td colspan="4"></td>
+              <td colspan="5" style="text-align: left;">{{ tableData.amountToCn }}</td>
               <td>（小写）:</td>
-              <td colspan="2">
-                <span style="float: left">￥</span
-                ><span style="float: right;margin-right: 30px;">-</span>
-              </td>
+              <td colspan="2" style="text-align: left;">￥{{ tableData.allPrice }}</td>
             </tr>
             <tr>
               <td colspan="4">审核人：</td>

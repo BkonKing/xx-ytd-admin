@@ -23,7 +23,7 @@
         <a-form-model-item required prop="clktime" label="出库日期">
           <a-date-picker
             v-model="form.clktime"
-            :show-time="{defaultValue:moment('00:00:00','HH:mm:ss')}"
+            :show-time="{ defaultValue: moment('00:00:00', 'HH:mm:ss') }"
             placeholder="请选择"
             valueFormat="YYYY-MM-DD HH:mm:ss"
             style="width: 100%;"
@@ -38,7 +38,9 @@
       <div class="edit-table">
         <a-row class="edit-table-header" type="flex">
           <a-col class="form-required-after" flex="2">物料</a-col>
+          <a-col class="form-required-after" flex="120px">出库单价</a-col>
           <a-col class="form-required-after" flex="320px">数量</a-col>
+          <a-col flex="1">金额</a-col>
           <a-col flex="1">物料用途</a-col>
           <a-col flex="100px">排序</a-col>
           <a-col flex="60px">操作</a-col>
@@ -63,6 +65,17 @@
                     $refs[`tableForm${index}`][0].validateField('materialIdArr')
                   "
                 ></material-type-select>
+              </a-form-model-item>
+            </a-col>
+            <a-col flex="120px">
+              <a-form-model-item prop="unitPrice" required>
+                <a-input
+                  v-model="record.unitPrice"
+                  v-number-input
+                  placeholder="请输入"
+                  prefix="￥"
+                  :maxLength="15"
+                />
               </a-form-model-item>
             </a-col>
             <a-col flex="320px">
@@ -91,22 +104,34 @@
                 </a-col>
                 <a-col flex="1">
                   <a-form-model-item prop="stockNum" required>
-                    <a-input-number
+                    <a-input
                       v-model="record.stockNum"
                       placeholder="请输入"
-                      :min="0"
-                      :max="parseFloat(record.currentNum)"
+                      v-number-input="{
+                        min: 0,
+                        max: parseFloat(record.currentNum)
+                      }"
                       :maxLength="15"
                     />
                   </a-form-model-item>
                 </a-col>
                 <a-col flex="100px">
                   <a-form-model-item style="color: #0000003F;">
-                    库存
+                    <span class="two-blank">库存</span>
                     {{ record.currentNum }}
                   </a-form-model-item>
                 </a-col>
               </a-row>
+            </a-col>
+            <a-col flex="1">
+              <span class="td-block" style="word-break: break-all;"
+                >￥{{
+                  NPTimes(
+                    record.unitPrice,
+                    parseFloat(record.stockNum) || 0
+                  ).toFixed(2)
+                }}</span
+              >
             </a-col>
             <a-col flex="1">
               <a-form-model-item prop="remarks">
@@ -143,9 +168,10 @@
           style="border-bottom: 1px solid #e8e8e8;"
         >
           <a-col flex="2">总计</a-col>
-          <a-col flex="101px"></a-col>
-          <a-col flex="219px">{{ totalNum }}</a-col>
-          <a-col flex="1"></a-col>
+          <a-col flex="120px"></a-col>
+          <a-col flex="90px"></a-col>
+          <a-col flex="218px">{{ totalNum }}</a-col>
+          <a-col flex="2">￥{{ totalMoney }}</a-col>
           <a-col flex="160px"></a-col>
         </a-row>
         <a-button
@@ -195,6 +221,7 @@ export default {
       id: '',
       title: '新增出库单',
       loading: false,
+      NPTimes: NP.times,
       NPPlus: NP.plus,
       form: {
         projectId: '',
@@ -211,8 +238,8 @@ export default {
       },
       tableRules: {
         materialIdArr: [{ required: true, message: '请填写' }],
-        stockNum: [{ required: true, message: '请填写' }]
-        // stockNum: [{ required: true, message: '请填写' }],
+        stockNum: [{ required: true, message: '请填写' }],
+        unitPrice: [{ required: true, message: '请填写' }]
       },
       tableData: [],
       reTableIndexs: [],
@@ -220,6 +247,13 @@ export default {
     }
   },
   computed: {
+    totalMoney () {
+      let num = 0
+      this.tableData.forEach(obj => {
+        num += this.NPTimes(obj.unitPrice, obj.stockNum)
+      })
+      return num.toFixed(2)
+    },
     totalNum () {
       let num = 0
       this.tableData.forEach(obj => {
@@ -265,7 +299,8 @@ export default {
         materialIdArr: [],
         remarks: '',
         unit: '',
-        stockNum: 0,
+        unitPrice: '',
+        stockNum: '',
         listOrder: ''
       })
     },
@@ -361,18 +396,22 @@ export default {
           }
           // console.log(params)
           const api = this.id ? updateStockCk : addStockCk
-          api(params).then(() => {
-            this.$message.success('提交成功')
-            this.$router.go(-1)
-          }).catch((res) => {
-            if (res.code === 202) {
-              const text = res.date.map(index => index + 1)
-              // this.reTableIndexs = res.date
-              this.$message.warning(`物料第${text.join('，')}条重复创建，请合并为一行`)
-            } else {
-              this.$message.error(res.message)
-            }
-          })
+          api(params)
+            .then(() => {
+              this.$message.success('提交成功')
+              this.$router.go(-1)
+            })
+            .catch(res => {
+              if (res.code === 202) {
+                const text = res.date.map(index => index + 1)
+                // this.reTableIndexs = res.date
+                this.$message.warning(
+                  `物料第${text.join('，')}条重复创建，请合并为一行`
+                )
+              } else {
+                this.$message.error(res.message)
+              }
+            })
         })
         .catch(() => {})
         .finally(() => {
@@ -394,14 +433,14 @@ export default {
     background: #fafafa;
     border-bottom: 1px solid #e8e8e8;
     > .ant-col {
-      padding: 16px 8px;
+      padding: 12px 4px 12px 8px;
     }
   }
   &-body {
     > .ant-row-flex {
       border-bottom: 1px solid #e8e8e8;
       > .ant-col {
-        padding: 6px 8px;
+        padding: 6px 4px 6px 8px;
       }
     }
   }
@@ -411,6 +450,7 @@ export default {
   }
 }
 .table-total {
+  font-weight: bold;
   .ant-col {
     padding: 6px 8px;
   }

@@ -16,11 +16,11 @@
                   placeholder="请选择"
                 >
                   <a-select-option
-                    v-for="option in tabList"
-                    :value="option.key"
-                    :key="option.key"
+                    v-for="option in statusOptions"
+                    :value="option.value"
+                    :key="option.value"
                   >
-                    {{ option.tab }}
+                    {{ option.text }}
                   </a-select-option>
                 </a-select>
               </a-form-item>
@@ -247,18 +247,18 @@ export default {
   },
   data () {
     return {
-      // 审核状态：0=全部、1=待审核、2=已通过、3=未通过
-      tabList: [
-        { key: '0', tab: '全部' },
-        { key: '1', tab: '待审核' },
-        { key: '2', tab: '已通过' },
-        { key: '3', tab: '未通过' }
-      ],
       tabActiveKey: '0',
       visible: false,
       confirmLoading: false,
       // 高级搜索 展开/关闭
       advanced: false,
+      // 审核状态：0=全部、1=待审核、2=已通过、3=未通过
+      statusOptions: [
+        { value: '0', text: '全部' },
+        { value: '1', text: '待审核' },
+        { value: '2', text: '已通过' },
+        { value: '3', text: '未通过' }
+      ],
       // 查询参数
       queryParam: {
         companyId: ''
@@ -308,6 +308,7 @@ export default {
           scopedSlots: { customRender: 'action' }
         }
       ],
+      dsTotal: 0, // 待审核tab数量
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
@@ -325,7 +326,10 @@ export default {
         }
         return getOrderList(
           Object.assign(parameter, this.queryParam, queryParam)
-        )
+        ).then(res => {
+          this.dsTotal = res.data.dsTotal
+          return res
+        })
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -334,6 +338,16 @@ export default {
     }
   },
   computed: {
+    // 审核状态：0=全部、1=待审核、2=已通过、3=未通过
+    tabList () {
+      const dsTotal = +this.dsTotal ? ` ${this.dsTotal}` : ''
+      return [
+        { key: '0', tab: '全部' },
+        { key: '1', tab: `待审核${dsTotal}` },
+        { key: '2', tab: '已通过' },
+        { key: '3', tab: '未通过' }
+      ]
+    },
     rowSelection () {
       if (!this.permissions.AuditPermission) {
         return null
@@ -359,6 +373,8 @@ export default {
   methods: {
     handleTabChange (key) {
       this.tabActiveKey = key
+      this.queryParam = { companyId: '' }
+      this.setcompanyId()
       this.changeColumns(key)
       this.$refs.table.refresh()
     },

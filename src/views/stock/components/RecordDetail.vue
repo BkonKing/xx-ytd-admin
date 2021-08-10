@@ -49,7 +49,7 @@
       ref="table"
       size="default"
       rowKey="stockId"
-      :columns="columns"
+      :columns="isRK ? RKColumns : CKColumns"
       :data-source="data.materia"
       :pagination="false"
     >
@@ -65,7 +65,7 @@
         >/{{ record.brand }}/{{ record.model }}
       </span>
       <div slot="stockNum" slot-scope="text, record" style="min-width: 70px;">
-        {{ text }} {{ record.unitv }}
+        {{ text }} {{ record.unitv || '' }}
       </div>
     </a-table>
     <a-row
@@ -74,14 +74,22 @@
       align="middle"
       style="border-bottom: 1px solid #e8e8e8;"
     >
+    <template v-if="isRK">
       <a-col flex="1">总计</a-col>
-      <a-col :flex="`0 0 ${isRK ? '21.9%' : '57%'}`">{{ data.materiaNum }}</a-col>
+      <a-col flex="0 0 21.9%">{{ data.materiaNum }}</a-col>
+    </template>
+    <template v-else>
+      <a-col flex="0 0 51%">总计</a-col>
+      <a-col flex="0 0 12%">{{ data.materiaNum }}</a-col>
+      <a-col flex="0 0 37%">￥{{ totalMoney }}</a-col>
+    </template>
     </a-row>
   </a-modal>
 </template>
 
 <script>
 import { TImage } from '@/components'
+import NP from 'number-precision'
 export default {
   name: '',
   components: {
@@ -100,7 +108,7 @@ export default {
   data () {
     return {
       visible: this.value,
-      columns: [
+      RKColumns: [
         {
           title: '序号',
           dataIndex: 'id',
@@ -118,6 +126,42 @@ export default {
           dataIndex: 'stockNum',
           scopedSlots: { customRender: 'stockNum' },
           width: '12%'
+        }
+      ],
+      CKColumns: [
+        {
+          title: '序号',
+          dataIndex: 'id',
+          scopedSlots: { customRender: 'index' },
+          width: '8%'
+        },
+        {
+          title: '物料',
+          dataIndex: 'materialName',
+          scopedSlots: { customRender: 'materialName' },
+          width: '30%'
+        },
+        {
+          title: '出库单价',
+          dataIndex: 'unitPrice',
+          width: '110px',
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        {
+          title: '数量',
+          dataIndex: 'stockNum',
+          scopedSlots: { customRender: 'stockNum' },
+          width: '12%'
+        },
+        {
+          title: '金额',
+          dataIndex: 'stockId',
+          width: '130px',
+          customRender (text, record) {
+            return `￥${NP.times(record.unitPrice, record.stockNum).toFixed(2)}`
+          }
         },
         {
           title: '物料用途',
@@ -132,6 +176,13 @@ export default {
     },
     typeText () {
       return this.isRK ? '入库' : '出库'
+    },
+    totalMoney () {
+      let num = 0
+      this.data.materia && this.data.materia.forEach(obj => {
+        num += NP.times(obj.unitPrice, obj.stockNum)
+      })
+      return num.toFixed(2)
     }
   },
   watch: {
@@ -140,20 +191,6 @@ export default {
     },
     visible (val) {
       this.$emit('input', val)
-    },
-    isRK (val) {
-      const index = this.columns.findIndex(
-        column => column.dataIndex === 'remarks'
-      )
-      // 入库单不显示物料用途
-      if (val && index > 0) {
-        this.columns.pop()
-      } else if (!val && index === -1) {
-        this.columns.push({
-          title: '物料用途',
-          dataIndex: 'remarks'
-        })
-      }
     }
   }
 }

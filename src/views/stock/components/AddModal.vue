@@ -101,14 +101,15 @@
               </a-col>
               <a-col flex="1">
                 <a-form-model-item prop="originalNum" required>
-                  <a-input-number
+                  <a-input
                     v-model="record.originalNum"
                     placeholder="请输入"
-                    :min="0"
-                    :precision="0"
-                    :max="999999999999999"
-                    style="width: 100%;"
+                    v-number-input="{
+                      min: 0,
+                      max: 999999999999999
+                    }"
                     @change="changeError(index)"
+                    style="width: 100%;"
                   />
                 </a-form-model-item>
               </a-col>
@@ -218,7 +219,7 @@ export default {
         model: '',
         unit: '',
         unitOptions: [],
-        originalNum: 0,
+        originalNum: '',
         remarks: ''
       })
     },

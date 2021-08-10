@@ -103,7 +103,7 @@
         showPagination="auto"
       >
         <template slot="materialName" slot-scope="text, record">
-          {{ record.materialNo }} {{ text }}
+          <div class="two-Multi">{{ record.materialNo }} {{ text }}</div>
         </template>
         <template slot="originalNum" slot-scope="text, record">
           <a-input-number
@@ -177,11 +177,10 @@ import { getStockList, updateStock, removeStock } from '@/api/stock'
 import AddModal from './components/AddModal'
 import clonedeep from 'lodash.clonedeep'
 import setCompanyId from '@/mixins/setCompanyId'
-import beforeRouteLeave from '@/mixins/beforeRouteLeave'
 
 export default {
   name: 'stockIndex',
-  mixins: [setCompanyId, beforeRouteLeave],
+  mixins: [setCompanyId],
   components: {
     STable,
     ProjectSelect,
@@ -217,10 +216,7 @@ export default {
           title: '物料名称',
           dataIndex: 'materialName',
           scopedSlots: { customRender: 'materialName' },
-          width: '11%',
-          customRender: (text) => {
-            return <div class="two-Multi">{text}</div>
-          }
+          width: '11%'
         },
         {
           title: '物料品牌',
@@ -352,6 +348,12 @@ export default {
         }
       })
     }
+  },
+  beforeRouteLeave (to, from, next) {
+    if (to.name !== 'stockDetail') {
+      this.$destroy()
+    }
+    next()
   }
 }
 </script>
@@ -373,6 +375,10 @@ export default {
 /deep/ .ant-table-tbody > tr > td {
   padding-left: 8px;
   padding-right: 0;
+}
+/deep/ .ant-table-thead > tr > th:last-child,
+/deep/ .ant-table-tbody > tr > td:last-child {
+  padding-right: 8px;
 }
 /deep/ .max-width {
   max-width: 116px;

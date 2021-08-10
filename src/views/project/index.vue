@@ -205,7 +205,8 @@ export default {
   },
   computed: {
     projectNum () {
-      return this.isParentCompany ? this.data.length - 1 : this.data.length
+      const num = this.isParentCompany ? this.data.length - 1 : this.data.length
+      return num < 0 ? 0 : num
     }
   },
   filters: {
@@ -393,6 +394,7 @@ export default {
   }
 }
 .status-list {
+  display: block;
   position: absolute;
   right: 24px;
   top: 16px;

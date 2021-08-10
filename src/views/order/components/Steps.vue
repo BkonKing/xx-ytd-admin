@@ -6,14 +6,23 @@
           <span>{{ step.leve }}</span>
         </template>
         <template v-slot:description>
-          <div>{{ step.realname }}</div>
+          <div>
+            {{
+              step.realname ||
+                (current === index &&
+                  index !== data.length - 1 &&
+                  "暂无审批人员") ||
+                ""
+            }}
+          </div>
           <div>{{ step.company }}</div>
           <div>{{ step.leveTime }}</div>
           <div
             v-if="
               !+step.status &&
                 current === index &&
-                index !== data.length - 1
+                index !== data.length - 1 &&
+                step.realname
             "
           >
             <template v-if="step.hurryUp">已催</template>
@@ -71,22 +80,39 @@ export default {
   /deep/ .ant-steps-item:last-child {
     margin-right: 67px;
   }
-  /deep/ .ant-steps-item-content, .ant-steps-dot.ant-steps-small .ant-steps-item-content {
+  /deep/ .ant-steps-item-content,
+  .ant-steps-dot.ant-steps-small .ant-steps-item-content {
     width: auto;
   }
   /deep/ .ant-steps-item-title {
-    margin-bottom:8px;
+    margin-bottom: 8px;
   }
   /deep/ .ant-steps-item-content {
     margin-left: 55px;
     text-align: left;
   }
-  /deep/ .ant-steps-item-process > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-title {
+  /deep/
+    .ant-steps-item-process
+    > .ant-steps-item-container
+    > .ant-steps-item-content
+    > .ant-steps-item-title {
     color: rgba(0, 0, 0, 0.45);
   }
-  /deep/ .ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-description,
-  /deep/ .ant-steps-item-wait > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-description,
-  /deep/ .ant-steps-item-process > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-description{
+  /deep/
+    .ant-steps-item-finish
+    > .ant-steps-item-container
+    > .ant-steps-item-content
+    > .ant-steps-item-description,
+  /deep/
+    .ant-steps-item-wait
+    > .ant-steps-item-container
+    > .ant-steps-item-content
+    > .ant-steps-item-description,
+  /deep/
+    .ant-steps-item-process
+    > .ant-steps-item-container
+    > .ant-steps-item-content
+    > .ant-steps-item-description {
     color: rgba(0, 0, 0, 0.35);
   }
 }

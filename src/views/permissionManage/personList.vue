@@ -215,7 +215,8 @@ export default {
           title: '编辑人员',
           width: 700,
           centered: true,
-          maskClosable: false
+          maskClosable: false,
+          dialogClass: 'person-form-dialog'
         }
       )
     },
@@ -265,7 +266,8 @@ export default {
           title: '新增人员',
           width: 700,
           centered: true,
-          maskClosable: false
+          maskClosable: false,
+          dialogClass: 'person-form-dialog'
         }
       )
     }
@@ -289,5 +291,11 @@ export default {
   .card2 {
     margin-top: 24px;
   }
+}
+</style>
+
+<style lang="less">
+.person-form-dialog .ant-modal-body {
+  max-height: 650px;
 }
 </style>

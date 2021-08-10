@@ -117,7 +117,7 @@ export default {
           dataIndex: 'total',
           width: '8%',
           customRender (text, record) {
-            return `${text}${record.unitv}`
+            return `${text}${record.unitv || ''}`
           }
         },
         {

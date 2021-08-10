@@ -6,7 +6,12 @@
       :bordered="false"
     >
       <a-form ref="form" layout="inline">
-        <standard-form-row class="type-row" title="报表类型" block style="padding-bottom: 11px;">
+        <standard-form-row
+          class="type-row"
+          title="报表类型"
+          block
+          style="padding-bottom: 11px;"
+        >
           <a-form-item style="margin-bottom: 0;">
             <tag-select v-model="types">
               <tag-select-option
@@ -33,7 +38,7 @@
               </a-form-item>
             </a-col>
             <a-col v-if="isParentCompany" :span="8">
-              <a-form-item label="选择公司" >
+              <a-form-item label="选择公司">
                 <company-select
                   v-model="queryParam.companyId"
                   @change="
@@ -112,31 +117,23 @@
                 <td>{{ tr.xh }}</td>
                 <td>{{ tr.categoryName }}</td>
                 <td>
-                  <template v-if="tr.children && tr.children.length">{{
-                    tr.masterBudgets
-                  }}</template>
-                  <template v-else>
-                    <a-input
-                      v-model="tr.masterBudgets"
-                      v-number-input
-                      placeholder="请输入"
-                      class="no-border-input"
-                    ></a-input
-                  ></template>
+                  <a-input
+                    v-model="tr.masterBudgets"
+                    v-number-input
+                    placeholder="请输入"
+                    class="no-border-input"
+                    @blur="updateAmbReport(tr)"
+                  ></a-input>
                 </td>
                 <td>{{ tr.payableTotal }}</td>
                 <td>
-                  <template v-if="tr.children && tr.children.length">{{
-                    tr.monthBudget
-                  }}</template>
-                  <template v-else>
-                    <a-input
-                      v-model="tr.monthBudget"
-                      v-number-input
-                      placeholder="请输入"
-                      class="no-border-input"
-                    ></a-input
-                  ></template>
+                  <a-input
+                    v-model="tr.monthBudget"
+                    v-number-input
+                    placeholder="请输入"
+                    class="no-border-input"
+                    @blur="updateAmbReport(tr)"
+                  ></a-input>
                 </td>
                 <td>{{ tr.monthPayTotal }}</td>
                 <td>{{ tr.allPayTotal }}</td>
@@ -151,44 +148,68 @@
                 </td>
               </tr>
               <template v-if="tr.children && tr.children.length">
-                <tr
-                  v-for="(trc, i) in tr.children"
-                  class="print-tbody-tr-border"
-                  :key="`${index}${i}`"
-                >
-                  <td></td>
-                  <td>{{ trc.categoryName }}</td>
-                  <td>
-                    <a-input
-                      v-model="trc.masterBudgets"
-                      v-number-input
-                      placeholder="请输入"
-                      class="no-border-input"
-                      @blur="updateAmbReport(tr)"
-                    ></a-input>
-                  </td>
-                  <td>{{ trc.payableTotal }}</td>
-                  <td>
-                    <a-input
-                      v-model="trc.monthBudget"
-                      v-number-input
-                      placeholder="请输入"
-                      class="no-border-input"
-                      @blur="updateAmbReport(tr)"
-                    ></a-input>
-                  </td>
-                  <td>{{ trc.monthPayTotal }}</td>
-                  <td>{{ trc.allPayTotal }}</td>
-                  <td>
-                    {{ trc.allUnPayTotal || "--" }}
-                  </td>
-                  <td>
-                    {{ trc.monthBalance || "--" }}
-                  </td>
-                  <td>
-                    {{ trc.budgetsBalance || "--" }}
-                  </td>
-                </tr>
+                <template v-for="(trc, i) in tr.children">
+                  <tr
+                    v-if="i !== tr.children.length - 1"
+                    class="print-tbody-tr-border"
+                    :key="`${index}${i}`"
+                  >
+                    <td></td>
+                    <td>{{ trc.categoryName }}</td>
+                    <td>
+                      <a-input
+                        v-model="trc.masterBudgets"
+                        v-number-input
+                        placeholder="请输入"
+                        class="no-border-input"
+                        @blur="updateAmbReport(tr)"
+                      ></a-input>
+                    </td>
+                    <td>{{ trc.payableTotal }}</td>
+                    <td>
+                      <a-input
+                        v-model="trc.monthBudget"
+                        v-number-input
+                        placeholder="请输入"
+                        class="no-border-input"
+                        @blur="updateAmbReport(tr)"
+                      ></a-input>
+                    </td>
+                    <td>{{ trc.monthPayTotal }}</td>
+                    <td>{{ trc.allPayTotal }}</td>
+                    <td>
+                      {{ trc.allUnPayTotal || "--" }}
+                    </td>
+                    <td>
+                      {{ trc.monthBalance || "--" }}
+                    </td>
+                    <td>
+                      {{ trc.budgetsBalance || "--" }}
+                    </td>
+                  </tr>
+                  <tr
+                    v-else
+                    class="print-tbody-tr-border"
+                    :key="`${index}${i}`"
+                  >
+                    <td></td>
+                    <td>{{ trc.categoryName }}</td>
+                    <td>{{ trc.masterBudgets }}</td>
+                    <td>{{ trc.payableTotal }}</td>
+                    <td>{{ trc.monthBudget }}</td>
+                    <td>{{ trc.monthPayTotal }}</td>
+                    <td>{{ trc.allPayTotal }}</td>
+                    <td>
+                      {{ trc.allUnPayTotal || "--" }}
+                    </td>
+                    <td>
+                      {{ trc.monthBalance || "--" }}
+                    </td>
+                    <td>
+                      {{ trc.budgetsBalance || "--" }}
+                    </td>
+                  </tr>
+                </template>
               </template>
             </template>
             <tr class="print-tbody-tr-border">
@@ -259,13 +280,13 @@
                   资<br />金<br />流<br />出
                 </td>
                 <td>{{ tr.categoryName }}</td>
-                <td>{{ tr.masterBudgets }}</td>
-                <td>{{ tr.payableLastMonthTotal }}</td>
-                <td>{{ tr.monthBudget }}</td>
-                <td>{{ tr.monthPayTotal }}</td>
-                <td>{{ tr.allPayTotal }}</td>
-                <td>{{ tr.monthBalance || "--" }}</td>
-                <td>{{ tr.budgetsBalance || "--" }}</td>
+                <td>{{ tr.children[tr.children.length - 1].masterBudgets }}</td>
+                <td>{{ tr.children[tr.children.length - 1].payableLastMonthTotal }}</td>
+                <td>{{ tr.children[tr.children.length - 1].monthBudget }}</td>
+                <td>{{ tr.children[tr.children.length - 1].monthPayTotal }}</td>
+                <td>{{ tr.children[tr.children.length - 1].allPayTotal }}</td>
+                <td>{{ tr.children[tr.children.length - 1].monthBalance || "--" }}</td>
+                <td>{{ tr.children[tr.children.length - 1].budgetsBalance || "--" }}</td>
                 <td></td>
               </tr>
             </template>
@@ -398,12 +419,17 @@ export default {
         this.completeData = data
         this.updateParam = clonedeep(this.queryParam)
         this.updateTypes = this.types
+        this.count()
       })
     },
     // 更新报表
     updateAmbReport () {
       const materialObj = {}
       this.completeData.forEach(obj => {
+        materialObj[obj.materialId] = {
+          masterBudgets: obj.masterBudgets,
+          monthBudget: obj.monthBudget
+        }
         if (obj.children) {
           const arr = obj.children.map(material => {
             return {
@@ -418,10 +444,72 @@ export default {
       })
       updateAmbReport({ ...this.updateParam, material: materialObj }).then(
         ({ data }) => {
-          console.log(123)
           this.getAmbReport()
         }
       )
+    },
+    // 计算合计值
+    count () {
+      let masterBudgets = 0
+      let payableTotal = 0
+      let monthBudget = 0
+      let monthPayTotal = 0
+      let allPayTotal = 0
+      let allUnPayTotal = 0
+      let monthBalance = 0
+      let budgetsBalance = 0
+      let payableLastMonthTotal = 0
+      let isNullMasterBudgets = true // 所有的预算金额全部都是空字符串
+      let isNullMonthBudget = true // 所有的本月计划数都是空字符串
+      let isNullMonthBalance = true // 整体本月差异全部都是——
+      let isNullBudgetsBalance = true // 整体预算差异金额全部都是——
+      this.completeData.forEach(obj => {
+        const index = obj.children.length - 1
+        const countRow = obj.children[index]
+        countRow.masterBudgets !== '' && (isNullMasterBudgets = false)
+        countRow.monthBudget !== '' && (isNullMonthBudget = false)
+        countRow.monthBalance !== '——' && (isNullMonthBalance = false)
+        countRow.budgetsBalance !== '——' && (isNullBudgetsBalance = false)
+        masterBudgets = NP.plus(
+          masterBudgets,
+          parseFloat(countRow.masterBudgets) || 0
+        )
+        payableTotal = NP.plus(
+          payableTotal,
+          parseFloat(countRow.payableTotal) || 0
+        )
+        monthBudget = NP.plus(monthBudget, parseFloat(countRow.monthBudget) || 0)
+        monthPayTotal = NP.plus(
+          monthPayTotal,
+          parseFloat(countRow.monthPayTotal) || 0
+        )
+        allPayTotal = NP.plus(allPayTotal, parseFloat(countRow.allPayTotal) || 0)
+        allUnPayTotal = NP.plus(
+          allUnPayTotal,
+          parseFloat(countRow.allUnPayTotal) || 0
+        )
+        monthBalance = NP.plus(
+          monthBalance,
+          parseFloat(countRow.monthBalance) || 0
+        )
+        budgetsBalance = NP.plus(
+          budgetsBalance,
+          parseFloat(countRow.budgetsBalance) || 0
+        )
+        payableLastMonthTotal = NP.plus(
+          payableLastMonthTotal,
+          parseFloat(countRow.payableLastMonthTotal) || 0
+        )
+      })
+      this.masterBudgets = isNullMasterBudgets ? '' : masterBudgets
+      this.payableTotal = payableTotal
+      this.monthBudget = isNullMonthBudget ? '' : monthBudget
+      this.monthPayTotal = monthPayTotal
+      this.allPayTotal = allPayTotal
+      this.allUnPayTotal = allUnPayTotal
+      this.monthBalance = isNullMonthBalance ? '——' : monthBalance
+      this.budgetsBalance = isNullBudgetsBalance ? '——' : budgetsBalance
+      this.payableLastMonthTotal = payableLastMonthTotal
     },
     // 动态渲染要禁用的日期
     disabledDate (current) {
@@ -431,72 +519,15 @@ export default {
     openExport () {
       this.visible = true
     }
-  },
-  watch: {
-    completeData: {
-      deep: true,
-      handler (val) {
-        let masterBudgets = 0
-        let payableTotal = 0
-        let monthBudget = 0
-        let monthPayTotal = 0
-        let allPayTotal = 0
-        let allUnPayTotal = 0
-        let monthBalance = 0
-        let budgetsBalance = 0
-        let payableLastMonthTotal = 0
-        let isNullMasterBudgets = true // 所有的预算金额全部都是空字符串
-        let isNullMonthBudget = true // 所有的本月计划数都是空字符串
-        let isNullMonthBalance = true // 整体本月差异全部都是——
-        let isNullBudgetsBalance = true // 整体预算差异金额全部都是——
-        this.completeData.forEach(obj => {
-          obj.masterBudgets !== '' && (isNullMasterBudgets = false)
-          obj.monthBudget !== '' && (isNullMonthBudget = false)
-          obj.monthBalance !== '——' && (isNullMonthBalance = false)
-          obj.budgetsBalance !== '——' && (isNullBudgetsBalance = false)
-          masterBudgets = NP.plus(
-            masterBudgets,
-            parseFloat(obj.masterBudgets) || 0
-          )
-          payableTotal = NP.plus(
-            payableTotal,
-            parseFloat(obj.payableTotal) || 0
-          )
-          monthBudget = NP.plus(monthBudget, parseFloat(obj.monthBudget) || 0)
-          monthPayTotal = NP.plus(
-            monthPayTotal,
-            parseFloat(obj.monthPayTotal) || 0
-          )
-          allPayTotal = NP.plus(allPayTotal, parseFloat(obj.allPayTotal) || 0)
-          allUnPayTotal = NP.plus(
-            allUnPayTotal,
-            parseFloat(obj.allUnPayTotal) || 0
-          )
-          monthBalance = NP.plus(
-            monthBalance,
-            parseFloat(obj.monthBalance) || 0
-          )
-          budgetsBalance = NP.plus(
-            budgetsBalance,
-            parseFloat(obj.budgetsBalance) || 0
-          )
-          payableLastMonthTotal = NP.plus(
-            payableLastMonthTotal,
-            parseFloat(obj.payableLastMonthTotal) || 0
-          )
-        })
-        this.masterBudgets = isNullMasterBudgets ? '' : masterBudgets
-        this.payableTotal = payableTotal
-        this.monthBudget = isNullMonthBudget ? '' : monthBudget
-        this.monthPayTotal = monthPayTotal
-        this.allPayTotal = allPayTotal
-        this.allUnPayTotal = allUnPayTotal
-        this.monthBalance = isNullMonthBalance ? '——' : monthBalance
-        this.budgetsBalance = isNullBudgetsBalance ? '——' : budgetsBalance
-        this.payableLastMonthTotal = payableLastMonthTotal
-      }
-    }
   }
+  // watch: {
+  //   completeData: {
+  //     deep: true,
+  //     handler (val) {
+  //       this.count()
+  //     }
+  //   }
+  // }
 }
 </script>
 
@@ -557,10 +588,7 @@ export default {
     box-shadow: none;
   }
 }
-.table-page-search-wrapper
-  /deep/
-  .type-row
-  .ant-form-item-control-wrapper {
+.table-page-search-wrapper /deep/ .type-row .ant-form-item-control-wrapper {
   width: auto;
 }
 .other-row /deep/ .ant-form-item-control-wrappe {

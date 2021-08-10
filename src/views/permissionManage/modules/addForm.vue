@@ -60,11 +60,26 @@
         oninput="value=value.replace(/[^0-9]/g,'')"
       ></a-input>
     </a-form-model-item>
+    <a-form-model-item label="参与项目" prop="projectIds">
+      <a-checkbox-group
+        v-if="options && options.length"
+        v-model="form.projectIds"
+        :options="options"
+        class="projectIds-checkbox"
+      />
+      <template v-else>暂无项目</template>
+      <div class="joinProject">参与项目，才有对项目有相关处理权限</div>
+    </a-form-model-item>
   </a-form-model>
 </template>
 
 <script>
-import { toGetRoles, toAddAdmin, toUpdateAdmin } from '@/api/permissionManage'
+import {
+  toGetRoles,
+  toAddAdmin,
+  toUpdateAdmin,
+  toGetAllProject
+} from '@/api/permissionManage'
 import bus from '@/utils/bus'
 
 export default {
@@ -84,6 +99,7 @@ export default {
       labelCol: { span: 7 },
       wrapperCol: { span: 14 },
       treeExpandedKeys: [],
+      projectList: [],
       treeData: [],
       form: {
         account: '', // 是varchar人员登录账户
@@ -106,9 +122,20 @@ export default {
       }
     }
   },
+  computed: {
+    options () {
+      return this.projectList.map(option => {
+        return {
+          label: option.projectName,
+          value: option.projectId
+        }
+      })
+    }
+  },
   mounted () {
     if (this.record) {
       this.form = this.record
+      this.form.projectIds = this.record.projectIds.map(obj => obj.projectId)
     }
   },
 
@@ -118,6 +145,14 @@ export default {
       const res = await toGetRoles()
       this.treeData = res.data
       console.log('获取角色', res)
+    },
+    // 获取所有项目
+    getAllProject () {
+      toGetAllProject({
+        allots: 1
+      }).then(({ data }) => {
+        this.projectList = data
+      })
     },
     // 设置姓名
     setName () {
@@ -153,7 +188,8 @@ export default {
             } else {
               toUpdateAdmin(this.form).then(() => {
                 this.$message.success('提交成功')
-                this.form.id === this.$store.state.user.info.id && this.$store.dispatch('GetInfo')
+                this.form.id === this.$store.state.user.info.id &&
+                  this.$store.dispatch('GetInfo')
                 bus.$emit('refresh', 'mode')
               })
             }
@@ -173,6 +209,7 @@ export default {
   },
   created () {
     this.getRole()
+    this.getAllProject()
   }
 }
 </script>
@@ -180,5 +217,18 @@ export default {
 <style lang="less" scoped>
 .ant-form-horizontal .ant-form-item:last-child {
   margin-bottom: 0;
+}
+.projectIds-checkbox {
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  /deep/ .ant-checkbox-wrapper {
+    display: block;
+    margin-top: 5px;
+  }
+}
+.joinProject {
+  color: rgba(0, 0, 0, 0.45);
+  line-height: 1;
 }
 </style>

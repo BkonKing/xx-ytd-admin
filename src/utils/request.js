@@ -1,7 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import storage from 'store'
-import Cookies from 'js-cookie'
+// import Cookies from 'js-cookie'
 import notification from 'ant-design-vue/es/notification'
 import { Message } from 'ant-design-vue'
 import {
@@ -25,7 +25,6 @@ const request = axios.create({
 // 异常拦截处理器
 const errorHandler = (error) => {
   if (error.response) {
-    console.log(error.response)
     const data = error.response.data
     // 从 localstorage 获取 token
     const token = storage.get('access_token')

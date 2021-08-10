@@ -98,6 +98,7 @@
                   <a-range-picker
                     v-model="queryParam.time"
                     valueFormat="YYYY-MM-DD"
+                    style="width: 100%;"
                   />
                 </a-form-item>
               </a-col>
@@ -135,7 +136,7 @@
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
         showPagination="auto"
-        :scroll="{ x: 'auto' }"
+        :scroll="{ x: 3000 }"
         style="width: 100%"
       >
         <Ellipsis slot="projectName" slot-scope="text" :lines="2" :length="100" tooltip
@@ -236,15 +237,6 @@ export default {
   },
   data () {
     return {
-      tabList: [
-        { key: '0', tab: '全部' },
-        { key: '1', tab: '待审核' },
-        { key: '2', tab: '已通过' },
-        { key: '3', tab: '未通过' },
-        { key: '11', tab: '正常' },
-        { key: '12', tab: '延期' },
-        { key: '13', tab: '终止' }
-      ],
       tabActiveKey: '0',
       // 审核弹窗
       visible: false,
@@ -261,28 +253,32 @@ export default {
       // 合同状态：0=全部、1=正常、2=延期、3=终止
       contractStatusOptions: [
         {
-          value: 0,
+          value: '0',
           text: '全部'
         },
         {
-          value: 1,
+          value: '1',
           text: '正常'
         },
         {
-          value: 2,
+          value: '2',
           text: '延期'
         },
         {
-          value: 3,
+          value: '3',
           text: '终止'
         }
       ],
+      dsTotal: 0, // 待审核tab数量
+      yqTotal: 0, // 延期tab数量
+      zcTotal: 0, // 终止tab数量
       // 查询参数
       queryParam: {
         time: [],
         companyId: undefined,
         status: undefined,
-        contractStatus: undefined
+        contractStatus: undefined,
+        tab: 0
       },
       columns: [
         {
@@ -295,8 +291,7 @@ export default {
         },
         {
           title: '合同编号',
-          class: 'nowrap',
-          width: 'auto',
+          sorter: true,
           dataIndex: 'contractNo'
         },
         {
@@ -339,6 +334,7 @@ export default {
         },
         {
           title: '税率',
+          width: '80px',
           class: 'nowrap',
           dataIndex: 'taxRate',
           customRender (text) {
@@ -353,7 +349,7 @@ export default {
         },
         {
           title: '有效期',
-          width: '190px',
+          width: '200px',
           dataIndex: 'startDate',
           customRender (text, row) {
             return `${text}~${row.endDate}`
@@ -455,7 +451,12 @@ export default {
         }
         this.queryParam.startDate = startDate
         this.queryParam.endDate = endDate
-        return getContractList(Object.assign(parameter, this.queryParam))
+        return getContractList(Object.assign(parameter, this.queryParam)).then(res => {
+          this.dsTotal = res.data.dsTotal
+          this.yqTotal = res.data.yqTotal
+          this.zcTotal = res.data.zcTotal
+          return res
+        })
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -463,6 +464,22 @@ export default {
     }
   },
   computed: {
+    tabList () {
+      // 0=全部、1=待审核、2=已通过、3=未通过、4=正常、5=延期、6=终止
+      // eslint-disable-next-line no-irregular-whitespace
+      const dsTotal = +this.dsTotal ? ` ${this.dsTotal}` : ''
+      const yqTotal = +this.yqTotal ? ` ${this.yqTotal}` : ''
+      const zcTotal = +this.zcTotal ? ` ${this.zcTotal}` : ''
+      return [
+        { key: '0', tab: '全部' },
+        { key: '1', tab: `待审核${dsTotal}` },
+        { key: '2', tab: '已通过' },
+        { key: '3', tab: '未通过' },
+        { key: '4', tab: `正常${zcTotal}` },
+        { key: '5', tab: `延期${yqTotal}` },
+        { key: '6', tab: '终止' }
+      ]
+    },
     rowSelection () {
       if (!this.permissions.AuditPermission) {
         return null
@@ -479,10 +496,10 @@ export default {
       }
     },
     statusAble () {
-      return this.tabActiveKey !== '0' && +this.tabActiveKey < 10
+      return this.tabActiveKey > 0 && +this.tabActiveKey < 4
     },
     contractStatusAble () {
-      return this.tabActiveKey !== '0' && +this.tabActiveKey > 10
+      return +this.tabActiveKey > 3
     }
   },
   created () {
@@ -518,27 +535,24 @@ export default {
       }
     },
     reset () {
-      this.queryParam = {
-        time: [],
-        companyId: undefined,
-        status: undefined,
-        contractStatus: undefined
-      }
       this.changeStatus()
       this.setcompanyId()
       this.$refs.table.refresh(true)
     },
     changeStatus () {
       const index = +this.tabActiveKey
-      if (index !== 0) {
-        if (index < 10) {
-          this.queryParam.status = String(index)
-        } else {
-          this.queryParam.contractStatus = index - 10
-        }
-      } else {
-        this.queryParam.status = undefined
-        this.queryParam.contractStatus = undefined
+      this.queryParam = {
+        time: [],
+        companyId: undefined,
+        status: undefined,
+        contractStatus: undefined,
+        tab: index
+      }
+      this.setcompanyId()
+      if (index > 0 && index < 4) {
+        this.queryParam.status = this.tabActiveKey
+      } else if (index > 3) {
+        this.queryParam.contractStatus = String(index - 3)
       }
     },
     openCheck ({ id }) {

@@ -217,6 +217,19 @@ export default {
       this.queryParam.startDate = value[0]
       this.queryParam.endDate = value[1]
     },
+    reset () {
+      this.queryParam = {
+        status: '',
+        projectId: '',
+        companyId: '',
+        supplierType: '',
+        searchText: '',
+        material: '',
+        ctime: []
+      }
+      this.setcompanyId()
+      this.$refs.table.refresh(true)
+    },
     // 导出
     exportReport () {
       if (!this.queryParam.projectId) {
