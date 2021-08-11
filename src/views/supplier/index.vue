@@ -100,7 +100,7 @@
         :data="loadData"
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
-        showPagination="auto"
+        :showPagination="true"
       >
         <span slot="auditTime" slot-scope="text, record">
           <time-wait

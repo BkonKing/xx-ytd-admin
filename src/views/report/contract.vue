@@ -111,7 +111,7 @@
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
         :rowSelectionPaging="true"
-        showPagination="auto"
+        :showPagination="true"
       >
         <div slot="orderNum" slot-scope="text" style="min-width: 48px;">
           {{ text }}

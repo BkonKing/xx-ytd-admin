@@ -135,7 +135,7 @@
         :data="loadData"
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
-        showPagination="auto"
+        :showPagination="true"
         :scroll="{ x: 3000 }"
         style="width: 100%"
       >
@@ -506,7 +506,7 @@ export default {
     const tab = this.$route.query.tabActiveKey
     if (tab) {
       this.tabActiveKey = tab
-      // this.changeColumns(+tab)
+      this.changeStatus()
     }
   },
   methods: {

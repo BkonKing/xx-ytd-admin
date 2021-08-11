@@ -53,7 +53,7 @@
         rowKey="id"
         :columns="columns"
         :data="loadData"
-        showPagination="auto"
+        :showPagination="true"
       >
         <template slot="opera" slot-scope="text, record">
           <div class="table-action">

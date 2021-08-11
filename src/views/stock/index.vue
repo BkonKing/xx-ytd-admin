@@ -100,7 +100,7 @@
         rowKey="id"
         :columns="columns"
         :data="loadData"
-        showPagination="auto"
+        :showPagination="true"
       >
         <template slot="materialName" slot-scope="text, record">
           <div class="two-Multi">{{ record.materialNo }} {{ text }}</div>

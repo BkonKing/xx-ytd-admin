@@ -64,7 +64,7 @@
         rowKey="id"
         :columns="orderColumns"
         :data="orderLoadData"
-        showPagination="auto"
+        :showPagination="true"
       >
         <span slot="paid" slot-scope="text, record">
           <template v-if="record.status !== '1'">--</template>

@@ -179,10 +179,14 @@ export default {
       SHOW_PARENT,
       loadData: parameter => {
         const time = this.queryParam.time
-        if (time) {
-          this.queryParam.startDate = time[0]
-          this.queryParam.endDate = time[1]
+        let startDate = ''
+        let endDate = ''
+        if (time && time.length) {
+          startDate = time[0]
+          endDate = time[1]
         }
+        this.queryParam.startDate = startDate
+        this.queryParam.endDate = endDate
         return getLogsList(Object.assign(parameter, this.queryParam, {
           sourceId: this.sourceId
         }))

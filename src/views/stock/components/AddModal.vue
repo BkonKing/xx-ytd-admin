@@ -26,7 +26,7 @@
         <a-col flex="1" class="form-required-after">物料</a-col>
         <a-col flex="1" class="form-required-after">物料品牌</a-col>
         <a-col flex="1" class="form-required-after">规格型号</a-col>
-        <a-col flex="200px" class="form-required-after">数量</a-col>
+        <a-col flex="200px" class="form-required-after">期初库存</a-col>
         <a-col flex="180px">备注</a-col>
         <a-col flex="60px">操作</a-col>
       </a-row>

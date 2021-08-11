@@ -105,7 +105,7 @@
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
         :rowSelectionPaging="true"
-        showPagination="auto"
+        :showPagination="true"
       >
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>

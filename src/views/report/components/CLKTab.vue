@@ -77,7 +77,7 @@
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
         :rowSelectionPaging="true"
-        showPagination="auto"
+        :showPagination="true"
       >
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
@@ -191,10 +191,14 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
+        let startDate = ''
+        let endDate = ''
         if (time && time.length) {
-          this.queryParam.startDate = time[0]
-          this.queryParam.endDate = time[1]
+          startDate = time[0]
+          endDate = time[1]
         }
+        this.queryParam.startDate = startDate
+        this.queryParam.endDate = endDate
         const api = this.type === '1' ? getStockLkReport : getStockCkReport
         return api(Object.assign(parameter, this.queryParam))
       },

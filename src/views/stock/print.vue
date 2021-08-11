@@ -1,14 +1,10 @@
 <template>
   <div class="print-page">
-    <button v-show="false" ref="button" v-print="'#print-table'">打印</button>
+    <button v-show="false" ref="button" v-print="printObj">打印</button>
     <div id="print-table">
       <template v-for="(tableData, index) in CKData">
         <div class="print-page-title" :key="index">出库单</div>
-        <table
-          class="print-table"
-          :key="`table${index}`"
-          style="page-break-after: always"
-        >
+        <table class="print-table" :key="`table${index}`">
           <tbody>
             <tr class="print-text-tr">
               <th colspan="4">领料部门：{{ tableData.department }}</th>
@@ -45,9 +41,13 @@
             </tr>
             <tr class="print-tbody-tr-border">
               <td colspan="2">合计（大写）:</td>
-              <td colspan="5" style="text-align: left;">{{ tableData.amountToCn }}</td>
+              <td colspan="5" style="text-align: left;">
+                {{ tableData.amountToCn }}
+              </td>
               <td>（小写）:</td>
-              <td colspan="2" style="text-align: left;">￥{{ tableData.allPrice }}</td>
+              <td colspan="2" style="text-align: left;">
+                ￥{{ tableData.allPrice }}
+              </td>
             </tr>
             <tr>
               <td colspan="4">审核人：</td>
@@ -78,7 +78,10 @@ export default {
   data () {
     return {
       id: '',
-      CKData: []
+      CKData: [],
+      printObj: {
+        id: 'print-table'
+      }
     }
   },
   mounted () {
@@ -119,9 +122,11 @@ export default {
 }
 .print-table {
   width: 100%;
-  /* border: 1px solid #e8e8e8; */
-  border-right: 0;
-  border-bottom: 0;
+  page-break-after: always;
+  border-spacing: 0;
+}
+.print-table:last-child {
+  page-break-after: auto;
 }
 .print-table > tbody > tr > th,
 .print-table > tbody > tr > td {
@@ -147,17 +152,17 @@ export default {
 .print-table > tbody > tr > th {
   color: rgba(0, 0, 0, 0.85);
   text-align: left;
-  transition: background 0.3s ease;
 }
-.print-table > tbody > tr > td {
-  transition: background 0.3s;
+@-moz-document url-prefix() {
+  .print-table {
+    border-collapse: unset;
+  }
+  .print-table > tbody > .print-thead-tr-border > th:first-child,
+  .print-table > tbody > .print-tbody-tr-border > td:first-child {
+    border-left-width: 1.5px !important;
+  }
+  .print-table > tbody > .print-thead-tr-border > th {
+    border-top-width: 1.5px !important;
+  }
 }
-/* .print-table > thead > tr:first-child > th:first-child {
-  border-top-left-radius: 2px;
-} */
-/* .print-table > thead > .print-text-tr > th {
-  background: #fff;
-  border-bottom: 1px solid #e8e8e880;
-  border-right: 1px solid #e8e8e880;
-} */
 </style>

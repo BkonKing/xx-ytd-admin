@@ -134,7 +134,7 @@
         rowKey="clkId"
         :columns="columns"
         :data="loadData"
-        showPagination="auto"
+        :showPagination="true"
       >
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>

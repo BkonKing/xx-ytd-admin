@@ -65,7 +65,7 @@
         rowKey="id"
         :columns="columns"
         :data="loadData"
-        showPagination="auto"
+        :showPagination="true"
       >
         <template slot="supplierName" slot-scope="text, record">
           <router-link

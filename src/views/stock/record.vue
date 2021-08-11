@@ -134,7 +134,7 @@
         :columns="columns"
         :data="loadData"
         :rowSelection="rowSelection"
-        showPagination="auto"
+        :showPagination="true"
       >
         <span slot="checkTime" slot-scope="text, record, index">
           {{ index + 1 }}

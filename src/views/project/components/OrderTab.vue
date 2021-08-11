@@ -79,7 +79,7 @@
         rowKey="id"
         :columns="orderColumns"
         :data="orderLoadData"
-        showPagination="auto"
+        :showPagination="true"
       >
         <span slot="idv" slot-scope="text, record">
           <router-link

@@ -65,7 +65,7 @@
         rowKey="id"
         :columns="columns"
         :data="loadData"
-        showPagination="auto"
+        :showPagination="true"
       >
         <span class="table-action" slot="action" slot-scope="text, record">
           <a @click="goDetail(record)">查看</a>
