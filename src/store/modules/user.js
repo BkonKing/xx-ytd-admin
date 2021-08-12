@@ -57,7 +57,7 @@ const user = {
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
-          commit('SET_NAME', { name: res.data.account, welcome: welcome() })
+          commit('SET_NAME', { name: res.data && res.data.account, welcome: welcome() })
           commit('SET_AVATAR', res.data.avatar)
           commit('SET_INFO', res.data)
 

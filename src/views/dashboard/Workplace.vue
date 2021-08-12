@@ -64,12 +64,12 @@
       <a-row :gutter="24">
         <a-col :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
           <a-card
+            title="进行中的项目"
             class="project-list"
             :loading="loading"
-            style="margin-bottom: 24px;"
             :bordered="false"
-            title="进行中的项目"
             :body-style="{ padding: 0 }"
+            style="margin-bottom: 24px;"
           >
             <a slot="extra" @click="$router.push('/project/index')">全部项目</a>
             <div v-if="info.project && info.project.length">
@@ -126,7 +126,12 @@
             ></a-empty>
           </a-card>
 
-          <a-card :loading="loading" title="动态" :bordered="false">
+          <a-card
+            title="动态"
+            :loading="loading"
+            :bordered="false"
+            style="margin-bottom: 24px;"
+          >
             <a-list>
               <a-list-item :key="index" v-for="(item, index) in info.dynamic">
                 <a-list-item-meta>
