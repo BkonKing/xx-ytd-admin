@@ -1,9 +1,10 @@
 <template>
   <a-upload
+    :class="{ 'max-upload-file': fileList && fileList.length > 5 }"
     v-bind="$attrs"
-    :action="`${action}/file/uploads/uImages`"
-    list-type="picture-card"
-    name="imgFile"
+    :action="`${action}/file/uploads/uFile`"
+    list-type="picture"
+    name="upFile"
     :file-list="fileList"
     multiple
     :beforeUpload="beforeUpload"
@@ -11,10 +12,7 @@
     @change="handleChange"
   >
     <div v-if="fileList.length < maxLength">
-      <a-icon type="plus" />
-      <div class="ant-upload-text">
-        上传
-      </div>
+      <a-button icon="upload">上传文件</a-button>
     </div>
   </a-upload>
 </template>
@@ -37,7 +35,10 @@ export default {
     return {
       fileList: this.format(this.value),
       uploadList: [],
-      action: process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
+      action:
+        process.env.NODE_ENV === 'production'
+          ? process.env.VUE_APP_API_BASE_URL
+          : '/api'
     }
   },
   methods: {
@@ -53,12 +54,12 @@ export default {
         const index = this.genId(5)
         return {
           uid: index,
-          name: index,
+          name: item.name,
           status: 'done',
           response: {
-            data: item
+            data: item.url
           },
-          url: item
+          url: item.url
         }
       })
     },
@@ -71,13 +72,14 @@ export default {
         file.preview = await getBase64(file.originFileObj)
       }
       const url = file.response ? file.response.data : file.url
-      this.$viewerApi({
-        options: {
-          toolbar: true,
-          initialViewIndex: this.value.findIndex(obj => url === obj)
-        },
-        images: this.value
-      })
+      if (url.indexOf('.doc') > 0 || url.indexOf('.docx') > 0) {
+        window.open(
+          `https://view.officeapps.live.com/op/view.aspx?src=${url}`,
+          '_target'
+        )
+        return
+      }
+      window.open(url, '_target')
     },
     beforeUpload (file, fileList) {
       const index = parseInt(this.maxLength) - this.fileList.length
@@ -107,17 +109,45 @@ export default {
       if (deleteCount) {
         this.fileList.splice(this.fileList.length - 1, deleteCount)
       }
-      if (file.status === 'done' || file.status === 'removed') {
-        const uploadList = fileList.map(obj => {
-          if (obj.response) {
-            return obj.response.data
-          }
-        }).filter(item => {
-          return item
-        })
+      if (
+        (file.status === 'done' && file.response.success) ||
+        file.status === 'removed'
+      ) {
+        if (file.status === 'done' && !this.isImageUrl(file)) {
+          const index = this.fileList.findIndex(obj => obj.uid === file.uid)
+          this.fileList[index].url = file.response.data
+        }
+        const uploadList = fileList
+          .map(obj => {
+            if (obj.response) {
+              return {
+                url: obj.response.data,
+                name: obj.name
+              }
+            }
+          })
+          .filter(item => {
+            return item && item.url
+          })
         this.uploadList = uploadList
         this.$emit('input', uploadList)
       }
+    },
+    isImageUrl (file) {
+      const url = file.thumbUrl || file.url
+      const extension = this.extname(url)
+      if (
+        /^data:image\//.test(url) ||
+        /(webp|svg|png|gif|jpg|jpeg|jfif|bmp|dpg|ico)$/i.test(extension)
+      ) {
+        return true
+      }
+    },
+    extname (url = '') {
+      const temp = url.split('/')
+      const filename = temp[temp.length - 1]
+      const filenameWithoutSuffix = filename.split(/#|\?/)[0]
+      return (/\.[^./\\]*$/.exec(filenameWithoutSuffix) || [''])[0]
     }
   },
   watch: {
@@ -130,4 +160,11 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="less" scoped>
+.max-upload-file {
+  /deep/ .ant-upload-list-picture {
+    height: 370px;
+    overflow: auto;
+  }
+}
+</style>

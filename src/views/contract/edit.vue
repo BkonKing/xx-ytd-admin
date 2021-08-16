@@ -61,9 +61,9 @@
           </a-select>
         </a-form-model-item>
         <a-form-model-item label="上传合同" prop="contractPz">
-          <upload-image v-model="form.contractPz" maxLength="50"></upload-image>
-          <div style="margin-top: -20px;">
-            最多50张；支持扩展名：.png .jpg；
+          <upload-file v-model="form.contractPz" maxLength="50"></upload-file>
+          <div>
+            支持扩展名：.rar .zip .doc .docx .pdf .jpg .png...
           </div>
         </a-form-model-item>
         <a-form-model-item label="备注" prop="remarks">
@@ -167,7 +167,7 @@
 <script>
 import clonedeep from 'lodash.clonedeep'
 import {
-  UploadImage,
+  UploadFile,
   ProjectSelect,
   ContractTypeSelect,
   SupplierSelect,
@@ -206,7 +206,7 @@ export default {
   mixins: [appMixin],
   components: {
     FooterToolBar,
-    UploadImage,
+    UploadFile,
     ProjectSelect,
     ContractTypeSelect,
     SupplierSelect,
@@ -328,10 +328,12 @@ export default {
             this.form.startDate = this.form.rtime[0]
             this.form.endDate = this.form.rtime[1]
           }
+          const params = clonedeep(this.form)
+          params.contractPz = params.contractPz.map(obj => `${obj.url}|${obj.name}`)
           if (this.id) {
-            this.updateCont(this.form)
+            this.updateCont(params)
           } else {
-            this.addCont(this.form)
+            this.addCont(params)
           }
         })
         .catch(() => {})

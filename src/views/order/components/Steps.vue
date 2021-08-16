@@ -6,15 +6,16 @@
           <span>{{ step.leve }}</span>
         </template>
         <template v-slot:description>
-          <div>
-            {{
-              step.realname ||
-                (current === index &&
-                  index !== data.length - 1 &&
-                  "暂无审批人员") ||
-                ""
-            }}
+          <div v-if="step.realname">
+            {{ step.realname }}
           </div>
+          <div
+            v-else-if="current === index && index !== data.length - 1"
+            style="color: #f5222d;"
+          >
+            暂无审批人员
+          </div>
+          <div v-else></div>
           <div>{{ step.company }}</div>
           <div>{{ step.leveTime }}</div>
           <div
