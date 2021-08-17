@@ -196,7 +196,9 @@ export default {
     },
     // 获取所有项目
     getAllProject () {
-      toGetAllProject().then(({ data }) => {
+      toGetAllProject({
+        allots: 1
+      }).then(({ data }) => {
         this.projectList = data
         console.log('所有项目', data)
       })

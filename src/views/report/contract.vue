@@ -208,6 +208,7 @@ export default {
         {
           title: '合同编号',
           dataIndex: 'contractNo',
+          sorter: true,
           customRender: (text) => {
             return <div class="two-Multi">{text}</div>
           }

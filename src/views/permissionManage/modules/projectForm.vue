@@ -77,11 +77,7 @@
       </a-row>
     </a-form-model-item>
     <a-form-model-item label="公司地址" prop="area">
-      <a-cascader
-        v-model="form.area"
-        :options="area"
-        placeholder="请选择"
-      />
+      <a-cascader v-model="form.area" :options="area" placeholder="请选择" />
       <a-form-model-item prop="address" style="margin-top: 24px"
         ><a-textarea v-model="form.address" rows="4" placeholder="详细地址" />
       </a-form-model-item>
@@ -197,7 +193,8 @@ export default {
         return {
           label: option.projectName,
           value: option.projectId,
-          disabled: this.form.glStatus && this.form.glStatus.includes(option.projectId)
+          disabled:
+            this.form.glStatus && this.form.glStatus.includes(option.projectId)
         }
       })
     }
@@ -234,6 +231,9 @@ export default {
   color: #000;
 }
 .projectIds-checkbox {
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
   /deep/ .ant-checkbox-wrapper {
     display: block;
     margin-top: 5px;

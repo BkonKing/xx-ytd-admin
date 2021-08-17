@@ -98,6 +98,9 @@ export default {
       const max = parseInt(this.maxLength)
       const index = max - this.fileList.length
       const deleteCount = index < 0 ? Math.abs(index) : 0
+      if (file.status === 'uploading' && !this.isImageUrl(file)) {
+        file.url = ' .txt'
+      }
       // 上传失败
       if (file.status === 'done' && !file.response.success) {
         this.$message.error(file.response.message)
@@ -113,9 +116,10 @@ export default {
         (file.status === 'done' && file.response.success) ||
         file.status === 'removed'
       ) {
-        if (file.status === 'done' && !this.isImageUrl(file)) {
+        if (file.status === 'done') {
           const index = this.fileList.findIndex(obj => obj.uid === file.uid)
-          this.fileList[index].url = file.response.data
+          this.$set(this.fileList[index], 'url', file.response.data)
+          // this.fileList[index].url = file.response.data
         }
         const uploadList = fileList
           .map(obj => {
@@ -134,7 +138,7 @@ export default {
       }
     },
     isImageUrl (file) {
-      const url = file.thumbUrl || file.url
+      const url = file.thumbUrl || file.url || file.type
       const extension = this.extname(url)
       if (
         /^data:image\//.test(url) ||

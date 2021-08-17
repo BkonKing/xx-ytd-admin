@@ -213,7 +213,7 @@ export default {
           this.operaTime.length > 0
             ? moment(this.operaTime[1]).format('YYYY-MM-DD')
             : '',
-        logType: this.logType,
+        logType: this.logType[this.logType.length - 1],
         operationType: this.operationType,
         searchText: this.serachText,
         adminId: this.adminId
