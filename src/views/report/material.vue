@@ -6,7 +6,10 @@
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="所属项目">
-                <project-select v-model="queryParam.projectId"></project-select>
+                <project-select
+                  v-model="queryParam.projectId"
+                  :addOther="true"
+                ></project-select>
               </a-form-item>
             </a-col>
             <a-col v-if="isParentCompany" :md="8" :sm="24">
@@ -41,9 +44,9 @@
             </a-col>
             <template v-if="!isParentCompany || advanced">
               <a-col :md="8" :sm="24">
-                <a-form-item label="物料">
+                <a-form-item label="供应商">
                   <a-input
-                    v-model="queryParam.serachMaterialText"
+                    v-model="queryParam.serachSupplierText"
                     placeholder="ID、名称"
                   ></a-input>
                 </a-form-item>
@@ -51,10 +54,18 @@
             </template>
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
-                <a-form-item label="供应商">
+                <a-form-item label="物料">
                   <a-input
-                    v-model="queryParam.serachSupplierText"
+                    v-model="queryParam.serachMaterialText"
                     placeholder="ID、名称"
+                  ></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="规格型号">
+                  <a-input
+                    v-model="queryParam.serachModelText"
+                    placeholder="规格型号"
                   ></a-input>
                 </a-form-item>
               </a-col>
@@ -77,7 +88,7 @@
             </template>
             <advanced-form
               v-model="advanced"
-              :md="isParentCompany ? 24 : 8"
+              :md="isParentCompany ? 16 : 24"
               @reset="reset"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
@@ -153,7 +164,7 @@ export default {
           title: '所属项目',
           dataIndex: 'projectName',
           width: '10%',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -166,7 +177,7 @@ export default {
           title: '供应商',
           dataIndex: 'supplierName',
           width: '10%',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -174,7 +185,7 @@ export default {
           title: '物料名称',
           dataIndex: 'materialName',
           width: '10%',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -182,7 +193,7 @@ export default {
           title: '物料品牌',
           dataIndex: 'brand',
           width: '10%',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -190,7 +201,7 @@ export default {
           title: '规格型号',
           dataIndex: 'model',
           width: '10%',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },

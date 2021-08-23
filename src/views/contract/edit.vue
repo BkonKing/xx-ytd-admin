@@ -62,7 +62,7 @@
         </a-form-model-item>
         <a-form-model-item label="上传合同" prop="contractPz">
           <upload-file v-model="form.contractPz" maxLength="50"></upload-file>
-          <div>
+          <div style="color: #00000072;">
             支持扩展名：.rar .zip .doc .docx .pdf .jpg .png...
           </div>
         </a-form-model-item>

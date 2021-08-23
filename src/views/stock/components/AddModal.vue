@@ -17,6 +17,7 @@
       <a-form-model-item required prop="projectId" label="入库项目">
         <project-select
           v-model="form.projectId"
+          :addOther="true"
           @input="$refs.form.validateField('projectId')"
         ></project-select>
       </a-form-model-item>

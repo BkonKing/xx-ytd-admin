@@ -10,7 +10,10 @@
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="所属项目">
-                <project-select v-model="queryParam.projectId"></project-select>
+                <project-select
+                  v-model="queryParam.projectId"
+                  :addOther="true"
+                ></project-select>
               </a-form-item>
             </a-col>
             <a-col v-if="isParentCompany" :md="8" :sm="24">
@@ -227,7 +230,7 @@ export default {
           title: '所属项目',
           dataIndex: 'projectName',
           width: '20%',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },

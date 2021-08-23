@@ -17,6 +17,10 @@ export default {
     value: {
       type: [String, Number],
       default: ''
+    },
+    addOther: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -28,6 +32,12 @@ export default {
   created () {
     getAllProject().then(({ data }) => {
       this.options = data
+      if (this.addOther) {
+        this.options.unshift({
+          projectId: -1,
+          projectName: '--'
+        })
+      }
     })
   },
   methods: {

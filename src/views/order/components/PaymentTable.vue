@@ -38,8 +38,8 @@
       align="middle"
       style="border-bottom: 1px solid #e8e8e8;"
     >
-      <div style="width: 41%;">总计({{ `${data.unKpNum + data.kpNum}` }})</div>
-      <div style="width: 20%;">￥{{ parseFloat(data.allMoney) ? data.allMoney : 0 }}</div>
+      <div style="width: 44%;">总计({{ `${data.unKpNum + data.kpNum}` }})</div>
+      <div style="width: 18%;">￥{{ parseFloat(data.allMoney) ? data.allMoney : 0 }}</div>
       <div>
         已开{{ data.kpNum }} (￥{{ parseFloat(data.kpMoney) ? data.kpMoney : 0 }})，未开{{
           data.unKpNum
@@ -114,24 +114,29 @@ export default {
           width: '7%'
         },
         {
-          title: '付款时间',
-          dataIndex: 'payTime',
-          width: '12%'
-        },
-        {
           title: '付款ID',
           dataIndex: 'id',
-          width: '12%'
+          width: '10%'
+        },
+        {
+          title: '付款情况',
+          dataIndex: 'isPayName',
+          width: '8%'
+        },
+        {
+          title: '付款时间',
+          dataIndex: 'payTime',
+          width: '10%'
         },
         {
           title: '付款方式',
           dataIndex: 'payTypeName',
-          width: '10%'
+          width: '9%'
         },
         {
           title: '付款金额',
           dataIndex: 'paid',
-          width: '10%',
+          width: '9%',
           customRender (text) {
             return `￥${text}`
           }
@@ -140,12 +145,12 @@ export default {
           title: '付款凭证',
           dataIndex: 'payPzNum',
           scopedSlots: { customRender: 'payPz' },
-          width: '10%'
+          width: '9%'
         },
         {
           title: '开票情况',
           dataIndex: 'isKpName',
-          width: '10%'
+          width: '9%'
         },
         {
           title: '开票凭证',
@@ -156,7 +161,7 @@ export default {
         {
           title: '创建时间',
           dataIndex: 'ctime',
-          width: '10%'
+          width: '9%'
         },
         {
           title: '操作',

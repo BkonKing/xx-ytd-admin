@@ -12,6 +12,7 @@
           <project-select
             v-model="form.projectId"
             @input="$refs.form.validateField('projectId')"
+            @change="hanlderProjectChange"
           ></project-select>
         </a-form-model-item>
         <a-form-model-item required prop="department" label="领料部门">
@@ -238,7 +239,20 @@ export default {
       },
       tableRules: {
         materialIdArr: [{ required: true, message: '请填写' }],
-        stockNum: [{ required: true, message: '请填写' }],
+        unit: [{ required: true, message: '请选择' }],
+        stockNum: [
+          { required: true, message: '请填写' },
+          {
+            validator: (rule, value, callback) => {
+              if (parseFloat(value) < 0) {
+                callback(new Error('不能小于0'))
+              } else {
+                callback()
+              }
+            },
+            trigger: 'blur'
+          }
+        ],
         unitPrice: [{ required: true, message: '请填写' }]
       },
       tableData: [],
@@ -279,7 +293,12 @@ export default {
         this.form = form
         this.form.ckId = this.id
         this.tableData = materia.map(obj => {
-          obj.materialIdArr = [obj.materialId, obj.brand, obj.model]
+          obj.materialIdArr = [
+            +obj.projectId ? 1 : 0,
+            obj.materialId,
+            obj.brand,
+            obj.model
+          ]
           return obj
         })
         this.tableData.forEach((obj, index) => {
@@ -294,15 +313,9 @@ export default {
         })
       })
     },
-    handleAdd () {
-      this.tableData.push({
-        materialIdArr: [],
-        remarks: '',
-        unit: '',
-        unitPrice: '',
-        stockNum: '',
-        listOrder: ''
-      })
+    // 项目切换，删除所有物料信息
+    hanlderProjectChange () {
+      this.tableData = []
     },
     // 排序实时更改
     changeSort () {
@@ -328,30 +341,43 @@ export default {
     },
     // 获取项目-物料-品牌-规格，对应的单位和库存
     handleChange (value, index) {
-      // console.log(value)
-      if (value && value.length < 3) {
-        return
-      }
-      return getAllProMatBanModelUnit({
-        projectId: this.form.projectId,
-        materialId: value[0],
-        brand: value[1],
-        model: value[2]
-      }).then(({ data }) => {
+      return this.getAllProMatBanModelUnit(value).then(({ data }) => {
         // console.log(data)
         this.$set(this.tableData[index], 'unitOptions', data)
         this.$set(this.tableData[index], 'unit', data[0].unit)
         this.$set(this.tableData[index], 'currentNum', data[0].currentNum)
       })
     },
-    changeDatePicker (date, dateString) {
-      console.log(date)
+    // 获取单位信息
+    getAllProMatBanModelUnit (value) {
+      // console.log(value)
+      if (value && value.length < 4) {
+        // eslint-disable-next-line prefer-promise-reject-errors
+        return Promise.reject(new Error(false))
+      }
+      return getAllProMatBanModelUnit({
+        projectId: +value[0] ? this.form.projectId : '0',
+        materialId: value[1],
+        brand: value[2],
+        model: value[3]
+      })
     },
+    // 单位变更则重新设置当前单位库存
     unitChange (value, index) {
       const targetOption = this.tableData[index].unitOptions.find(
         obj => obj.unit === value
       )
       this.$set(this.tableData[index], 'currentNum', targetOption.currentNum)
+    },
+    handleAdd () {
+      this.tableData.push({
+        materialIdArr: [],
+        remarks: '',
+        unit: '',
+        unitPrice: '',
+        stockNum: '',
+        listOrder: ''
+      })
     },
     remove (index) {
       this.tableData.splice(index, 1)
@@ -388,9 +414,10 @@ export default {
             ...this.form,
             material: this.tableData.map(obj => {
               const arr = obj.materialIdArr
-              obj.materialId = arr[0]
-              obj.brand = arr[1]
-              obj.model = arr[2]
+              obj.projectId = +arr[0] ? this.form.projectId : '0'
+              obj.materialId = arr[1]
+              obj.brand = arr[2]
+              obj.model = arr[3]
               return obj
             })
           }
@@ -410,6 +437,11 @@ export default {
                 )
               } else {
                 this.$message.error(res.message)
+                this.tableData.forEach((obj, index) => {
+                  this.getAllProMatBanModelUnit(obj.materialIdArr).then(() => {
+                    this.unitChange(obj.unit, index)
+                  })
+                })
               }
             })
         })

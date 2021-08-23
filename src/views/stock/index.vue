@@ -17,7 +17,10 @@
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="所属项目">
-                <project-select v-model="queryParam.projectId"></project-select>
+                <project-select
+                  v-model="queryParam.projectId"
+                  :addOther="true"
+                ></project-select>
               </a-form-item>
             </a-col>
             <a-col v-if="isParentCompany" :md="8" :sm="24">
@@ -208,7 +211,7 @@ export default {
           title: '所属项目',
           dataIndex: 'projectName',
           width: '11%',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -222,7 +225,7 @@ export default {
           title: '物料品牌',
           dataIndex: 'brand',
           width: '11%',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -230,7 +233,7 @@ export default {
           title: '规格型号',
           dataIndex: 'model',
           width: '11%',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },

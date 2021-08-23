@@ -6,7 +6,10 @@
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="所属项目">
-                <project-select v-model="queryParam.projectId"></project-select>
+                <project-select
+                  v-model="queryParam.projectId"
+                  :addOther="true"
+                ></project-select>
               </a-form-item>
             </a-col>
             <a-col v-if="isParentCompany" :md="8" :sm="24">
@@ -138,14 +141,14 @@ export default {
         {
           title: '类型',
           dataIndex: 'stockTypeV',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
         {
           title: '所属项目',
           dataIndex: 'projectName',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -154,7 +157,7 @@ export default {
           dataIndex: 'materiaCount',
           sorter: true,
           class: 'nowrap',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -218,7 +221,9 @@ export default {
       }
     },
     eUrl () {
-      return this.type === '1' ? '/operate/report/stocklkReportExcel' : '/operate/report/stockCkReportExcel'
+      return this.type === '1'
+        ? '/operate/report/stocklkReportExcel'
+        : '/operate/report/stockCkReportExcel'
     }
   },
   methods: {
@@ -227,13 +232,18 @@ export default {
       if (!this.queryParam.projectId) {
         this.$message.warning('请选择项目')
       } else {
-        const baseUrl = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
+        const baseUrl =
+          process.env.NODE_ENV === 'production'
+            ? process.env.VUE_APP_API_BASE_URL
+            : '/api'
         const params = {
           projectId: this.queryParam.projectId,
           ids: this.selectedRowKeys.join(',')
         }
         console.log(params)
-        location.href = `${baseUrl}${this.eUrl}?${changeJSON2QueryString(params)}`
+        location.href = `${baseUrl}${this.eUrl}?${changeJSON2QueryString(
+          params
+        )}`
       }
     },
     goDetail (record) {
@@ -248,5 +258,4 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

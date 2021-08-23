@@ -20,6 +20,10 @@
         <a-form-model-item label="订单凭证">
           <upload-image v-model="form.orderPz" maxLength="10"></upload-image>
         </a-form-model-item>
+        <a-form-model-item label="物料归属">
+          <a-radio-group v-model="form.ownership" :options="ownerOptions" />
+          <div style="color: #00000072;">物料入库时若是归属项目则只能用于该项目，无归属则可用于任意项目</div>
+        </a-form-model-item>
       </a-form-model>
     </a-card>
     <a-card title="物料信息" style="margin-top: 24px;">
@@ -112,7 +116,7 @@
                   <a-form-model-item prop="total" required>
                     <a-input
                       v-model="record.total"
-                      v-number-input="{min:0}"
+                      v-number-input="{ min: 0 }"
                       placeholder="请输入"
                       :disabled="isDisabled"
                       style="width: 100%;"
@@ -155,10 +159,19 @@
           <a-col flex="1"></a-col>
           <a-col flex="1"></a-col>
           <a-col flex="230px"></a-col>
-          <a-col flex="180px" style="padding-left: 100px;">{{ totalNum }}</a-col>
+          <a-col flex="180px" style="padding-left: 100px;">{{
+            totalNum
+          }}</a-col>
           <a-col flex="1" style="word-break: break-all;"
-            >￥{{ totalMoney }}</a-col
-          >
+            ><a-input
+              v-model="form.orderPrice"
+              v-number-input
+              prefix="￥"
+              :maxLength="15"
+              :disabled="isDisabled"
+              @blur="blurPrice"
+              style="margin-left: -11px;"
+          /></a-col>
           <a-col flex="128px"></a-col>
         </a-row>
         <a-button
@@ -215,7 +228,9 @@ export default {
       form: {
         contractId: '',
         supplier: '',
-        orderPz: []
+        orderPz: [],
+        ownership: '1',
+        orderPrice: ''
       },
       rules: {
         contractId: [{ required: true, message: '请选择关联合同' }]
@@ -229,7 +244,15 @@ export default {
         unit: [{ required: true, message: '请选择' }],
         total: [{ required: true, message: '请填写' }]
       },
-      tableData: []
+      tableData: [],
+      paidNum: 0, // 订单付款信息已付金额
+      // 物料总金额是否跟随单价数量和改变，如果相等就跟随改变
+      orderPriceIsChange: true,
+      // 项目归属选项
+      ownerOptions: [
+        { label: '归属项目', value: '1' },
+        { label: '无归属', value: '0' }
+      ]
     }
   },
   computed: {
@@ -240,6 +263,10 @@ export default {
       })
       return num.toFixed(2)
     },
+    // 物料总金额是否跟随单价数量和改变，如果相等就跟随改变
+    // orderPriceIsChange () {
+    //   return parseFloat(this.totalMoney) === parseFloat(this.form.orderPrice)
+    // },
     totalNum () {
       let num = 0
       this.tableData.forEach(obj => {
@@ -249,6 +276,16 @@ export default {
     },
     isDisabled () {
       return this.UpdatePermission !== 1 && this.form.status === '1'
+    }
+  },
+  watch: {
+    totalMoney (val) {
+      if (this.orderPriceIsChange) {
+        this.form.orderPrice =
+          parseFloat(val) > this.paidNum ? parseFloat(val) : this.paidNum
+      } else {
+        this.blurPrice()
+      }
     }
   },
   mounted () {
@@ -268,11 +305,16 @@ export default {
         this.form.contractId = data.contractId
         this.form.status = data.status
         this.form.orderPz = data.orderPz
+        this.form.ownership = data.ownership
         this.form.supplier = data.supplierName
+        this.form.orderPrice = data.orderPrice
+        this.paidNum = parseFloat(data.paid)
         this.tableData = data.material
         this.tableData.forEach((obj, index) => {
           this.getUnit(obj.materialId, index, obj.unit)
         })
+        this.orderPriceIsChange =
+          parseFloat(this.totalMoney) === parseFloat(this.form.orderPrice)
       })
     },
     // 获取编辑权限
@@ -297,6 +339,13 @@ export default {
           unit || (data[0] && data[0].unit) || ''
         )
       })
+    },
+    blurPrice (e) {
+      if (e && this.paidNum > parseFloat(this.form.orderPrice)) {
+        this.form.orderPrice = this.paidNum
+      }
+      this.orderPriceIsChange =
+        parseFloat(this.totalMoney) === parseFloat(this.form.orderPrice)
     },
     handleAdd () {
       this.tableData.push({
@@ -369,22 +418,26 @@ export default {
             material: this.tableData
           }
           const api = this.id ? updateOrder : addOrder
-          api(params).then(({ id }) => {
-            this.$message.success('提交成功')
-            this.$router.replace({
-              name: 'OrderDetail',
-              query: {
-                id: this.id || id
+          api(params)
+            .then(({ id }) => {
+              this.$message.success('提交成功')
+              this.$router.replace({
+                name: 'OrderDetail',
+                query: {
+                  id: this.id || id
+                }
+              })
+            })
+            .catch(res => {
+              if (res.code === 202) {
+                const text = res.data.map(index => index + 1)
+                this.$message.warning(
+                  `物料第${text.join('，')}条重复创建，请合并为一行`
+                )
+              } else {
+                this.$message.error(res.message)
               }
             })
-          }).catch((res) => {
-            if (res.code === 202) {
-              const text = res.data.map(index => index + 1)
-              this.$message.warning(`物料第${text.join('，')}条重复创建，请合并为一行`)
-            } else {
-              this.$message.error(res.message)
-            }
-          })
         })
         .catch(() => {})
         .finally(() => {
