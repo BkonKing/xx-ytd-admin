@@ -196,17 +196,13 @@ export default {
   methods: {
     // 导出
     exportReport () {
-      if (!this.queryParam.projectId) {
-        this.$message.warning('请选择项目')
-      } else {
-        const baseUrl =
+      const baseUrl =
           process.env.NODE_ENV === 'production'
             ? process.env.VUE_APP_API_BASE_URL
             : '/api'
-        location.href = `${baseUrl}/operate/report/stockReportExcel?${changeJSON2QueryString(
+      location.href = `${baseUrl}/operate/report/stockReportExcel?${changeJSON2QueryString(
           this.queryParam
         )}`
-      }
     },
     goDetail ({ id }) {
       this.$router.push({

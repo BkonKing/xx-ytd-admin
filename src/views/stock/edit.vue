@@ -110,7 +110,8 @@
                       placeholder="请输入"
                       v-number-input="{
                         min: 0,
-                        max: parseFloat(record.currentNum)
+                        max: parseFloat(record.currentNum),
+                        decimal: 3
                       }"
                       :maxLength="15"
                     />

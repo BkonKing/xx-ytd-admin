@@ -100,7 +100,6 @@
       <div class="table-operator">
         <a-button
           v-if="permissions.ExportPermission"
-          :disabled="!selectedRowKeys.length"
           @click="exportReport"
         >
           导出
@@ -266,22 +265,18 @@ export default {
   methods: {
     // 导出
     exportReport () {
-      if (!this.queryParam.projectId) {
-        this.$message.warning('请选择项目')
-      } else {
-        const baseUrl =
+      const baseUrl =
           process.env.NODE_ENV === 'production'
             ? process.env.VUE_APP_API_BASE_URL
             : '/api'
-        const params = {
-          projectId: this.queryParam.projectId,
-          ids: this.selectedRowKeys.join(',')
-        }
-        console.log(params)
-        location.href = `${baseUrl}/operate/report/materialReportExcel?${changeJSON2QueryString(
+      const params = {
+        ...this.queryParam,
+        ids: this.selectedRowKeys.join(',')
+      }
+      console.log(params)
+      location.href = `${baseUrl}/operate/report/materialReportExcel?${changeJSON2QueryString(
           params
         )}`
-      }
     },
     goDetail ({ orderId: id }) {
       this.$router.push({

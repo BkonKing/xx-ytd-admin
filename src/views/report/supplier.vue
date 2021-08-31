@@ -61,11 +61,7 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button
-          v-if="permissions.ExportPermission"
-          type="primary"
-          :disabled="!selectedRowKeys.length"
-          @click="exportReport"
+        <a-button v-if="permissions.ExportPermission" @click="exportReport"
           >导出</a-button
         >
       </div>
@@ -135,7 +131,7 @@ export default {
           title: '所属项目',
           dataIndex: 'projectName',
           width: '20%',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -148,7 +144,7 @@ export default {
           title: '供应商',
           dataIndex: 'supplierName',
           width: '15%',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -156,7 +152,7 @@ export default {
           title: '类型',
           dataIndex: 'supplierTypeName',
           width: '10%',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -168,7 +164,7 @@ export default {
         {
           title: '供应物料',
           dataIndex: 'materialName',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -232,17 +228,18 @@ export default {
     },
     // 导出
     exportReport () {
-      if (!this.queryParam.projectId) {
-        this.$message.warning('请选择项目')
-      } else {
-        const baseUrl = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
-        const params = {
-          projectId: this.queryParam.projectId,
-          ids: this.selectedRowKeys.join(',')
-        }
-        console.log(params)
-        location.href = `${baseUrl}/operate/report/suppReportExcel?${changeJSON2QueryString(params)}`
+      const baseUrl =
+        process.env.NODE_ENV === 'production'
+          ? process.env.VUE_APP_API_BASE_URL
+          : '/api'
+      const params = {
+        ...this.queryParam,
+        ids: this.selectedRowKeys.join(',')
       }
+      console.log(params)
+      location.href = `${baseUrl}/operate/report/suppReportExcel?${changeJSON2QueryString(
+        params
+      )}`
     },
     goDetail ({ id }) {
       this.$router.push({
@@ -260,5 +257,4 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

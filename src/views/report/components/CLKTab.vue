@@ -229,22 +229,18 @@ export default {
   methods: {
     // 导出
     exportReport () {
-      if (!this.queryParam.projectId) {
-        this.$message.warning('请选择项目')
-      } else {
-        const baseUrl =
+      const baseUrl =
           process.env.NODE_ENV === 'production'
             ? process.env.VUE_APP_API_BASE_URL
             : '/api'
-        const params = {
-          projectId: this.queryParam.projectId,
-          ids: this.selectedRowKeys.join(',')
-        }
-        console.log(params)
-        location.href = `${baseUrl}${this.eUrl}?${changeJSON2QueryString(
+      const params = {
+        ...this.queryParam,
+        ids: this.selectedRowKeys.join(',')
+      }
+      console.log(params)
+      location.href = `${baseUrl}${this.eUrl}?${changeJSON2QueryString(
           params
         )}`
-      }
     },
     goDetail (record) {
       this.activeRecord = record

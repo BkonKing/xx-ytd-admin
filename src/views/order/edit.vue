@@ -22,7 +22,9 @@
         </a-form-model-item>
         <a-form-model-item label="物料归属">
           <a-radio-group v-model="form.ownership" :options="ownerOptions" />
-          <div style="color: #00000072;">物料入库时若是归属项目则只能用于该项目，无归属则可用于任意项目</div>
+          <div style="color: #00000072;">
+            物料入库时若是归属项目则只能用于该项目，无归属则可用于任意项目
+          </div>
         </a-form-model-item>
       </a-form-model>
     </a-card>
@@ -116,7 +118,7 @@
                   <a-form-model-item prop="total" required>
                     <a-input
                       v-model="record.total"
-                      v-number-input="{ min: 0 }"
+                      v-number-input="{ min: 0, decimal: 3 }"
                       placeholder="请输入"
                       :disabled="isDisabled"
                       style="width: 100%;"
@@ -165,7 +167,7 @@
           <a-col flex="1" style="word-break: break-all;"
             ><a-input
               v-model="form.orderPrice"
-              v-number-input
+              v-number-input="{ decimal: 2 }"
               prefix="￥"
               :maxLength="15"
               :disabled="isDisabled"
@@ -314,7 +316,7 @@ export default {
           this.getUnit(obj.materialId, index, obj.unit)
         })
         this.orderPriceIsChange =
-          parseFloat(this.totalMoney) === parseFloat(this.form.orderPrice)
+          parseFloat(this.totalMoney) === parseFloat(this.form.orderPrice) || this.form.orderPrice === ''
       })
     },
     // 获取编辑权限
@@ -341,11 +343,14 @@ export default {
       })
     },
     blurPrice (e) {
+      if (this.form.orderPrice === '') {
+        this.form.orderPrice = parseFloat(this.totalMoney)
+      }
       if (e && this.paidNum > parseFloat(this.form.orderPrice)) {
         this.form.orderPrice = this.paidNum
       }
       this.orderPriceIsChange =
-        parseFloat(this.totalMoney) === parseFloat(this.form.orderPrice)
+        parseFloat(this.totalMoney) === parseFloat(this.form.orderPrice) || this.form.orderPrice === ''
     },
     handleAdd () {
       this.tableData.push({
@@ -473,6 +478,8 @@ export default {
 .table-total {
   font-weight: bold;
   .ant-col {
+    display: flex;
+    align-items: center;
     padding: 6px 8px;
   }
 }

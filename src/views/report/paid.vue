@@ -63,6 +63,7 @@
         ref="table"
         size="default"
         rowKey="id"
+        table-layout="fixed"
         :columns="columns"
         :data="loadData"
         :showPagination="true"
@@ -99,6 +100,23 @@
               >备注</a
             >
           </span>
+        </template>
+
+        <template slot="footer">
+          <a-table
+            v-if="footerData && footerData.length"
+            class="table-footer"
+            size="default"
+            rowKey="id"
+            :columns="columns"
+            :dataSource="footerData"
+            :pagination="false"
+            :showHeader="false"
+          >
+            <template slot="contractMoney" slot-scope="text">
+              {{+text ? `￥${text}` : '--' }}
+            </template></a-table
+          >
         </template>
       </s-table>
     </a-card>
@@ -154,14 +172,16 @@ export default {
           }
         },
         {
+          title: '付款日期',
+          dataIndex: 'payDate'
+        },
+        {
           title: '订单ID',
-          dataIndex: 'idv',
-          class: 'nowrap'
+          dataIndex: 'idv'
         },
         {
           title: '供应商ID',
           dataIndex: 'supplierIdv',
-          class: 'nowrap',
           customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
@@ -169,20 +189,24 @@ export default {
         {
           title: '供应商',
           dataIndex: 'supplierName',
-          class: 'nowrap',
           scopedSlots: { customRender: 'supplierName' }
         },
         {
           title: '合同金额',
           dataIndex: 'contractMoney',
-          class: 'nowrap',
           scopedSlots: { customRender: 'contractMoney' }
+        },
+        {
+          title: '订单总额',
+          dataIndex: 'orderPrice',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
         },
         {
           title: '已付款金额',
           dataIndex: 'paid',
           sort: true,
-          class: 'nowrap',
           customRender (text) {
             return +text ? `￥${text}` : '--'
           }
@@ -191,7 +215,6 @@ export default {
           title: '未付款金额',
           dataIndex: 'unpaid',
           sort: true,
-          class: 'nowrap',
           customRender (text) {
             return +text ? `￥${text}` : '--'
           }
@@ -210,12 +233,23 @@ export default {
       ],
       tableData: [],
       cacheData: [],
+      footerData: [],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const requestParameters = Object.assign({}, parameter, this.queryParam)
         return getStockList(requestParameters).then(res => {
           this.tableData = res.data.records
           this.cacheData = cloneDeep(res.data.records)
+          this.footerData = [
+            {
+              id: 'total',
+              projectName: '合计',
+              contractMoney: res.data.allContractMoney,
+              orderPrice: res.data.allPrice,
+              paid: res.data.allPaid,
+              unpaid: res.data.allUnpaid
+            }
+          ]
           return res
         })
       }
@@ -227,13 +261,7 @@ export default {
     },
     // 导出
     openExport () {
-      if (!this.queryParam.projectId) {
-        this.$message.warning('请选择项目')
-      } else if (!this.tableData || !this.tableData.length) {
-        this.$message.warning('当前项目有没有数据')
-      } else {
-        this.visible = true
-      }
+      this.visible = true
     },
     handleEdit (index) {
       const target = this.tableData[index]
@@ -265,5 +293,12 @@ export default {
 /deep/ .ant-table-thead > tr > th,
 /deep/ .ant-table-tbody > tr > td {
   padding-right: 0;
+}
+/deep/ .ant-table-footer {
+  background: #fff;
+  padding: 0;
+  .table-footer {
+    font-weight: bold;
+  }
 }
 </style>

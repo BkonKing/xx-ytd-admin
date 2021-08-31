@@ -93,11 +93,7 @@
     </a-card>
     <a-card style="margin-top: 24px" :bordered="false">
       <div class="table-operator">
-        <a-button
-          v-if="permissions.ExportPermission"
-          type="primary"
-          :disabled="!selectedRowKeys.length"
-          @click="exportReport"
+        <a-button v-if="permissions.ExportPermission" @click="exportReport"
           >导出</a-button
         >
       </div>
@@ -106,6 +102,7 @@
         ref="table"
         size="default"
         rowKey="id"
+        table-layout="fixed"
         :columns="columns"
         :data="loadData"
         :alert="{ clear: true }"
@@ -121,6 +118,20 @@
             <a @click="goDetail(record)">查看</a>
           </template>
         </span>
+        <template slot="footer">
+          <a-table
+            v-if="footerData && footerData.length"
+            class="table-footer"
+            size="default"
+            rowKey="id"
+            :columns="columns"
+            :rowSelection="{}"
+            :dataSource="footerData"
+            :pagination="false"
+            :showHeader="false"
+          >
+          </a-table>
+        </template>
       </s-table>
     </a-card>
   </page-header-wrapper>
@@ -189,19 +200,16 @@ export default {
         {
           title: '合同状态',
           dataIndex: 'contractStatusv',
-          class: 'nowrap'
+          class: 'nowrap',
+          customRender: text => {
+            return <div class="contract-statusv">{text}</div>
+          }
         },
         {
           title: '所属项目',
           dataIndex: 'projectName',
-          customRender: (text) => {
-            return <div class="two-Multi">{text}</div>
-          }
-        },
-        {
-          title: '合同名称',
-          dataIndex: 'contractName',
-          customRender: (text) => {
+          width: '15%',
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -209,38 +217,49 @@ export default {
           title: '合同编号',
           dataIndex: 'contractNo',
           sorter: true,
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
         {
-          title: '订单',
-          dataIndex: 'orderNum',
-          class: 'nowrap',
-          sorter: true,
-          scopedSlots: { customRender: 'orderNum' }
+          title: '合同名称',
+          dataIndex: 'contractName',
+          customRender: text => {
+            return <div class="two-Multi">{text}</div>
+          }
         },
         {
-          title: '金额',
+          title: '合同金额',
           dataIndex: 'contractMoney',
-          class: 'nowrap',
           sorter: true,
           customRender (text) {
             return +text ? `￥${text}` : '--'
           }
         },
         {
+          title: '订单',
+          dataIndex: 'orderNum',
+          sorter: true,
+          scopedSlots: { customRender: 'orderNum' }
+        },
+        {
+          title: '订单金额',
+          dataIndex: 'orderPrice',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
           title: '创建时间',
-          class: 'nowrap',
           dataIndex: 'ctime'
         },
         {
           title: '操作',
-          dataIndex: 'id',
           width: '64px',
           scopedSlots: { customRender: 'action' }
         }
       ],
+      footerData: [],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
@@ -252,7 +271,19 @@ export default {
         }
         this.queryParam.startDate = startDate
         this.queryParam.endDate = endDate
-        return getContractReport(Object.assign(parameter, this.queryParam))
+        return getContractReport(
+          Object.assign(parameter, this.queryParam)
+        ).then(res => {
+          this.footerData = [
+            {
+              id: 'total',
+              contractStatusv: '合计',
+              contractMoney: res.data.allContractMoney,
+              orderPrice: res.data.allOrderPrice
+            }
+          ]
+          return res
+        })
       },
       selectedRowKeys: [],
       selectedRows: []
@@ -272,21 +303,17 @@ export default {
   methods: {
     // 导出
     exportReport () {
-      if (!this.queryParam.projectId) {
-        this.$message.warning('请选择项目')
-      } else {
-        const baseUrl =
-          process.env.NODE_ENV === 'production'
-            ? process.env.VUE_APP_API_BASE_URL
-            : '/api'
-        const params = {
-          projectId: this.queryParam.projectId,
-          ids: this.selectedRowKeys.join(',')
-        }
-        location.href = `${baseUrl}/operate/report/contractReportExcel?${changeJSON2QueryString(
-          params
-        )}`
+      const baseUrl =
+        process.env.NODE_ENV === 'production'
+          ? process.env.VUE_APP_API_BASE_URL
+          : '/api'
+      const params = {
+        ...this.queryParam,
+        ids: this.selectedRowKeys.join(',')
       }
+      location.href = `${baseUrl}/operate/report/contractReportExcel?${changeJSON2QueryString(
+        params
+      )}`
     },
     goDetail ({ id }) {
       this.$router.push({
@@ -304,4 +331,20 @@ export default {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+/deep/ .ant-table-footer {
+  background: #fff;
+  padding: 0;
+  .table-footer {
+    font-weight: bold;
+    .ant-checkbox {
+      display: none;
+    }
+    .contract-statusv {
+      position: absolute;
+      left: 22px;
+      top: 16px;
+    }
+  }
+}
+</style>
