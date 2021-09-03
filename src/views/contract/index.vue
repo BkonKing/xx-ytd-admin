@@ -131,6 +131,7 @@
         ref="table"
         size="default"
         rowKey="id"
+        table-layout="fixed"
         :columns="columns"
         :data="loadData"
         :alert="{ clear: true }"
@@ -139,9 +140,6 @@
         :scroll="{ x: 3000 }"
         style="width: 100%"
       >
-        <Ellipsis slot="projectName" slot-scope="text" :lines="2" :length="100" tooltip
-          >{{ text }}{{ text }}{{ text }}{{ text }}</Ellipsis
-        >
         <span slot="auditTime" slot-scope="text, record">
           <time-wait
             v-if="text"
@@ -182,6 +180,21 @@
             >
           </template>
         </span>
+        <template slot="footer">
+          <a-table
+            v-if="footerData && footerData.length"
+            class="table-footer"
+            size="default"
+            rowKey="id"
+            :columns="footerColumns"
+            :rowSelection="{}"
+            :dataSource="footerData"
+            :scroll="{ x: 3000 }"
+            :pagination="false"
+            :showHeader="false"
+          >
+          </a-table>
+        </template>
       </s-table>
     </a-card>
     <a-modal
@@ -285,12 +298,13 @@ export default {
           title: '所属项目',
           width: '120px',
           dataIndex: 'projectName',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
         {
           title: '合同编号',
+          width: 160,
           sorter: true,
           dataIndex: 'contractNo'
         },
@@ -298,7 +312,7 @@ export default {
           title: '合同名称',
           width: '140px',
           dataIndex: 'contractName',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -306,7 +320,7 @@ export default {
           title: '类型',
           width: '140px',
           dataIndex: 'categoryName',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -314,13 +328,14 @@ export default {
           title: '供应商',
           width: '140px',
           dataIndex: 'supplierName',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
         {
-          title: '金额',
+          title: '合同金额',
           class: 'nowrap',
+          width: 130,
           dataIndex: 'contractMoney',
           sorter: true,
           customRender (text) {
@@ -372,8 +387,18 @@ export default {
           sorter: true
         },
         {
+          title: '订单金额',
+          class: 'nowrap',
+          width: 130,
+          dataIndex: 'orderMoney',
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        {
           title: '已付款',
           class: 'nowrap',
+          width: 130,
           dataIndex: 'orderPayMoney',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
@@ -382,6 +407,7 @@ export default {
         {
           title: '未付款',
           class: 'nowrap',
+          width: 130,
           dataIndex: 'orderUnPayMoney',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
@@ -390,6 +416,7 @@ export default {
         {
           title: '已收票金额',
           class: 'nowrap',
+          width: 130,
           dataIndex: 'orderInvoicedMoney',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
@@ -398,6 +425,7 @@ export default {
         {
           title: '未收票金额',
           class: 'nowrap',
+          width: 130,
           dataIndex: 'orderUnInvoicedMoney',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
@@ -423,7 +451,7 @@ export default {
           title: '备注',
           width: '150px',
           dataIndex: 'remarks',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -434,11 +462,86 @@ export default {
         },
         {
           title: '操作',
-          dataIndex: 'id',
           fixed: 'right',
           class: 'nowrap',
           scopedSlots: { customRender: 'action' }
         }
+      ],
+      footerData: [],
+      footerColumns: [
+        {
+          dataIndex: 'projectName',
+          class: 'contract-statusv',
+          width: 120
+          // customRender: text => {
+          //   return <div class="contract-statusv">{text}</div>
+          // }
+        },
+        { width: 160, dataIndex: 'contractNo' },
+        { width: '140px', dataIndex: 'contractName' },
+        { width: '140px', dataIndex: 'categoryName' },
+        { width: '140px', dataIndex: 'supplierName' },
+        {
+          dataIndex: 'contractMoney',
+          class: 'nowrap',
+          width: 130,
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        { dataIndex: 'contractTotal' },
+        { width: '80px', dataIndex: 'taxRate' },
+        { width: '120px', dataIndex: 'signDate' },
+        { width: '200px', dataIndex: 'startDate' },
+        { width: '120px', dataIndex: 'settleTypeName' },
+        { width: '100px', dataIndex: 'payTypeName' },
+        { dataIndex: 'orderNum' },
+        {
+          dataIndex: 'orderMoney',
+          class: 'nowrap',
+          width: 130,
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        {
+          dataIndex: 'orderPayMoney',
+          class: 'nowrap',
+          width: 130,
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        {
+          dataIndex: 'orderUnPayMoney',
+          class: 'nowrap',
+          width: 130,
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        {
+          dataIndex: 'orderInvoicedMoney',
+          class: 'nowrap',
+          width: 130,
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        {
+          dataIndex: 'orderUnInvoicedMoney',
+          class: 'nowrap',
+          width: 130,
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        { width: '100px', dataIndex: 'statusv' },
+        { width: '100px', dataIndex: 'contractStatusv' },
+        { width: '130px', dataIndex: 'auditTime' },
+        { width: '150px', dataIndex: 'remarks' },
+        { width: '110px', dataIndex: 'ctime' },
+        { dataIndex: 'action' }
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
@@ -451,12 +554,31 @@ export default {
         }
         this.queryParam.startDate = startDate
         this.queryParam.endDate = endDate
-        return getContractList(Object.assign(parameter, this.queryParam)).then(res => {
-          this.dsTotal = res.data.dsTotal
-          this.yqTotal = res.data.yqTotal
-          this.zcTotal = res.data.zcTotal
-          return res
-        })
+        return getContractList(Object.assign(parameter, this.queryParam)).then(
+          res => {
+            this.dsTotal = res.data.dsTotal
+            this.yqTotal = res.data.yqTotal
+            this.zcTotal = res.data.zcTotal
+            if (+res.data.total) {
+              this.footerData = [
+                {
+                  id: 'total',
+                  projectName: '合计',
+                  action: '',
+                  contractMoney: res.data.allContractMoney,
+                  orderMoney: res.data.allOrderPrice,
+                  orderPayMoney: res.data.allPaid,
+                  orderUnPayMoney: res.data.allUnpaid,
+                  orderInvoicedMoney: res.data.allInvoiced,
+                  orderUnInvoicedMoney: res.data.allNotInvoiced
+                }
+              ]
+            } else {
+              this.footerData = []
+            }
+            return res
+          }
+        )
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -507,6 +629,19 @@ export default {
     if (tab) {
       this.tabActiveKey = tab
       this.changeStatus()
+    }
+  },
+  watch: {
+    footerData (val) {
+      if (val && val.length) {
+        setTimeout(() => {
+          var ele = document.getElementsByClassName('ant-table-body')[1]
+          var table = document.getElementsByClassName('ant-table-body')[0]
+          ele.addEventListener('scroll', function (e) {
+            table.scrollLeft = ele.scrollLeft || 0
+          })
+        }, 10)
+      }
     }
   },
   methods: {
@@ -660,5 +795,45 @@ export default {
 /deep/ .ant-table-fixed-right .nowrap {
   padding-left: 8px;
   padding-right: 8px;
+}
+/deep/ .ant-table-body {
+  margin-bottom: -6px;
+}
+@-moz-document url-prefix() {
+  .ant-table-body {
+    margin-bottom: -17px !important;
+  }
+}
+.table-footer /deep/ .ant-table-body {
+  margin-bottom: 0 !important;
+}
+/deep/ .ant-table-scroll-position-middle .contract-statusv,
+/deep/ .ant-table-scroll-position-right .contract-statusv  {
+  box-shadow: 6px 0 6px -4px #00000026;
+}
+/deep/ .ant-table-footer {
+  background: #fff;
+  padding: 0;
+  .table-footer {
+    font-weight: bold;
+    .ant-checkbox {
+      display: none;
+    }
+    .contract-statusv {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 90%;
+      border-bottom: 0;
+      background: #fff;
+      vertical-align: middle;
+    }
+    td {
+      vertical-align: top;
+    }
+    tr:hover td {
+      background: #fff !important;
+    }
+  }
 }
 </style>

@@ -96,6 +96,7 @@
         ref="table"
         size="default"
         rowKey="id"
+        table-layout="fixed"
         :columns="columns"
         :data="loadData"
         :alert="{ clear: true }"
@@ -142,6 +143,21 @@
             >
           </template>
         </span>
+
+        <template slot="footer">
+          <a-table
+            v-if="footerData && footerData.length"
+            class="table-footer"
+            size="default"
+            rowKey="id"
+            :columns="columns"
+            :rowSelection="{}"
+            :dataSource="footerData"
+            :pagination="false"
+            :showHeader="false"
+          >
+          </a-table>
+        </template>
       </s-table>
     </a-card>
 
@@ -217,39 +233,66 @@ export default {
       columns: [
         {
           title: '审核状态',
-          class: 'nowrap',
+          width: 90,
           dataIndex: 'statusv'
         },
         {
           title: '供应商ID',
-          class: 'nowrap',
-          dataIndex: 'idv'
+          dataIndex: 'idv',
+          customRender: text => {
+            return <div class="contract-statusv">{text}</div>
+          }
         },
         {
           title: '供应商',
           dataIndex: 'supplierName',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
         {
           title: '类型',
           dataIndex: 'supplierTypeName',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
         {
-          title: '供应物料',
           dataIndex: 'materialCount',
-          class: 'nowrap',
-          sorter: true
+          sorter: true,
+          title: () => {
+            return (
+              <div>
+                供应物料
+                <a-tooltip placement="top">
+                  <template slot="title">
+                    <span>物料的种类</span>
+                  </template>
+                  <a-icon type="exclamation-circle" />
+                </a-tooltip>
+              </div>
+            )
+          }
         },
         {
           title: '合同',
+          width: '9%',
           dataIndex: 'contractCount',
-          class: 'nowrap',
           sorter: true
+        },
+        {
+          title: '合同金额',
+          dataIndex: 'contractMoney',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '订单金额',
+          dataIndex: 'orderPrice',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
         },
         {
           title: '创建时间',
@@ -258,7 +301,6 @@ export default {
         {
           title: '操作',
           dataIndex: 'action',
-          class: 'nowrap',
           scopedSlots: { customRender: 'action' }
         }
       ],
@@ -284,6 +326,7 @@ export default {
         material: undefined,
         ctime: []
       },
+      footerData: [],
       dsTotal: 0, // 待审核tab数量
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
@@ -308,6 +351,18 @@ export default {
         )
         return getSupplierList(requestParameters).then(res => {
           this.dsTotal = res.data.dsTotal
+          if (+res.data.total) {
+            this.footerData = [
+              {
+                id: 'total',
+                idv: '合计',
+                contractMoney: res.data.allContractMoney,
+                orderPrice: res.data.allOrderPrice
+              }
+            ]
+          } else {
+            this.footerData = []
+          }
           return res
         })
       },

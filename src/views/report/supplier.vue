@@ -70,6 +70,7 @@
         ref="table"
         size="default"
         rowKey="id"
+        table-layout="fixed"
         :columns="columns"
         :data="loadData"
         :alert="{ clear: true }"
@@ -82,6 +83,21 @@
             <a @click="goDetail(record)">查看</a>
           </template>
         </span>
+
+        <template slot="footer">
+          <a-table
+            v-if="footerData && footerData.length"
+            class="table-footer"
+            size="default"
+            rowKey="id"
+            :columns="columns"
+            :rowSelection="{}"
+            :dataSource="footerData"
+            :pagination="false"
+            :showHeader="false"
+          >
+          </a-table>
+        </template>
       </s-table>
     </a-card>
   </page-header-wrapper>
@@ -138,7 +154,9 @@ export default {
         {
           title: '供应商ID',
           dataIndex: 'idv',
-          class: 'nowrap'
+          customRender: text => {
+            return <div class="contract-statusv">{text}</div>
+          }
         },
         {
           title: '供应商',
@@ -158,8 +176,7 @@ export default {
         },
         {
           title: '统一社会信用代码',
-          dataIndex: 'socialCode',
-          class: 'nowrap'
+          dataIndex: 'socialCode'
         },
         {
           title: '供应物料',
@@ -169,12 +186,27 @@ export default {
           }
         },
         {
+          title: '合同金额',
+          dataIndex: 'contractMoney',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '订单金额',
+          dataIndex: 'orderPrice',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
           title: '操作',
           dataIndex: 'action',
           width: '65px',
           scopedSlots: { customRender: 'action' }
         }
       ],
+      footerData: [],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.ctime
@@ -187,7 +219,21 @@ export default {
         this.queryParam.startDate = startDate
         this.queryParam.endDate = endDate
         const requestParameters = Object.assign({}, parameter, this.queryParam)
-        return getSuppReport(requestParameters)
+        return getSuppReport(requestParameters).then(res => {
+          if (+res.data.total) {
+            this.footerData = [
+              {
+                id: 'total',
+                idv: '合计',
+                contractMoney: res.data.allContractMoney,
+                orderPrice: res.data.allOrderPrice
+              }
+            ]
+          } else {
+            this.footerData = []
+          }
+          return res
+        })
       },
       selectedRowKeys: [],
       selectedRows: []

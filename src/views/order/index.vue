@@ -121,6 +121,7 @@
         ref="table"
         size="default"
         rowKey="id"
+        table-layout="fixed"
         :columns="columns"
         :data="loadData"
         :alert="{ clear: true }"
@@ -176,6 +177,21 @@
             >
           </template>
         </span>
+
+        <template slot="footer">
+          <a-table
+            v-if="footerData && footerData.length"
+            class="table-footer"
+            size="default"
+            rowKey="id"
+            :columns="columns"
+            :rowSelection="{}"
+            :dataSource="footerData"
+            :pagination="false"
+            :showHeader="false"
+          >
+          </a-table>
+        </template>
       </s-table>
     </a-card>
 
@@ -278,7 +294,10 @@ export default {
         },
         {
           title: '订单ID',
-          dataIndex: 'idv'
+          dataIndex: 'idv',
+          customRender: text => {
+            return <div class="contract-statusv">{text}</div>
+          }
         },
         {
           title: '物料数量',
@@ -287,10 +306,13 @@ export default {
           sorter: true
         },
         {
-          title: '金额',
+          title: '订单金额',
           dataIndex: 'orderPrice',
           class: 'nowrap',
-          sorter: true
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
         },
         {
           title: '付款情况',
@@ -308,6 +330,7 @@ export default {
           scopedSlots: { customRender: 'action' }
         }
       ],
+      footerData: [],
       dsTotal: 0, // 待审核tab数量
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
@@ -328,6 +351,17 @@ export default {
           Object.assign(parameter, this.queryParam, queryParam)
         ).then(res => {
           this.dsTotal = res.data.dsTotal
+          if (+res.data.total) {
+            this.footerData = [
+              {
+                id: 'total',
+                idv: '合计',
+                orderPrice: res.data.allPrice
+              }
+            ]
+          } else {
+            this.footerData = []
+          }
           return res
         })
       },
