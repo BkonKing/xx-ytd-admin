@@ -132,12 +132,13 @@
         size="default"
         rowKey="id"
         table-layout="fixed"
+        class="contract-table"
         :columns="columns"
         :data="loadData"
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
         :showPagination="true"
-        :scroll="{ x: 3000 }"
+        :scroll="{ x: 3300 }"
         style="width: 100%"
       >
         <span slot="auditTime" slot-scope="text, record">
@@ -186,10 +187,11 @@
             class="table-footer"
             size="default"
             rowKey="id"
+            table-layout="fixed"
             :columns="footerColumns"
             :rowSelection="{}"
             :dataSource="footerData"
-            :scroll="{ x: 3000 }"
+            :scroll="{ x: 3300 }"
             :pagination="false"
             :showHeader="false"
           >
@@ -221,8 +223,7 @@ import {
   CompanySelect,
   ContractTypeSelect,
   PayStatusSelect,
-  AdvancedForm,
-  Ellipsis
+  AdvancedForm
 } from '@/components'
 import {
   getContractList,
@@ -245,8 +246,7 @@ export default {
     CompanySelect,
     ContractTypeSelect,
     PayStatusSelect,
-    AdvancedForm,
-    Ellipsis
+    AdvancedForm
   },
   data () {
     return {
@@ -800,10 +800,22 @@ export default {
   margin-bottom: -6px;
 }
 @-moz-document url-prefix() {
-  .ant-table-body {
+  .contract-table .ant-table-body {
     margin-bottom: -17px !important;
   }
+  .contract-table .ant-table-footer .table-footer .contract-statusv {
+    height: calc(90% - 17px) !important;
+  }
 }
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  .contract-table /deep/ .ant-table-body {
+    margin-bottom: -17px !important;
+  }
+  .contract-table /deep/ .ant-table-footer .table-footer .contract-statusv {
+    height: calc(90% - 17px) !important;
+  }
+}
+
 .table-footer /deep/ .ant-table-body {
   margin-bottom: 0 !important;
 }
