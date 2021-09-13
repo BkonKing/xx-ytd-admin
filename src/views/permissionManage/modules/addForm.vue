@@ -127,7 +127,8 @@ export default {
       return this.projectList.map(option => {
         return {
           label: option.projectName,
-          value: option.projectId
+          value: option.projectId,
+          disabled: !+option.isValid
         }
       })
     }

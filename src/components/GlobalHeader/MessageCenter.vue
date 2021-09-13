@@ -152,10 +152,10 @@ export default {
     },
     // 获取弹窗数量接口
     getMessageCount () {
-      this.timer = clearTimeout(this.timer)
+      clearTimeout(this.timer)
       getMessageCount().then(({ data }) => {
         this.count = data || 0
-        setTimeout(() => {
+        this.timer = setTimeout(() => {
           this.getMessageCount()
         }, 60000)
       })

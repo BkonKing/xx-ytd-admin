@@ -22,7 +22,7 @@
         }}<a
           v-if="data.legalPersonPzNum > 0"
           class="two-blank"
-          @click="previewImage(data.legalPersonPz)"
+          @click="previewImage('法人身份证', data.legalPersonPz)"
           >查看</a
         >
       </a-descriptions-item>
@@ -38,7 +38,7 @@
       <a-descriptions-item label="营业执照">
         {{ data.licensePzNum }}张<a
           class="two-blank"
-          @click="previewImage(data.licensePz)"
+          @click="previewImage('营业执照', data.licensePz)"
           >查看</a
         >
       </a-descriptions-item>
@@ -48,7 +48,7 @@
       <a-descriptions-item label="资质证件" :span="2">
         {{ data.qualificationsPzNum }}张<a
           class="two-blank"
-          @click="previewImage(data.qualificationsPz)"
+          @click="previewImage('资质证件', data.qualificationsPz)"
           >查看</a
         >
       </a-descriptions-item>
@@ -56,22 +56,38 @@
         {{ data.registeredAddress || "--" }}
       </a-descriptions-item>
     </a-descriptions>
+    <file-list-modal
+      v-model="previvewVisible"
+      :data="fileList"
+      :title="title"
+    ></file-list-modal>
   </a-card>
 </template>
 
 <script>
+import { FileListModal } from '@/components'
 export default {
+  components: {
+    FileListModal
+  },
   props: {
     data: {
       type: Object,
       default: () => {}
     }
   },
+  data () {
+    return {
+      previvewVisible: false,
+      title: '',
+      fileList: []
+    }
+  },
   methods: {
-    previewImage (images) {
-      this.$viewerApi({
-        images
-      })
+    previewImage (title, data) {
+      this.title = title
+      this.fileList = data
+      this.previvewVisible = true
     }
   }
 }

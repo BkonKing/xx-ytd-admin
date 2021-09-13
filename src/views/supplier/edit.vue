@@ -1,6 +1,6 @@
 <template>
   <page-header-wrapper :title="title">
-    <a-card class="card" :bordered="false">
+    <a-card class="card" :bordered="false" style="margin-bottom: 0;">
       <a-form-model
         ref="supplierForm"
         :model="form"
@@ -73,11 +73,13 @@
           style="margin-bottom: 4px;"
           required
         >
-          <upload-image
+          <upload-file
             v-model="form.legalPersonPz"
             maxLength="5"
+            accept="image/jpg,image/jpeg,image/png,application/pdf"
             @input="$refs.supplierForm.validateField('legalPersonPz')"
-          ></upload-image>
+          ></upload-file>
+          <div style="color: #00000072;">支持扩展名：.pdf .jpg .png</div>
         </a-form-model-item>
         <a-form-model-item label="成立日期" prop="createDate">
           <a-date-picker
@@ -118,11 +120,12 @@
           style="margin-bottom: 4px;"
           required
         >
-          <upload-image
+          <upload-file
             v-model="form.licensePz"
             maxLength="5"
             @input="$refs.supplierForm.validateField('licensePz')"
-          ></upload-image>
+          ></upload-file>
+          <div style="color: #00000072;">支持扩展名：.rar .zip .doc .docx .pdf .jpg .png...</div>
         </a-form-model-item>
         <a-form-model-item label="注册资金" prop="registeredCapital">
           <a-input
@@ -147,11 +150,12 @@
           style="margin-bottom: 0;"
           required
         >
-          <upload-image
+          <upload-file
             v-model="form.qualificationsPz"
             maxLength="5"
             @input="$refs.supplierForm.validateField('qualificationsPz')"
-          ></upload-image>
+          ></upload-file>
+          <div style="color: #00000072;">支持扩展名：.rar .zip .doc .docx .pdf .jpg .png...</div>
         </a-form-model-item>
       </a-form-model>
     </a-card>
@@ -169,19 +173,20 @@
 
 <script>
 import {
-  UploadImage,
+  UploadFile,
   SupplierTypeSelect,
   MaterialTypeSelect
 } from '@/components'
 import FooterToolBar from '@/components/FooterToolbar'
 import { addSupplier, updateSupplier, getSuppInfo } from '@/api/supplier'
 import { appMixin } from '@/store/mixin'
+import clonedeep from 'lodash.clonedeep'
 
 export default {
   name: 'SupplierEdit',
   mixins: [appMixin],
   components: {
-    UploadImage,
+    UploadFile,
     SupplierTypeSelect,
     MaterialTypeSelect,
     FooterToolBar
@@ -247,11 +252,15 @@ export default {
       this.$refs.supplierForm.validate(valid => {
         if (valid) {
           const api = this.id ? updateSupplier : addSupplier
-          if (this.form.startDate) {
-            this.form.businessTerm = `${this.form.startDate}~${this.form.endDate}`
+          const params = clonedeep(this.form)
+          if (params.startDate) {
+            params.businessTerm = `${params.startDate}~${params.endDate}`
           }
-          this.id && (this.form.id = this.id)
-          api(this.form).then(({ success, id }) => {
+          this.id && (params.id = this.id)
+          params.legalPersonPz = params.legalPersonPz.map(obj => `${obj.url}|${obj.name}`)
+          params.licensePz = params.licensePz.map(obj => `${obj.url}|${obj.name}`)
+          params.qualificationsPz = params.qualificationsPz.map(obj => `${obj.url}|${obj.name}`)
+          api(params).then(({ success, id }) => {
             if (success) {
               this.$message.success('提交成功')
               this.$router.replace({

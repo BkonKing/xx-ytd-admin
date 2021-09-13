@@ -58,55 +58,21 @@
         {{ data.remarks || "--" }}
       </a-descriptions-item>
     </a-descriptions>
-    <a-modal
+    <file-list-modal
+      v-model="previvewVisible"
+      :data="data.contractPz"
       title="合同文件"
-      :visible="previvewVisible"
-      :footer="null"
-      @cancel="previvewVisible = false"
-    >
-      <div class="ant-upload-list ant-upload-list-picture">
-        <div
-          v-for="(file, index) in data.contractPz"
-          :key="index"
-          class="ant-upload-list-item ant-upload-list-item-done ant-upload-list-item-list-type-picture"
-        >
-          <div class="ant-upload-list-item-info">
-            <span>
-              <a
-                class="ant-upload-list-item-thumbnail"
-                @click="openHref(file.url)"
-              >
-                <img
-                  v-if="isImg(file.name)"
-                  :src="file.url"
-                  :alt="file.name"
-                  class="ant-upload-list-item-image"/>
-                <a-icon
-                  v-else
-                  class="anticon anticon-file ant-upload-list-item-icon"
-                  type="file"/></a
-              ><a
-                :title="file.name"
-                @click="openHref(file.url)"
-                class="ant-upload-list-item-name ant-upload-list-item-name-icon-count-1"
-                >{{ file.name }}</a
-              >
-              <span class="ant-upload-list-item-card-actions picture">
-                <a :href="file.url" :download="file.name"
-                  ><a-icon type="download"></a-icon
-                ></a>
-              </span>
-            </span>
-          </div>
-        </div>
-      </div>
-    </a-modal>
+    ></file-list-modal>
   </a-card>
 </template>
 
 <script>
+import { FileListModal } from '@/components'
 export default {
   name: 'BasicInfo',
+  components: {
+    FileListModal
+  },
   props: {
     data: {
       type: Object,
@@ -121,21 +87,6 @@ export default {
   methods: {
     previewImage () {
       this.previvewVisible = true
-    },
-    openHref (url) {
-      if (url.indexOf('.doc') > 0 || url.indexOf('.docx') > 0) {
-        window.open(
-          `https://view.officeapps.live.com/op/view.aspx?src=${url}`,
-          '_target'
-        )
-        return
-      }
-      window.open(url, '_target')
-    },
-    // 是否是图片
-    isImg (val) {
-      var reg = /(.png)|(.jpg)/g
-      return reg.test(val)
     }
   }
 }

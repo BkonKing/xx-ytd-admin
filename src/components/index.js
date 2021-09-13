@@ -48,6 +48,7 @@ import Dialog from '@/components/Dialog'
 
 import QRCode from '@/components/QRCode'
 import TimeWait from '@/components/Time'
+import FileListModal from '@/components/FileListModal'
 
 export {
   AvatarList,
@@ -91,5 +92,6 @@ export {
   UnitSelect,
   AdvancedForm,
   QRCode,
-  TimeWait
+  TimeWait,
+  FileListModal
 }
