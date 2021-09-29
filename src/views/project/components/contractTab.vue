@@ -162,6 +162,7 @@ export default {
         {
           title: '合同编号',
           dataIndex: 'contractNo',
+          sorter: true,
           scopedSlots: { customRender: 'contractNo' }
         },
         {

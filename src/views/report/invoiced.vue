@@ -41,10 +41,21 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="开票时间">
+                  <a-range-picker
+                    v-model="queryParam.time"
+                    valueFormat="YYYY-MM-DD"
+                    @change="handlePickerChange"
+                    style="width: 100%;"
+                  />
+                </a-form-item>
+              </a-col>
             </template>
             <advanced-form
               v-model="advanced"
-              :md="isParentCompany ? 8 : 16"
+              :md="isParentCompany ? 24 : 8"
+              :showAdvanced="false"
               @reset="reset"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
@@ -259,6 +270,10 @@ export default {
     // 导出
     openExport () {
       this.visible = true
+    },
+    handlePickerChange (dates) {
+      this.queryParam.startDate = dates[0] || ''
+      this.queryParam.endDate = dates[1] || ''
     },
     exportReport () {},
     handleEdit (index) {

@@ -6,7 +6,7 @@
     >
       <a-button type="primary" @click="search">查询</a-button>
       <a-button style="margin-left: 8px" @click="reset">重置</a-button>
-      <a @click="advanced = !advanced" style="margin-left: 8px">
+      <a v-if="showAdvanced" @click="advanced = !advanced" style="margin-left: 8px">
         {{ advanced ? "收起" : "展开" }}
         <a-icon :type="advanced ? 'up' : 'down'" />
       </a>
@@ -25,6 +25,10 @@ export default {
     md: {
       type: Number,
       default: 8
+    },
+    showAdvanced: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
