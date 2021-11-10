@@ -42,14 +42,17 @@
       <a-descriptions-item label="税率">
         {{ data.taxRate }}
       </a-descriptions-item>
-      <a-descriptions-item label="供应商">
-        {{ data.supplierName }}
+      <a-descriptions-item label="发票类型">
+        {{ data.invoiceTypev }}
       </a-descriptions-item>
       <a-descriptions-item label="结算方式">
         {{ data.settleTypeName }}
       </a-descriptions-item>
       <a-descriptions-item label="付款方式">
         {{ data.payTypeName }}
+      </a-descriptions-item>
+      <a-descriptions-item label="供应商" :span="3">
+        {{ data.supplierName }}
       </a-descriptions-item>
       <a-descriptions-item label="物料" :span="3">
         {{ data.materialName }}

@@ -6,7 +6,7 @@
     @tabChange="handleTabChange"
   >
     <template v-slot:content>
-      <a-descriptions size="small" :column="isMobile ? 1 : 2">
+      <a-descriptions size="small" :column="isMobile ? 1 : 3">
         <a-descriptions-item label="所属项目">
           <router-link
             :to="{ name: 'ProjectDetail', query: { id: info.projectId } }"
@@ -14,7 +14,7 @@
             >{{ info.projectName || "--" }}</router-link
           >
         </a-descriptions-item>
-        <a-descriptions-item label="供应商">
+        <a-descriptions-item label="供应商" :span="2">
           <router-link
             :to="{ name: 'SupplierDetail', query: { id: info.supplierId } }"
             target="_blank"
@@ -24,7 +24,7 @@
         <a-descriptions-item label="所属公司">
           {{ info.companyName }}
         </a-descriptions-item>
-        <a-descriptions-item label="订单凭证">
+        <a-descriptions-item label="订单凭证" :span="2">
           {{ info.orderPzNum }}张<a
             v-if="+info.orderPzNum"
             class="two-blank"
@@ -39,6 +39,9 @@
             target="_blank"
             >{{ info.contractName || "--" }}</router-link
           >
+        </a-descriptions-item>
+        <a-descriptions-item label="订单日期">
+          {{ info.orderDate }}
         </a-descriptions-item>
         <a-descriptions-item label="创建人">
           {{ info.createAdmin }}<span class="two-blank"></span>{{ info.ctime }}

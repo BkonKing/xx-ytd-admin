@@ -102,6 +102,29 @@
                   />
                 </a-form-item>
               </a-col>
+              <!-- <a-col :md="8" :sm="24">
+                <a-form-item>
+                  <template v-slot:label>
+                    <a-row
+                      type="flex"
+                      align="middle"
+                      style="display: inline-flex;"
+                    >
+                      <span>合同物料</span>
+                      <a-tooltip placement="top">
+                        <template slot="title">
+                          <span>合同设置的物料</span>
+                        </template>
+                        <a-icon type="exclamation-circle" />
+                      </a-tooltip>
+                    </a-row>
+                  </template>
+                  <a-input
+                    v-model="queryParam.serachSupplierText"
+                    placeholder="编码、名称"
+                  ></a-input>
+                </a-form-item>
+              </a-col> -->
             </template>
             <advanced-form
               v-model="advanced"
@@ -132,7 +155,7 @@
         size="default"
         rowKey="id"
         table-layout="fixed"
-        class="contract-table"
+        class="contract-table combined-table"
         :columns="columns"
         :data="loadData"
         :alert="{ clear: true }"
@@ -387,9 +410,10 @@ export default {
           sorter: true
         },
         {
-          title: '订单金额',
+          title: '订单总额',
           class: 'nowrap',
           width: 130,
+          sorter: true,
           dataIndex: 'orderMoney',
           customRender (text) {
             return `￥${text}`
@@ -399,6 +423,7 @@ export default {
           title: '已付款',
           class: 'nowrap',
           width: 130,
+          sorter: true,
           dataIndex: 'orderPayMoney',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
@@ -408,24 +433,27 @@ export default {
           title: '未付款',
           class: 'nowrap',
           width: 130,
+          sorter: true,
           dataIndex: 'orderUnPayMoney',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
           }
         },
         {
-          title: '已收票金额',
+          title: '已开票',
           class: 'nowrap',
           width: 130,
+          sorter: true,
           dataIndex: 'orderInvoicedMoney',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
           }
         },
         {
-          title: '未收票金额',
+          title: '未开票',
           class: 'nowrap',
           width: 130,
+          sorter: true,
           dataIndex: 'orderUnInvoicedMoney',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
@@ -471,11 +499,8 @@ export default {
       footerColumns: [
         {
           dataIndex: 'projectName',
-          class: 'contract-statusv',
+          class: 'first-td',
           width: 120
-          // customRender: text => {
-          //   return <div class="contract-statusv">{text}</div>
-          // }
         },
         { width: 160, dataIndex: 'contractNo' },
         { width: '140px', dataIndex: 'contractName' },
@@ -788,6 +813,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/* .table-page-search-wrapper
+  /deep/ .ant-form-inline
+  .ant-form-item
+  > .ant-form-item-label {
+  min-width: 92px;
+} */
 /deep/ .ant-table-row-cell-last {
   padding-left: 8px;
   padding-right: 8px;
@@ -796,56 +827,8 @@ export default {
   padding-left: 8px;
   padding-right: 8px;
 }
-/deep/ .ant-table-body {
-  margin-bottom: -6px;
-}
-@-moz-document url-prefix() {
-  .contract-table .ant-table-body {
-    margin-bottom: -17px !important;
-  }
-  .contract-table .ant-table-footer .table-footer .contract-statusv {
-    height: calc(90% - 17px) !important;
-  }
-}
-@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-  .contract-table /deep/ .ant-table-body {
-    margin-bottom: -17px !important;
-  }
-  .contract-table /deep/ .ant-table-footer .table-footer .contract-statusv {
-    height: calc(90% - 17px) !important;
-  }
-}
+</style>
 
-.table-footer /deep/ .ant-table-body {
-  margin-bottom: 0 !important;
-}
-/deep/ .ant-table-scroll-position-middle .contract-statusv,
-/deep/ .ant-table-scroll-position-right .contract-statusv  {
-  box-shadow: 6px 0 6px -4px #00000026;
-}
-/deep/ .ant-table-footer {
-  background: #fff;
-  padding: 0;
-  .table-footer {
-    font-weight: bold;
-    .ant-checkbox {
-      display: none;
-    }
-    .contract-statusv {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 90%;
-      border-bottom: 0;
-      background: #fff;
-      vertical-align: middle;
-    }
-    td {
-      vertical-align: top;
-    }
-    tr:hover td {
-      background: #fff !important;
-    }
-  }
-}
+<style scoped lang="less" src="../../styles/combined-table.less">
+
 </style>

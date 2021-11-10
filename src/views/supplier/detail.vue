@@ -72,6 +72,10 @@
       :id="id"
       type="3"
     ></order-steps>
+    <pay-statistics
+      v-show="isPass && tabActiveKey === '0'"
+      :data="info"
+    ></pay-statistics>
     <basic-info
       v-show="!isPass || tabActiveKey === '0'"
       :data="info"
@@ -116,6 +120,7 @@ import OrderSteps from '../order/components/Steps.vue'
 import OrderStepsInfo from '../order/components/Info.vue'
 import MaterialTable from './components/material.vue'
 import BasicInfo from './components/basicInfo.vue'
+import PayStatistics from './components/PayStatistics.vue'
 import { CheckForm, LogList } from '@/components'
 import { getSuppInfo, auditSupp } from '@/api/supplier'
 import { getAllots } from '@/api/user'
@@ -129,7 +134,8 @@ export default {
     MaterialTable,
     LogList,
     BasicInfo,
-    CheckForm
+    CheckForm,
+    PayStatistics
   },
   data () {
     return {

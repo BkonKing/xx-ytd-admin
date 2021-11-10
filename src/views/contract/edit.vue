@@ -114,6 +114,12 @@
           <a-input-number v-model="form.taxRate" :min="0" :max="100" />
           <span style="margin-left: 10px;">%</span>
         </a-form-model-item>
+        <a-form-model-item label="发票类型" prop="invoiceType">
+          <a-radio-group v-model="form.invoiceType">
+            <a-radio value="1">专票</a-radio>
+            <a-radio value="2">普票</a-radio>
+          </a-radio-group>
+        </a-form-model-item>
         <a-form-model-item label="供应商" prop="supplierId" required>
           <supplier-select
             v-model="form.supplierId"
@@ -196,6 +202,7 @@ const form = {
   contractMoney: '',
   contractTotal: '',
   taxRate: 0,
+  invoiceType: '1',
   supplierId: '',
   material: [],
   settleType: undefined,
@@ -369,6 +376,6 @@ export default {
 
 <style lang="less" scoped>
 .card {
-  margin-bottom: 24px;
+  margin-top: 24px;
 }
 </style>

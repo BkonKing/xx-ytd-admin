@@ -97,11 +97,13 @@
         size="default"
         rowKey="id"
         table-layout="fixed"
+        class="combined-table"
         :columns="columns"
         :data="loadData"
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
         :showPagination="true"
+        :scroll="{ x: 2000 }"
       >
         <span slot="auditTime" slot-scope="text, record">
           <time-wait
@@ -150,11 +152,13 @@
             class="table-footer"
             size="default"
             rowKey="id"
-            :columns="columns"
+            table-layout="fixed"
+            :columns="footerColumns"
             :rowSelection="{}"
             :dataSource="footerData"
             :pagination="false"
             :showHeader="false"
+            :scroll="{ x: 2000 }"
           >
           </a-table>
         </template>
@@ -199,20 +203,16 @@ import { getIsAuditSet } from '@/api/common'
 import setCompanyId from '@/mixins/setCompanyId'
 import beforeRouteLeave from '@/mixins/beforeRouteLeave'
 
-const checkTimec = [
-  {
-    title: '审核时间',
-    dataIndex: 'auditTime',
-    scopedSlots: { customRender: 'auditTime' }
-  }
-]
+const checkTimec = {
+  title: '审核时间',
+  dataIndex: 'auditTime',
+  scopedSlots: { customRender: 'auditTime' }
+}
 
-const checkStatusC = [
-  {
-    title: '审核状态',
-    dataIndex: 'statusv'
-  }
-]
+const checkStatusC = {
+  title: '审核状态',
+  dataIndex: 'statusv'
+}
 
 export default {
   name: 'SupplierIndex',
@@ -239,6 +239,7 @@ export default {
         {
           title: '供应商ID',
           dataIndex: 'idv',
+          width: 120,
           customRender: text => {
             return <div class="contract-statusv">{text}</div>
           }
@@ -259,6 +260,7 @@ export default {
         },
         {
           dataIndex: 'materialCount',
+          width: 130,
           sorter: true,
           title: () => {
             return (
@@ -276,8 +278,8 @@ export default {
         },
         {
           title: '合同',
-          width: '9%',
           dataIndex: 'contractCount',
+          width: 80,
           sorter: true
         },
         {
@@ -295,12 +297,46 @@ export default {
           }
         },
         {
+          title: '已付款',
+          dataIndex: 'paid',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '未付款',
+          dataIndex: 'unpaid',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '已开票',
+          dataIndex: 'invoiced',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '未开票',
+          dataIndex: 'notInvoiced',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
           title: '创建时间',
-          dataIndex: 'ctime'
+          dataIndex: 'ctime',
+          width: 160
         },
         {
           title: '操作',
-          dataIndex: 'action',
+          fixed: 'right',
+          class: 'nowrap',
           scopedSlots: { customRender: 'action' }
         }
       ],
@@ -326,6 +362,86 @@ export default {
         material: undefined,
         ctime: []
       },
+      footerColumns: [
+        {
+          title: '审核状态',
+          class: 'first-td',
+          width: 90,
+          dataIndex: 'statusv'
+        },
+        {
+          title: '供应商ID',
+          dataIndex: 'idv',
+          width: 120
+        },
+        {
+          title: '供应商'
+        },
+        {
+          title: '类型'
+        },
+        {
+          dataIndex: 'materialCount',
+          width: 130
+        },
+        {
+          title: '合同',
+          width: 80
+        },
+        {
+          title: '合同金额',
+          dataIndex: 'contractMoney',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '订单金额',
+          dataIndex: 'orderPrice',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '已付款',
+          dataIndex: 'paid',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '未付款',
+          dataIndex: 'unpaid',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '已开票',
+          dataIndex: 'invoiced',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '未开票',
+          dataIndex: 'notInvoiced',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '创建时间',
+          width: 160
+        },
+        {
+          title: '操作'
+        }
+      ],
       footerData: [],
       dsTotal: 0, // 待审核tab数量
       // 加载数据方法 必须为 Promise 对象
@@ -354,10 +470,16 @@ export default {
           if (+res.data.total) {
             this.footerData = [
               {
-                id: 'total',
-                idv: '合计',
+                id: '合计',
+                idv: ['2', '3'].includes(this.tabActiveKey) ? '合计' : '',
+                statusv: '合计',
+                auditTime: '合计',
                 contractMoney: res.data.allContractMoney,
-                orderPrice: res.data.allOrderPrice
+                orderPrice: res.data.allOrderPrice,
+                paid: res.data.allPaid,
+                unpaid: res.data.allUnpaid,
+                invoiced: res.data.allInvoiced,
+                notInvoiced: res.data.allNotInvoiced
               }
             ]
           } else {
@@ -388,6 +510,7 @@ export default {
         return null
       }
       return {
+        fixed: true,
         selectedRowKeys: this.selectedRowKeys,
         getCheckboxProps: record => ({
           props: {
@@ -395,6 +518,19 @@ export default {
           }
         }),
         onChange: this.onSelectChange
+      }
+    }
+  },
+  watch: {
+    footerData (val) {
+      if (val && val.length) {
+        setTimeout(() => {
+          var ele = document.getElementsByClassName('ant-table-body')[1]
+          var table = document.getElementsByClassName('ant-table-body')[0]
+          ele.addEventListener('scroll', function (e) {
+            table.scrollLeft = ele.scrollLeft || 0
+          })
+        }, 10)
       }
     }
   },
@@ -420,15 +556,35 @@ export default {
       // 是否有审核状态
       const isStatus =
         this.columns.findIndex(column => column.dataIndex === 'statusv') > -1
+      this.footerColumns.find(column => column.dataIndex === 'idv').class = ''
       if (key === '1') {
-        isStatus && this.columns.shift()
-        !isAudit && this.columns.unshift(...checkTimec)
+        if (isStatus) {
+          this.columns.shift()
+          this.footerColumns.shift()
+        }
+        if (!isAudit) {
+          this.columns.unshift({ ...checkTimec })
+          this.footerColumns.unshift({ ...checkTimec, class: 'first-td' })
+        }
       } else if (key === '0') {
-        isAudit && this.columns.shift()
-        !isStatus && this.columns.unshift(...checkStatusC)
+        if (isAudit) {
+          this.columns.shift()
+          this.footerColumns.shift()
+        }
+        if (!isStatus) {
+          this.columns.unshift({ ...checkStatusC })
+          this.footerColumns.unshift({ ...checkStatusC, class: 'first-td' })
+        }
       } else {
-        isAudit && this.columns.shift()
-        isStatus && this.columns.shift()
+        if (isAudit) {
+          this.columns.shift()
+          this.footerColumns.shift()
+        }
+        if (isStatus) {
+          this.columns.shift()
+          this.footerColumns.shift()
+        }
+        this.footerColumns[0].class = 'first-td'
       }
     },
     openCheck ({ id, supplierName }) {
@@ -529,5 +685,4 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-</style>
+<style scoped lang="less" src="../../styles/combined-table.less"></style>

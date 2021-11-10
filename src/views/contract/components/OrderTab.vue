@@ -50,7 +50,7 @@
               @reset="
                 () => {
                   this.queryParam = {};
-                  this.$refs.table.refresh(true);
+                  this.$refs.orderTable.refresh(true);
                 }
               "
               @search="$refs.orderTable.refresh(true)"

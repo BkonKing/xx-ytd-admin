@@ -85,17 +85,27 @@
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
+                <a-form-item label="订单日期">
+                  <a-range-picker
+                    v-model="queryParam.orderDate"
+                    valueFormat="YYYY-MM-DD"
+                    style="width: 100%;"
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
                 <a-form-item label="创建时间">
                   <a-range-picker
                     v-model="queryParam.time"
                     valueFormat="YYYY-MM-DD"
+                    style="width: 100%;"
                   />
                 </a-form-item>
               </a-col>
             </template>
             <advanced-form
               v-model="advanced"
-              :md="isParentCompany ? 16 : 24"
+              :md="isParentCompany ? 8 : 16"
               @reset="reset"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
@@ -140,10 +150,20 @@
 
         <span slot="paid" slot-scope="text, record">
           <template v-if="record.status !== '1'">--</template>
-          <template v-else>
-            <div v-if="+text">已付￥{{ text }}</div>
-            <div v-if="+record.unpaid">未付￥{{ record.unpaid }}</div>
-          </template>
+          <div
+            v-else
+            :class="[
+              'status-tag',
+              { 'success-tag': +record.paid },
+              { 'error-tag': +record.unpaid },
+              { 'warning-tag': +record.paid && +record.unpaid }
+            ]"
+          >
+            <div v-if="+record.paid"><span>已付</span>￥{{ record.paid }}</div>
+            <div v-if="+record.unpaid">
+              <span>未付</span>￥{{ record.unpaid }}
+            </div>
+          </div>
         </span>
 
         <span class="table-action" slot="action" slot-scope="text, record">
@@ -190,6 +210,13 @@
             :pagination="false"
             :showHeader="false"
           >
+            <div
+              slot="paid"
+              slot-scope="text, record"
+              style="white-space: nowrap;"
+            >
+              已付￥{{ record.allPaid }}， 未付￥{{ record.allUnpaid }}
+            </div>
           </a-table>
         </template>
       </s-table>
@@ -288,7 +315,7 @@ export default {
         {
           title: '所属项目',
           dataIndex: 'projectName',
-          customRender: (text) => {
+          customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
@@ -316,7 +343,8 @@ export default {
         },
         {
           title: '付款情况',
-          dataIndex: 'paid',
+          dataIndex: 'payStatus',
+          sorter: true,
           scopedSlots: { customRender: 'paid' }
         },
         {
@@ -335,14 +363,23 @@ export default {
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
+        const orderDate = this.queryParam.orderDate
         let startDate = ''
         let endDate = ''
+        let orderStartDate = ''
+        let orderEndDate = ''
         if (time && time.length) {
           startDate = time[0]
           endDate = time[1]
         }
+        if (orderDate && orderDate.length) {
+          orderStartDate = orderDate[0]
+          orderEndDate = orderDate[1]
+        }
         this.queryParam.startDate = startDate
         this.queryParam.endDate = endDate
+        this.queryParam.orderStartDate = orderStartDate
+        this.queryParam.orderEndDate = orderEndDate
         const queryParam = {}
         if (this.tabActiveKey !== '0') {
           queryParam.status = this.tabActiveKey
@@ -356,7 +393,9 @@ export default {
               {
                 id: 'total',
                 idv: '合计',
-                orderPrice: res.data.allPrice
+                orderPrice: res.data.allPrice,
+                allPaid: res.data.allPaid,
+                allUnpaid: res.data.allUnpaid
               }
             ]
           } else {
@@ -533,4 +572,42 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.status-tag {
+  position: relative;
+  &::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    margin-top: -2px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: -10px;
+  }
+}
+.success-tag {
+  &::before {
+    background: @success-color;
+  }
+  span {
+    color: @success-color;
+  }
+}
+.error-tag {
+  &::before {
+    background: @error-color;
+  }
+  span {
+    color: @error-color;
+  }
+}
+.warning-tag {
+  &::before {
+    background: @warning-color;
+  }
+  span {
+    color: @warning-color;
+  }
+}
 </style>

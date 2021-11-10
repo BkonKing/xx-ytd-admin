@@ -21,6 +21,7 @@
                     v-model="queryParam.ctime"
                     valueFormat="YYYY-MM-DD"
                     @change="changeCreationTime"
+                    style="width: 100%;"
                   />
                 </a-form-item>
               </a-col>
@@ -71,12 +72,14 @@
         size="default"
         rowKey="id"
         table-layout="fixed"
+        class="combined-table"
         :columns="columns"
         :data="loadData"
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
         :rowSelectionPaging="true"
         :showPagination="true"
+        :scroll="{ x: 2000 }"
       >
         <span class="table-action" slot="action" slot-scope="text, record">
           <template>
@@ -90,11 +93,12 @@
             class="table-footer"
             size="default"
             rowKey="id"
-            :columns="columns"
+            :columns="footerColumns"
             :rowSelection="{}"
             :dataSource="footerData"
             :pagination="false"
             :showHeader="false"
+            :scroll="{ x: 2000 }"
           >
           </a-table>
         </template>
@@ -146,7 +150,7 @@ export default {
         {
           title: '所属项目',
           dataIndex: 'projectName',
-          width: '20%',
+          width: '13%',
           customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
@@ -161,7 +165,7 @@ export default {
         {
           title: '供应商',
           dataIndex: 'supplierName',
-          width: '15%',
+          width: '8%',
           customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
@@ -169,14 +173,15 @@ export default {
         {
           title: '类型',
           dataIndex: 'supplierTypeName',
-          width: '10%',
+          width: '8%',
           customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
         },
         {
           title: '统一社会信用代码',
-          dataIndex: 'socialCode'
+          dataIndex: 'socialCode',
+          width: 145
         },
         {
           title: '供应物料',
@@ -200,10 +205,115 @@ export default {
           }
         },
         {
+          title: '已付款',
+          dataIndex: 'paid',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '未付款',
+          dataIndex: 'unpaid',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '已开票',
+          dataIndex: 'invoiced',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '未开票',
+          dataIndex: 'notInvoiced',
+          sorter: true,
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
           title: '操作',
           dataIndex: 'action',
+          fixed: 'right',
           width: '65px',
           scopedSlots: { customRender: 'action' }
+        }
+      ],
+      footerColumns: [
+        {
+          title: '所属项目',
+          class: 'first-td',
+          dataIndex: 'projectName',
+          width: '13%'
+        },
+        {
+          title: '供应商ID'
+        },
+        {
+          title: '供应商',
+          width: '8%'
+        },
+        {
+          title: '类型',
+          width: '8%'
+        },
+        {
+          title: '统一社会信用代码',
+          width: 145
+        },
+        {
+          title: '供应物料'
+        },
+        {
+          title: '合同金额',
+          dataIndex: 'contractMoney',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '订单金额',
+          dataIndex: 'orderPrice',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '已付款',
+          dataIndex: 'paid',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '未付款',
+          dataIndex: 'unpaid',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '已开票',
+          dataIndex: 'invoiced',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '未开票',
+          dataIndex: 'notInvoiced',
+          customRender (text) {
+            return +text ? `￥${text}` : '--'
+          }
+        },
+        {
+          title: '操作',
+          width: '65px'
         }
       ],
       footerData: [],
@@ -224,9 +334,13 @@ export default {
             this.footerData = [
               {
                 id: 'total',
-                idv: '合计',
+                projectName: '合计',
                 contractMoney: res.data.allContractMoney,
-                orderPrice: res.data.allOrderPrice
+                orderPrice: res.data.allOrderPrice,
+                paid: res.data.allPaid,
+                unpaid: res.data.allUnpaid,
+                invoiced: res.data.allInvoiced,
+                notInvoiced: res.data.allNotInvoiced
               }
             ]
           } else {
@@ -245,8 +359,22 @@ export default {
         return null
       }
       return {
+        fixed: true,
         selectedRowKeys: this.selectedRowKeys,
         onChange: this.onSelectChange
+      }
+    }
+  },
+  watch: {
+    footerData (val) {
+      if (val && val.length) {
+        setTimeout(() => {
+          var ele = document.getElementsByClassName('ant-table-body')[1]
+          var table = document.getElementsByClassName('ant-table-body')[0]
+          ele.addEventListener('scroll', function (e) {
+            table.scrollLeft = ele.scrollLeft || 0
+          })
+        }, 10)
       }
     }
   },
@@ -303,4 +431,4 @@ export default {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style scoped lang="less" src="../../styles/combined-table.less"></style>

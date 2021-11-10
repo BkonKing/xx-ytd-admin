@@ -17,14 +17,23 @@
         <a-form-model-item v-if="form.contractId" label="供应商">
           {{ form.supplier }}
         </a-form-model-item>
-        <a-form-model-item label="订单凭证">
-          <upload-image v-model="form.orderPz" maxLength="10"></upload-image>
-        </a-form-model-item>
         <a-form-model-item label="物料归属">
           <a-radio-group v-model="form.ownership" :options="ownerOptions" />
           <div style="color: #00000072;">
             物料入库时若是归属项目则只能用于该项目，无归属则可用于任意项目
           </div>
+        </a-form-model-item>
+        <a-form-model-item label="订单日期" required>
+          <a-date-picker
+            v-model="form.orderDate"
+            :show-time="{ defaultValue: defaultTime }"
+            placeholder="请选择"
+            valueFormat="YYYY-MM-DD HH:mm:ss"
+            style="width: 100%;"
+          />
+        </a-form-model-item>
+        <a-form-model-item label="订单凭证">
+          <upload-image v-model="form.orderPz" maxLength="10"></upload-image>
         </a-form-model-item>
       </a-form-model>
     </a-card>
@@ -197,6 +206,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import FooterToolBar from '@/components/FooterToolbar'
 import NP from 'number-precision'
 import {
@@ -225,6 +235,7 @@ export default {
       UpdatePermission: 0,
       title: '新增订单',
       loading: false,
+      defaultTime: moment('00:00:00', 'HH:mm:ss'),
       NPTimes: NP.times,
       NPPlus: NP.plus,
       form: {
@@ -232,6 +243,7 @@ export default {
         supplier: '',
         orderPz: [],
         ownership: '1',
+        orderDate: '',
         orderPrice: ''
       },
       rules: {
@@ -308,6 +320,7 @@ export default {
         this.form.status = data.status
         this.form.orderPz = data.orderPz
         this.form.ownership = data.ownership
+        this.form.orderDate = data.orderDate
         this.form.supplier = data.supplierName
         this.form.orderPrice = data.orderPrice
         this.paidNum = parseFloat(data.paid)
@@ -316,7 +329,8 @@ export default {
           this.getUnit(obj.materialId, index, obj.unit)
         })
         this.orderPriceIsChange =
-          parseFloat(this.totalMoney) === parseFloat(this.form.orderPrice) || this.form.orderPrice === ''
+          parseFloat(this.totalMoney) === parseFloat(this.form.orderPrice) ||
+          this.form.orderPrice === ''
       })
     },
     // 获取编辑权限
@@ -350,7 +364,8 @@ export default {
         this.form.orderPrice = this.paidNum
       }
       this.orderPriceIsChange =
-        parseFloat(this.totalMoney) === parseFloat(this.form.orderPrice) || this.form.orderPrice === ''
+        parseFloat(this.totalMoney) === parseFloat(this.form.orderPrice) ||
+        this.form.orderPrice === ''
     },
     handleAdd () {
       this.tableData.push({

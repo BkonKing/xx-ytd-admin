@@ -65,7 +65,7 @@
               @reset="
                 () => {
                   this.queryParam = {};
-                  this.$refs.table.refresh(true);
+                  this.$refs.orderTable.refresh(true);
                 }
               "
               @search="$refs.orderTable.refresh(true)"
@@ -127,16 +127,27 @@
             <template v-if="payAdvanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="开票情况">
-                  <kp-status-select
-                    v-model="payParams.kpStatus"
-                  ></kp-status-select>
+                  <a-select v-model="payParams.kpStatus" placeholder="请选择">
+                    <a-select-option
+                      v-for="option in kpOptions"
+                      :value="option.value"
+                      :key="option.value"
+                    >
+                      {{ option.text }}
+                    </a-select-option>
+                  </a-select>
                 </a-form-item>
               </a-col>
             </template>
             <advanced-form
               v-model="payAdvanced"
               :md="isParentCompany ? 16 : 24"
-              @reset="() => this.payParams = {}"
+              @reset="
+                () => {
+                  this.payParams = {};
+                  this.$refs.table.refresh(true);
+                }
+              "
               @search="$refs.table.refresh(true)"
             ></advanced-form>
           </a-row>
@@ -247,6 +258,21 @@ export default {
         {
           title: '创建时间',
           dataIndex: 'ctime'
+        }
+      ],
+      // 开票情况：0=全部、1=已开、2=未开
+      kpOptions: [
+        {
+          value: 0,
+          text: '全部'
+        },
+        {
+          value: 1,
+          text: '已开'
+        },
+        {
+          value: 2,
+          text: '未开'
         }
       ],
       orderLoadData: parameter => {
