@@ -1,5 +1,6 @@
 <template>
   <page-header-wrapper
+    class="special-descriptions"
     :title="info.supplierName"
     :tab-list="tabList"
     :tab-active-key="tabActiveKey"
@@ -256,7 +257,18 @@ export default {
   }
 }
 
+.special-descriptions {
+  /deep/ .status-list {
+    .heading {
+      white-space: nowrap;
+    }
+  }
+  /deep/ .ant-pro-page-header-wrap-extraContent {
+    min-width: auto;
+  }
+}
+
 /deep/ .ant-pro-page-header-wrap-extraContent {
-  margin-left: 20px;
+  margin-left: 0;
 }
 </style>
