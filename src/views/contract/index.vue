@@ -150,19 +150,15 @@
         >
       </div>
 
-      <s-table
+      <combined-table
         ref="table"
-        size="default"
-        rowKey="id"
-        table-layout="fixed"
-        class="contract-table combined-table"
         :columns="columns"
         :data="loadData"
+        :footerData="footerData"
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
         :showPagination="true"
         :scroll="{ x: 3300 }"
-        style="width: 100%"
       >
         <span slot="auditTime" slot-scope="text, record">
           <time-wait
@@ -204,23 +200,7 @@
             >
           </template>
         </span>
-        <template slot="footer">
-          <a-table
-            v-if="footerData && footerData.length"
-            class="table-footer"
-            size="default"
-            rowKey="id"
-            table-layout="fixed"
-            :columns="footerColumns"
-            :rowSelection="{}"
-            :dataSource="footerData"
-            :scroll="{ x: 3300 }"
-            :pagination="false"
-            :showHeader="false"
-          >
-          </a-table>
-        </template>
-      </s-table>
+      </combined-table>
     </a-card>
     <a-modal
       title="审核"
@@ -239,7 +219,7 @@
 
 <script>
 import {
-  STable,
+  CombinedTable,
   CheckForm,
   TimeWait,
   ProjectSelect,
@@ -262,7 +242,7 @@ export default {
   name: 'ContractIndex',
   mixins: [setCompanyId, beforeRouteLeave],
   components: {
-    STable,
+    CombinedTable,
     CheckForm,
     TimeWait,
     ProjectSelect,
@@ -374,6 +354,7 @@ export default {
           title: '税率',
           width: '80px',
           class: 'nowrap',
+          removeFooterCustom: true,
           dataIndex: 'taxRate',
           customRender (text) {
             const number = parseFloat(text)
@@ -388,6 +369,7 @@ export default {
         {
           title: '有效期',
           width: '200px',
+          removeFooterCustom: true,
           dataIndex: 'startDate',
           customRender (text, row) {
             return `${text}~${row.endDate}`
@@ -496,78 +478,6 @@ export default {
         }
       ],
       footerData: [],
-      footerColumns: [
-        {
-          dataIndex: 'projectName',
-          class: 'first-td',
-          width: 120
-        },
-        { width: 160, dataIndex: 'contractNo' },
-        { width: '140px', dataIndex: 'contractName' },
-        { width: '140px', dataIndex: 'categoryName' },
-        { width: '140px', dataIndex: 'supplierName' },
-        {
-          dataIndex: 'contractMoney',
-          class: 'nowrap',
-          width: 130,
-          customRender (text) {
-            return `￥${text}`
-          }
-        },
-        { dataIndex: 'contractTotal' },
-        { width: '80px', dataIndex: 'taxRate' },
-        { width: '120px', dataIndex: 'signDate' },
-        { width: '200px', dataIndex: 'startDate' },
-        { width: '120px', dataIndex: 'settleTypeName' },
-        { width: '100px', dataIndex: 'payTypeName' },
-        { dataIndex: 'orderNum' },
-        {
-          dataIndex: 'orderMoney',
-          class: 'nowrap',
-          width: 130,
-          customRender (text) {
-            return `￥${text}`
-          }
-        },
-        {
-          dataIndex: 'orderPayMoney',
-          class: 'nowrap',
-          width: 130,
-          customRender (text) {
-            return `￥${text}`
-          }
-        },
-        {
-          dataIndex: 'orderUnPayMoney',
-          class: 'nowrap',
-          width: 130,
-          customRender (text) {
-            return `￥${text}`
-          }
-        },
-        {
-          dataIndex: 'orderInvoicedMoney',
-          class: 'nowrap',
-          width: 130,
-          customRender (text) {
-            return `￥${text}`
-          }
-        },
-        {
-          dataIndex: 'orderUnInvoicedMoney',
-          class: 'nowrap',
-          width: 130,
-          customRender (text) {
-            return `￥${text}`
-          }
-        },
-        { width: '100px', dataIndex: 'statusv' },
-        { width: '100px', dataIndex: 'contractStatusv' },
-        { width: '130px', dataIndex: 'auditTime' },
-        { width: '150px', dataIndex: 'remarks' },
-        { width: '110px', dataIndex: 'ctime' },
-        { dataIndex: 'action' }
-      ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
         const time = this.queryParam.time
@@ -654,19 +564,6 @@ export default {
     if (tab) {
       this.tabActiveKey = tab
       this.changeStatus()
-    }
-  },
-  watch: {
-    footerData (val) {
-      if (val && val.length) {
-        setTimeout(() => {
-          var ele = document.getElementsByClassName('ant-table-body')[1]
-          var table = document.getElementsByClassName('ant-table-body')[0]
-          ele.addEventListener('scroll', function (e) {
-            table.scrollLeft = ele.scrollLeft || 0
-          })
-        }, 10)
-      }
     }
   },
   methods: {
@@ -827,8 +724,4 @@ export default {
   padding-left: 8px;
   padding-right: 8px;
 }
-</style>
-
-<style scoped lang="less" src="../../styles/combined-table.less">
-
 </style>

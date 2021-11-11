@@ -45,6 +45,7 @@ import UploadImage from '@/components/UploadImage'
 import UploadFile from '@/components/UploadFile'
 import TImage from '@/components/Image'
 import Dialog from '@/components/Dialog'
+import CombinedTable from '@/components/CombinedTable'
 
 import QRCode from '@/components/QRCode'
 import TimeWait from '@/components/Time'
@@ -93,5 +94,6 @@ export {
   AdvancedForm,
   QRCode,
   TimeWait,
-  FileListModal
+  FileListModal,
+  CombinedTable
 }

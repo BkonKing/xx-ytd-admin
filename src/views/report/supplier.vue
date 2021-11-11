@@ -67,14 +67,11 @@
         >
       </div>
 
-      <s-table
+      <combined-table
         ref="table"
-        size="default"
-        rowKey="id"
-        table-layout="fixed"
-        class="combined-table"
         :columns="columns"
         :data="loadData"
+        :footerData="footerData"
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
         :rowSelectionPaging="true"
@@ -86,30 +83,14 @@
             <a @click="goDetail(record)">查看</a>
           </template>
         </span>
-
-        <template slot="footer">
-          <a-table
-            v-if="footerData && footerData.length"
-            class="table-footer"
-            size="default"
-            rowKey="id"
-            :columns="footerColumns"
-            :rowSelection="{}"
-            :dataSource="footerData"
-            :pagination="false"
-            :showHeader="false"
-            :scroll="{ x: 2000 }"
-          >
-          </a-table>
-        </template>
-      </s-table>
+      </combined-table>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
 import {
-  STable,
+  CombinedTable,
   ProjectSelect,
   CompanySelect,
   SupplierTypeSelect,
@@ -124,7 +105,7 @@ export default {
   name: 'reportSupplier',
   mixins: [setCompanyId],
   components: {
-    STable,
+    CombinedTable,
     ProjectSelect,
     CompanySelect,
     SupplierTypeSelect,
@@ -244,78 +225,6 @@ export default {
           scopedSlots: { customRender: 'action' }
         }
       ],
-      footerColumns: [
-        {
-          title: '所属项目',
-          class: 'first-td',
-          dataIndex: 'projectName',
-          width: '13%'
-        },
-        {
-          title: '供应商ID'
-        },
-        {
-          title: '供应商',
-          width: '8%'
-        },
-        {
-          title: '类型',
-          width: '8%'
-        },
-        {
-          title: '统一社会信用代码',
-          width: 145
-        },
-        {
-          title: '供应物料'
-        },
-        {
-          title: '合同金额',
-          dataIndex: 'contractMoney',
-          customRender (text) {
-            return +text ? `￥${text}` : '--'
-          }
-        },
-        {
-          title: '订单金额',
-          dataIndex: 'orderPrice',
-          customRender (text) {
-            return +text ? `￥${text}` : '--'
-          }
-        },
-        {
-          title: '已付款',
-          dataIndex: 'paid',
-          customRender (text) {
-            return +text ? `￥${text}` : '--'
-          }
-        },
-        {
-          title: '未付款',
-          dataIndex: 'unpaid',
-          customRender (text) {
-            return +text ? `￥${text}` : '--'
-          }
-        },
-        {
-          title: '已开票',
-          dataIndex: 'invoiced',
-          customRender (text) {
-            return +text ? `￥${text}` : '--'
-          }
-        },
-        {
-          title: '未开票',
-          dataIndex: 'notInvoiced',
-          customRender (text) {
-            return +text ? `￥${text}` : '--'
-          }
-        },
-        {
-          title: '操作',
-          width: '65px'
-        }
-      ],
       footerData: [],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
@@ -362,19 +271,6 @@ export default {
         fixed: true,
         selectedRowKeys: this.selectedRowKeys,
         onChange: this.onSelectChange
-      }
-    }
-  },
-  watch: {
-    footerData (val) {
-      if (val && val.length) {
-        setTimeout(() => {
-          var ele = document.getElementsByClassName('ant-table-body')[1]
-          var table = document.getElementsByClassName('ant-table-body')[0]
-          ele.addEventListener('scroll', function (e) {
-            table.scrollLeft = ele.scrollLeft || 0
-          })
-        }, 10)
       }
     }
   },
@@ -430,5 +326,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="less" src="../../styles/combined-table.less"></style>
