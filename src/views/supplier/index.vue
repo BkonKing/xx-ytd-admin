@@ -232,6 +232,14 @@ export default {
           }
         },
         {
+          title: '关联项目',
+          dataIndex: 'projectName',
+          removeFooterCustom: true,
+          customRender: text => {
+            return <div class="two-Multi">{text || '--'}</div>
+          }
+        },
+        {
           title: '类型',
           dataIndex: 'supplierTypeName',
           customRender: text => {

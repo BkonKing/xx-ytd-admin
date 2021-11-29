@@ -3,7 +3,7 @@
     <a-table
       ref="table"
       size="default"
-      rowKey="materialId"
+      rowKey="orderMaterialId"
       :columns="columns"
       :dataSource="data"
       :pagination="false"

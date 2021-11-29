@@ -1,12 +1,17 @@
 <template>
   <a-form-model
-    ref="projectForm"
+    ref="paymentForm"
     :model="form"
     :rules="rules"
     :label-col="labelCol"
     :wrapper-col="wrapperCol"
   >
-    <a-form-model-item label="付款金额" prop="payDetailed">
+    <a-form-model-item
+      label="付款金额"
+      prop="payDetailed"
+      :label-col="{ span: 5 }"
+      :wrapper-col="{ span: 19 }"
+    >
       <template v-for="(item, index) in payDetailed">
         <a-row class="pay-row" type="flex" :gutter="10" :key="index">
           <a-col class="textOverflow" flex="140px">
@@ -88,12 +93,29 @@
     <a-form-model-item label="开票情况" prop="isKp" required>
       <a-radio-group v-model="form.isKp">
         <a-radio value="0">
-          未开
+          全部未开
+        </a-radio>
+        <a-radio value="2">
+          部分已开
         </a-radio>
         <a-radio value="1">
-          已开
+          全部已开
         </a-radio>
       </a-radio-group>
+      <a-form-model-item
+        v-if="form.isKp === '2'"
+        prop="kpMoney"
+        :rules="[{ validator: kpMoneyCount }]"
+        style="margin-top: 16px;"
+      >
+        <a-input
+          v-model="form.kpMoney"
+          placeholder="请输入"
+          prefix="￥"
+          v-number-input
+        >
+        </a-input>
+      </a-form-model-item>
     </a-form-model-item>
     <a-form-model-item
       v-if="+form.isKp"
@@ -138,13 +160,14 @@ export default {
   data () {
     return {
       labelCol: { span: 5 },
-      wrapperCol: { span: 19 },
+      wrapperCol: { span: 14 },
       form: {
         isPay: '1',
         payTime: '',
         payType: '',
         payPz: [],
         isKp: '0',
+        kpMoney: '',
         kpPz: []
       },
       rules: {
@@ -176,6 +199,9 @@ export default {
         if (!+val) {
           this.form.kpPz = []
         }
+        if (val !== '2') {
+          this.form.kpMoney = ''
+        }
       }
     },
     material (val) {
@@ -194,10 +220,22 @@ export default {
       if (this.total > this.unpaidTotal) {
         item.paid = NP.plus(NP.minus(this.unpaidTotal, this.total), item.paid)
       }
+      this.$refs.paymentForm && this.$refs.paymentForm.validateField('kpMoney')
+    },
+    kpMoneyCount (rule, value, callback) {
+      if (!value) {
+        callback(new Error('请输入开票金额'))
+      } else if (parseFloat(value) <= 0) {
+        callback(new Error('开票金额必须大于0'))
+      } else if (parseFloat(value) >= this.total) {
+        callback(new Error('开票金额必须小于付款金额'))
+      } else {
+        callback()
+      }
     },
     handleSubmit () {
       return new Promise((resolve, reject) => {
-        this.$refs.projectForm.validate(valid => {
+        this.$refs.paymentForm.validate(valid => {
           if (valid) {
             this.form.payDetailed = this.payDetailed.map(obj => {
               return {
@@ -218,7 +256,11 @@ export default {
       this.form = data
       let sum = 0
       this.payDetailed = this.material.map((obj, index) => {
-        const paid = data.payDetailed[index].paid
+        const payData = data.payDetailed[index]
+        if (!payData) {
+          return obj
+        }
+        const { paid } = payData
         if (+this.form.isPay) {
           obj.unpaid = NP.plus(obj.unpaid, paid)
           sum = NP.plus(sum, paid)
@@ -238,13 +280,14 @@ export default {
     },
     // 重置表单数据
     resetFields () {
-      this.$refs.projectForm.resetFields()
+      this.$refs.paymentForm.resetFields()
       this.form = {
         isPay: '1',
         payTime: '',
         payType: '',
         payPz: [],
         isKp: '0',
+        kpMoney: '',
         kpPz: []
       }
       this.payDetailed = []

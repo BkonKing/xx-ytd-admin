@@ -102,7 +102,7 @@
                   />
                 </a-form-item>
               </a-col>
-              <!-- <a-col :md="8" :sm="24">
+              <a-col :md="8" :sm="24">
                 <a-form-item>
                   <template v-slot:label>
                     <a-row
@@ -120,15 +120,15 @@
                     </a-row>
                   </template>
                   <a-input
-                    v-model="queryParam.serachSupplierText"
+                    v-model="queryParam.serachMaterialText"
                     placeholder="编码、名称"
                   ></a-input>
                 </a-form-item>
-              </a-col> -->
+              </a-col>
             </template>
             <advanced-form
               v-model="advanced"
-              :md="isParentCompany ? 16 : 24"
+              :md="isParentCompany ? 8 : 16"
               @search="$refs.table.refresh(true)"
               @reset="reset"
             ></advanced-form>
@@ -710,12 +710,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/* .table-page-search-wrapper
+.table-page-search-wrapper
   /deep/ .ant-form-inline
   .ant-form-item
   > .ant-form-item-label {
   min-width: 92px;
-} */
+}
 /deep/ .ant-table-row-cell-last {
   padding-left: 8px;
   padding-right: 8px;

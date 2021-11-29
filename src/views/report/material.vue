@@ -219,6 +219,10 @@ export default {
           }
         },
         {
+          title: '单位',
+          dataIndex: 'unitv'
+        },
+        {
           title: '金额',
           dataIndex: 'allPrice',
           class: 'nowrap',

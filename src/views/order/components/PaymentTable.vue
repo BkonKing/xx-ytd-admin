@@ -161,7 +161,7 @@ export default {
         {
           title: '创建时间',
           dataIndex: 'ctime',
-          width: '9%'
+          width: '10%'
         },
         {
           title: '操作',
