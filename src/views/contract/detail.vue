@@ -95,7 +95,7 @@
         </a-col>
         <a-col flex="1">
           <info
-            :title="`未开票付款（${info.orderUnInvoicedNum}个订单）`"
+            :title="`未开票（${info.orderUnInvoicedNum}个订单）`"
             :value="`￥${info.orderUnInvoicedMoney}`"
           />
         </a-col>

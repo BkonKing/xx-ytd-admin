@@ -90,10 +90,10 @@
           <info title="未付款" :value="`￥${info.unpaid}`" :bordered="true" />
         </a-col>
         <a-col flex="1">
-          <info title="已收票" :value="`￥${info.invoiced}`" :bordered="true" />
+          <info title="已开票" :value="`￥${info.invoiced}`" :bordered="true" />
         </a-col>
         <a-col flex="1">
-          <info title="未收票" :value="`￥${info.notInvoiced}`" />
+          <info title="未开票" :value="`￥${info.notInvoiced}`" />
         </a-col>
       </a-row>
     </a-card>

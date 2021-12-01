@@ -103,10 +103,10 @@
         type="flex"
         align="middle"
       >
-        <div style="width: 41%;">
-          总计({{ `${payData.data.unKpNum + payData.data.kpNum}` }})
+        <div style="width: 16%;">
+          总计({{ `${payData.data.records.length || 0}` }})
         </div>
-        <div style="width: 20%;">￥{{ payData.data.allMoney }}</div>
+        <div style="width: 52%;">￥{{ payData.data.allMoney }}</div>
         <div>
           已开{{ payData.data.kpNum }} (￥{{ payData.data.kpMoney }})， 未开{{
             payData.data.unKpNum
@@ -199,23 +199,31 @@ export default {
           width: '7%'
         },
         {
+          title: '付款ID',
+          dataIndex: 'id',
+          width: '9%'
+        },
+        {
+          title: '付款金额',
+          dataIndex: 'paid',
+          width: '10%',
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        {
+          title: '付款情况',
+          dataIndex: 'isPayName',
+          width: '10%'
+        },
+        {
           title: '付款时间',
           dataIndex: 'payTime',
           width: '12%'
         },
         {
-          title: '付款ID',
-          dataIndex: 'id',
-          width: '12%'
-        },
-        {
           title: '付款方式',
           dataIndex: 'payTypeName',
-          width: '10%'
-        },
-        {
-          title: '付款金额',
-          dataIndex: 'paid',
           width: '10%'
         },
         {
@@ -226,7 +234,8 @@ export default {
         },
         {
           title: '开票情况',
-          dataIndex: 'isKpName'
+          dataIndex: 'isKpName',
+          width: '10%'
         },
         {
           title: '创建时间',

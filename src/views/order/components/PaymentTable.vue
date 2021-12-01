@@ -38,7 +38,7 @@
       align="middle"
       style="border-bottom: 1px solid #e8e8e8;"
     >
-      <div style="width: 44%;">总计({{ `${data.unKpNum + data.kpNum}` }})</div>
+      <div style="width: 44%;">总计({{ `${data.records.length || 0}` }})</div>
       <div style="width: 18%;">￥{{ parseFloat(data.allMoney) ? data.allMoney : 0 }}</div>
       <div>
         已开{{ data.kpNum }} (￥{{ parseFloat(data.kpMoney) ? data.kpMoney : 0 }})，未开{{

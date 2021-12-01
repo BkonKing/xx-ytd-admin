@@ -248,7 +248,10 @@ export default {
         {
           title: '金额',
           dataIndex: 'orderPrice',
-          sorter: true
+          sorter: true,
+          customRender (text) {
+            return `￥${text}`
+          }
         },
         {
           title: '付款情况',
@@ -268,11 +271,15 @@ export default {
         },
         {
           value: 1,
-          text: '已开'
+          text: '全部已开'
         },
         {
           value: 2,
-          text: '未开'
+          text: '全部未开'
+        },
+        {
+          value: 3,
+          text: '部分已开'
         }
       ],
       orderLoadData: parameter => {
@@ -313,7 +320,10 @@ export default {
         {
           title: '付款金额',
           dataIndex: 'paid',
-          width: '10%'
+          width: '10%',
+          customRender (text) {
+            return `￥${text}`
+          }
         },
         {
           title: '付款凭证',
