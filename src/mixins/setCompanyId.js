@@ -1,7 +1,7 @@
 export default {
-  created () {
-    this.setcompanyId()
-  },
+  // created () {
+  //   this.setcompanyId()
+  // },
   methods: {
     reset () {
       this.queryParam = { companyId: '' }
@@ -9,7 +9,7 @@ export default {
       this.$refs.table.refresh(true)
     },
     setcompanyId () {
-      this.isParentCompany && this.$set(this.queryParam, 'companyId', this.userCompanyId)
+      // this.isParentCompany && this.$set(this.queryParam, 'companyId', this.userCompanyId)
     }
   }
 }

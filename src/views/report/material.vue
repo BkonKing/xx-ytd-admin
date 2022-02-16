@@ -170,7 +170,12 @@ export default {
         {
           title: '订单ID',
           dataIndex: 'idv',
-          class: 'nowrap'
+          width: 170
+        },
+        {
+          title: '订单日期',
+          dataIndex: 'orderTime',
+          sorter: true
         },
         {
           title: '供应商',
@@ -206,8 +211,7 @@ export default {
         },
         {
           title: '税率',
-          dataIndex: 'taxRate',
-          class: 'nowrap'
+          dataIndex: 'taxRate'
         },
         {
           title: '单价',
@@ -225,7 +229,6 @@ export default {
         {
           title: '金额',
           dataIndex: 'allPrice',
-          class: 'nowrap',
           sorter: true,
           customRender (text) {
             return +text ? `￥${text}` : '--'
@@ -234,7 +237,7 @@ export default {
         {
           title: '操作',
           dataIndex: 'action',
-          width: '65px',
+          width: '55px',
           scopedSlots: { customRender: 'action' }
         }
       ],
@@ -298,4 +301,9 @@ export default {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+/deep/ .ant-table-thead > tr > th,
+/deep/ .ant-table-tbody > tr > td {
+  padding: 16px 10px;
+}
+</style>
