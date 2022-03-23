@@ -247,8 +247,8 @@ export default {
           }
         },
         {
-          dataIndex: 'materialCount',
-          width: 130,
+          dataIndex: 'materialName',
+          width: 200,
           sorter: true,
           title: () => {
             return (
