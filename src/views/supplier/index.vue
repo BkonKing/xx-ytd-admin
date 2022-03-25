@@ -25,8 +25,11 @@
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
-              <a-form-item label="关联项目">
-                <project-select v-model="queryParam.projectId"></project-select>
+              <a-form-item class="project-item" label="关联项目">
+                <project-select
+                  v-model="queryParam.projectId"
+                  mode="multiple"
+                ></project-select>
               </a-form-item>
             </a-col>
             <a-col v-if="isParentCompany" :md="8" :sm="24">
@@ -34,7 +37,16 @@
                 <company-select v-model="queryParam.companyId"></company-select>
               </a-form-item>
             </a-col>
-            <a-col :md="8" :sm="24">
+            <a-col v-if="!isParentCompany" :md="8" :sm="24">
+              <a-form-item label="类型">
+                <supplier-type-select
+                  v-model="queryParam.supplierType"
+                ></supplier-type-select>
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row :gutter="48">
+            <a-col v-if="isParentCompany" :md="8" :sm="24">
               <a-form-item label="类型">
                 <supplier-type-select
                   v-model="queryParam.supplierType"
@@ -179,8 +191,8 @@ import {
   auditBatchSupp
 } from '@/api/supplier'
 import { getIsAuditSet } from '@/api/common'
-import setCompanyId from '@/mixins/setCompanyId'
 import beforeRouteLeave from '@/mixins/beforeRouteLeave'
+import cloneDeep from 'lodash.clonedeep'
 
 const checkTimec = {
   title: '审核时间',
@@ -195,7 +207,7 @@ const checkStatusC = {
 
 export default {
   name: 'SupplierIndex',
-  mixins: [setCompanyId, beforeRouteLeave],
+  mixins: [beforeRouteLeave],
   components: {
     CombinedTable,
     CheckForm,
@@ -262,6 +274,9 @@ export default {
                 </a-tooltip>
               </div>
             )
+          },
+          customRender: text => {
+            return <div class="two-Multi">{text}</div>
           }
         },
         {
@@ -343,7 +358,7 @@ export default {
       // 查询参数
       queryParam: {
         status: undefined,
-        projectId: '',
+        projectId: [],
         companyId: '',
         supplierType: '',
         searchText: '',
@@ -354,15 +369,13 @@ export default {
       dsTotal: 0, // 待审核tab数量
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        const time = this.queryParam.ctime
-        let startDate = ''
-        let endDate = ''
+        const params = cloneDeep(this.queryParam)
+        const time = params.ctime
         if (time && time.length) {
-          startDate = time[0]
-          endDate = time[1]
+          params.startDate = time[0]
+          params.endDate = time[1]
         }
-        this.queryParam.startDate = startDate
-        this.queryParam.endDate = endDate
+        params.projectId = params.projectId.join(',')
         const queryParam = {}
         if (this.tabActiveKey !== '0') {
           queryParam.status = this.tabActiveKey
@@ -370,7 +383,7 @@ export default {
         const requestParameters = Object.assign(
           {},
           parameter,
-          this.queryParam,
+          params,
           queryParam
         )
         return getSupplierList(requestParameters).then(res => {
@@ -437,10 +450,13 @@ export default {
     }
   },
   methods: {
+    reset () {
+      this.queryParam = { projectId: [] }
+      this.$refs.table.refresh(true)
+    },
     handleTabChange (key) {
       this.tabActiveKey = key
-      this.queryParam = { companyId: '' }
-      this.setcompanyId()
+      this.queryParam = { projectId: [] }
       this.changeColumns(key)
       this.$refs.table.refresh()
     },
@@ -559,3 +575,13 @@ export default {
   }
 }
 </script>
+
+<style lang="less" scoped>
+.table-page-search-wrapper
+  /deep/
+  .ant-form-inline
+  .project-item
+  .ant-form-item-control {
+  height: auto;
+}
+</style>

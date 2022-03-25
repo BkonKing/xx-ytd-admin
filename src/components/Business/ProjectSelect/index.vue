@@ -1,5 +1,5 @@
 <template>
-  <a-select v-model="data" placeholder="请选择" @change="handleChange">
+  <a-select v-model="data" placeholder="请选择" :mode="mode" @change="handleChange">
     <a-select-option
       v-for="option in options"
       :value="option.projectId"
@@ -15,12 +15,16 @@ export default {
   name: 'ProjectSelect',
   props: {
     value: {
-      type: [String, Number],
+      type: [String, Number, Array],
       default: ''
     },
     addOther: {
       type: Boolean,
       default: false
+    },
+    mode: {
+      type: String,
+      default: 'default'
     }
   },
   data () {

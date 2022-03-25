@@ -4,9 +4,12 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
-            <a-col :md="8" :sm="24">
+            <a-col class="project-item" :md="8" :sm="24">
               <a-form-item label="关联项目">
-                <project-select v-model="queryParam.projectId"></project-select>
+                <project-select
+                  v-model="queryParam.projectId"
+                  mode="multiple"
+                ></project-select>
               </a-form-item>
             </a-col>
             <a-col v-if="isParentCompany" :md="8" :sm="24">
@@ -26,8 +29,24 @@
                 </a-form-item>
               </a-col>
             </template>
+            <a-col v-if="!isParentCompany && advanced" :md="8" :sm="24">
+              <a-form-item label="类型">
+                <supplier-type-select
+                  v-model="queryParam.supplierType"
+                ></supplier-type-select>
+              </a-form-item>
+            </a-col>
+            <advanced-form
+              v-if="!advanced"
+              v-model="advanced"
+              :md="isParentCompany ? 24 : 8"
+              @reset="reset"
+              @search="$refs.table.refresh(true)"
+            ></advanced-form>
+          </a-row>
+          <a-row :gutter="48">
             <template v-if="advanced">
-              <a-col :md="8" :sm="24">
+              <a-col v-if="isParentCompany" :md="8" :sm="24">
                 <a-form-item label="类型">
                   <supplier-type-select
                     v-model="queryParam.supplierType"
@@ -51,6 +70,7 @@
               </a-col>
             </template>
             <advanced-form
+              v-if="advanced"
               v-model="advanced"
               :md="isParentCompany ? 24 : 8"
               @reset="reset"
@@ -99,11 +119,10 @@ import {
 } from '@/components'
 import { changeJSON2QueryString } from '@/utils/util'
 import { getSuppReport } from '@/api/report'
-import setCompanyId from '@/mixins/setCompanyId'
+import cloneDeep from 'lodash.clonedeep'
 
 export default {
   name: 'reportSupplier',
-  mixins: [setCompanyId],
   components: {
     CombinedTable,
     ProjectSelect,
@@ -120,7 +139,7 @@ export default {
       // 查询参数
       queryParam: {
         status: '',
-        projectId: '',
+        projectId: [],
         companyId: '',
         supplierType: '',
         searchText: '',
@@ -228,16 +247,14 @@ export default {
       footerData: [],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        const time = this.queryParam.ctime
-        let startDate = ''
-        let endDate = ''
+        const params = cloneDeep(this.queryParam)
+        const time = params.ctime
         if (time && time.length) {
-          startDate = time[0]
-          endDate = time[1]
+          params.startDate = time[0]
+          params.endDate = time[1]
         }
-        this.queryParam.startDate = startDate
-        this.queryParam.endDate = endDate
-        const requestParameters = Object.assign({}, parameter, this.queryParam)
+        params.projectId = params.projectId.join(',')
+        const requestParameters = Object.assign({}, parameter, params)
         return getSuppReport(requestParameters).then(res => {
           if (+res.data.total) {
             this.footerData = [
@@ -286,14 +303,13 @@ export default {
     reset () {
       this.queryParam = {
         status: '',
-        projectId: '',
+        projectId: [],
         companyId: '',
         supplierType: '',
         searchText: '',
         material: '',
         ctime: []
       }
-      this.setcompanyId()
       this.$refs.table.refresh(true)
     },
     // 导出
@@ -326,3 +342,13 @@ export default {
   }
 }
 </script>
+
+<style lang="less" scoped>
+.table-page-search-wrapper
+  /deep/
+  .ant-form-inline
+  .project-item
+  .ant-form-item-control {
+  height: auto;
+}
+</style>
