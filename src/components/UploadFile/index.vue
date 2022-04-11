@@ -1,17 +1,17 @@
 <template>
   <a-upload
-    :class="{ 'max-upload-file': fileList && fileList.length > 5 }"
     v-bind="$attrs"
-    :action="`${action}/file/uploads/uFile`"
-    list-type="picture"
-    name="upFile"
-    :file-list="fileList"
     multiple
+    name="upFile"
+    list-type="picture"
+    :class="{ 'max-upload-file': fileList && fileList.length > 5 }"
+    :action="`${action}/file/uploads/uFile`"
+    :file-list="fileList"
     :beforeUpload="beforeUpload"
     @preview="handlePreview"
     @change="handleChange"
   >
-    <div v-if="fileList.length < maxLength">
+    <div v-if="fileList.length < maxLength || isInfinite">
       <a-button icon="upload">上传文件</a-button>
     </div>
   </a-upload>
@@ -20,7 +20,7 @@
 <script>
 import { getBase64 } from '@/utils/util'
 export default {
-  name: 'UploadImage',
+  name: 'UploadFile',
   props: {
     value: {
       type: Array,
@@ -39,6 +39,12 @@ export default {
         process.env.NODE_ENV === 'production'
           ? process.env.VUE_APP_API_BASE_URL
           : '/api'
+    }
+  },
+  computed: {
+    // 小于1则表示无限
+    isInfinite () {
+      return +this.maxLength < 1
     }
   },
   methods: {
@@ -82,6 +88,9 @@ export default {
       window.open(url, '_target')
     },
     beforeUpload (file, fileList) {
+      if (this.isInfinite) {
+        return file
+      }
       const index = parseInt(this.maxLength) - this.fileList.length
       if (index > 0) {
         const active = fileList.findIndex(obj => obj.name === file.name) + 1
@@ -109,7 +118,7 @@ export default {
         return
       }
       this.fileList = fileList
-      if (deleteCount) {
+      if (deleteCount && !this.isInfinite) {
         this.fileList.splice(this.fileList.length - 1, deleteCount)
       }
       if (

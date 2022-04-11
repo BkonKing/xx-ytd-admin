@@ -11,13 +11,13 @@
         {{ data.records.length - index }}
       </span>
       <span slot="payPz" slot-scope="text, record">
-        <a v-if="+text !== 0" @click="previewImage(record.payPz)"
+        <a v-if="+text !== 0" @click="previewFile(record.payPz, '付款凭证')"
           >{{ text }}张</a
         >
         <template v-else>--</template>
       </span>
       <span slot="kpPz" slot-scope="text, record">
-        <a v-if="+text !== 0" @click="previewImage(record.kpPz)"
+        <a v-if="+text !== 0" @click="previewFile(record.kpPz, '开票凭证')"
           >{{ text }}张</a
         >
         <template v-else>--</template>
@@ -39,12 +39,15 @@
       style="border-bottom: 1px solid #e8e8e8;"
     >
       <div style="width: 44%;">总计({{ `${data.records.length || 0}` }})</div>
-      <div style="width: 18%;">￥{{ parseFloat(data.allMoney) ? data.allMoney : 0 }}</div>
+      <div style="width: 18%;">
+        ￥{{ parseFloat(data.allMoney) ? data.allMoney : 0 }}
+      </div>
       <div>
-        已开{{ data.kpNum }} (￥{{ parseFloat(data.kpMoney) ? data.kpMoney : 0 }})，未开{{
-          data.unKpNum
-        }}
-        (￥{{ parseFloat(data.unKpMoney) ? data.unKpMoney : 0 }})
+        已开{{ data.kpNum }} (￥{{
+          parseFloat(data.kpMoney) ? data.kpMoney : 0
+        }})，未开{{ data.unKpNum }} (￥{{
+          parseFloat(data.unKpMoney) ? data.unKpMoney : 0
+        }})
       </div>
     </a-row>
     <a-button
@@ -72,11 +75,16 @@
         :unpaid="unpaid"
       ></payment-edit-form>
     </a-modal>
+    <file-list-modal
+      v-model="previewVisible"
+      :title="previewTitle"
+      :data="previewFileData"
+    ></file-list-modal>
   </a-card>
 </template>
 
 <script>
-import { STable } from '@/components'
+import { FileListModal, STable } from '@/components'
 import PaymentEditForm from './PaymentEditForm'
 import clonedeep from 'lodash.clonedeep'
 import {
@@ -88,6 +96,7 @@ import {
 export default {
   name: 'PaymentTable',
   components: {
+    FileListModal,
     STable,
     PaymentEditForm
   },
@@ -183,7 +192,10 @@ export default {
       title: '',
       visible: false,
       confirmLoading: false,
-      clonedeep
+      clonedeep,
+      previewVisible: false,
+      previewTitle: '',
+      previewFileData: []
     }
   },
   methods: {
@@ -264,10 +276,17 @@ export default {
       })
     },
     // 查看订单凭证
-    previewImage (images) {
-      this.$viewerApi({
-        images
-      })
+    previewFile (files, title) {
+      const isOnlyImage = files.some(obj => !obj.name)
+      if (isOnlyImage) {
+        this.$viewerApi({
+          images: files.map((obj) => obj.url)
+        })
+        return
+      }
+      this.previewTitle = title
+      this.previewFileData = files
+      this.previewVisible = true
     }
   }
 }

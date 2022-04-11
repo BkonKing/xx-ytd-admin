@@ -88,7 +88,11 @@
       prop="payPz"
       style="margin-bottom: 7px;"
     >
-      <upload-image v-model="form.payPz" maxLength="8"></upload-image>
+      <upload-file
+        v-model="form.payPz"
+        maxLength="0"
+        accept=".jpg,.jpeg,.pdf,.png"
+      ></upload-file>
     </a-form-model-item>
     <a-form-model-item label="开票情况" prop="isKp" required>
       <a-radio-group v-model="form.isKp">
@@ -123,20 +127,24 @@
       prop="kpPz"
       style="margin-bottom: 0;"
     >
-      <upload-image v-model="form.kpPz" maxLength="8"></upload-image>
+      <upload-file
+        v-model="form.kpPz"
+        maxLength="0"
+        accept=".jpg,.jpeg,.pdf,.png"
+      ></upload-file>
     </a-form-model-item>
   </a-form-model>
 </template>
 
 <script>
-import { UploadImage } from '@/components'
+import { UploadFile } from '@/components'
 import { getPayType } from '@/api/contract'
 import NP from 'number-precision'
 
 export default {
   name: 'PaymentEditForm',
   components: {
-    UploadImage
+    UploadFile
   },
   props: {
     material: {

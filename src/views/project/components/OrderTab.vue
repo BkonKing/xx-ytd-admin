@@ -186,11 +186,16 @@
           >
         </span>
         <span slot="payPz" slot-scope="text, record">
-          <a v-if="text" @click="previewImage(record.payPz)"> {{ text }}张 </a>
+          <a v-if="text" @click="previewFile(record.payPz)"> {{ text }}张 </a>
           <template v-else>--</template>
         </span>
       </s-table>
     </a-card>
+    <file-list-modal
+      v-model="previewVisible"
+      title="付款凭证"
+      :data="previewFileData"
+    ></file-list-modal>
   </div>
 </template>
 
@@ -200,7 +205,8 @@ import {
   CompanySelect,
   PayStatusSelect,
   KpStatusSelect,
-  AdvancedForm
+  AdvancedForm,
+  FileListModal
 } from '@/components'
 import { getOrderPayByProjectId, getProjectOrderList } from '@/api/project'
 export default {
@@ -210,7 +216,8 @@ export default {
     CompanySelect,
     PayStatusSelect,
     KpStatusSelect,
-    AdvancedForm
+    AdvancedForm,
+    FileListModal
   },
   props: {
     projectId: {
@@ -353,7 +360,9 @@ export default {
           this.payData = res.data
           return res
         })
-      }
+      },
+      previewVisible: false,
+      previewFileData: []
     }
   },
   methods: {
@@ -365,10 +374,16 @@ export default {
         }
       })
     },
-    previewImage (images) {
-      this.$viewerApi({
-        images: images
-      })
+    previewFile (files) {
+      const isOnlyImage = files.some(obj => !obj.name)
+      if (isOnlyImage) {
+        this.$viewerApi({
+          images: files
+        })
+        return
+      }
+      this.previewFileData = files
+      this.previewVisible = true
     }
   }
 }

@@ -1,16 +1,16 @@
 <template>
   <a-upload
     v-bind="$attrs"
-    :action="`${action}/file/uploads/uImages`"
-    list-type="picture-card"
-    name="imgFile"
-    :file-list="fileList"
     multiple
+    name="imgFile"
+    list-type="picture-card"
+    :action="`${action}/file/uploads/uImages`"
+    :file-list="fileList"
     :beforeUpload="beforeUpload"
     @preview="handlePreview"
     @change="handleChange"
   >
-    <div v-if="fileList.length < maxLength">
+    <div v-if="fileList.length < maxLength || isInfinite">
       <a-icon type="plus" />
       <div class="ant-upload-text">
         上传
@@ -37,7 +37,16 @@ export default {
     return {
       fileList: this.format(this.value),
       uploadList: [],
-      action: process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : '/api'
+      action:
+        process.env.NODE_ENV === 'production'
+          ? process.env.VUE_APP_API_BASE_URL
+          : '/api'
+    }
+  },
+  computed: {
+    // 小于1则表示无限
+    isInfinite () {
+      return +this.maxLength < 1
     }
   },
   methods: {
@@ -80,6 +89,9 @@ export default {
       })
     },
     beforeUpload (file, fileList) {
+      if (this.isInfinite) {
+        return file
+      }
       const index = parseInt(this.maxLength) - this.fileList.length
       if (index > 0) {
         const active = fileList.findIndex(obj => obj.name === file.name) + 1
@@ -104,17 +116,19 @@ export default {
         return
       }
       this.fileList = fileList
-      if (deleteCount) {
+      if (deleteCount && !this.isInfinite) {
         this.fileList.splice(this.fileList.length - 1, deleteCount)
       }
       if (file.status === 'done' || file.status === 'removed') {
-        const uploadList = fileList.map(obj => {
-          if (obj.response) {
-            return obj.response.data
-          }
-        }).filter(item => {
-          return item
-        })
+        const uploadList = fileList
+          .map(obj => {
+            if (obj.response) {
+              return obj.response.data
+            }
+          })
+          .filter(item => {
+            return item
+          })
         this.uploadList = uploadList
         this.$emit('input', uploadList)
       }
