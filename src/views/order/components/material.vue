@@ -28,10 +28,9 @@
       align="middle"
       style="border-bottom: 1px solid #e8e8e8;"
     >
-      <div style="width: 62%;">总计</div>
-      <div style="width: 8%;">{{ number }}</div>
-      <div style="width: 10%;">￥{{ money }}</div>
-      <div style="width: 20%;">已付￥{{ parseFloat(paid) ? paid : 0 }}，未付￥{{ parseFloat(unpaid) ? unpaid : 0 }}</div>
+      <div style="width: 71%;">总计</div>
+      <div style="width: 9%;">{{ number }}</div>
+      <div style="width: 13%;">￥{{ money }}</div>
     </a-row>
   </a-card>
 </template>
@@ -75,13 +74,13 @@ export default {
         {
           title: '物料',
           dataIndex: 'materialName',
-          width: '14%',
+          width: '17%',
           scopedSlots: { customRender: 'material' }
         },
         {
           title: '物料品牌',
           dataIndex: 'brand',
-          width: '14%',
+          width: '15%',
           customRender: (text) => {
             return <div class="two-Multi">{text}</div>
           }
@@ -89,7 +88,7 @@ export default {
         {
           title: '规格型号',
           dataIndex: 'model',
-          width: '14%',
+          width: '17%',
           customRender: (text) => {
             return <div class="two-Multi">{text}</div>
           }
@@ -98,12 +97,12 @@ export default {
           title: '税率',
           dataIndex: 'taxRate',
           scopedSlots: { customRender: 'taxRate' },
-          width: '7%'
+          width: '8%'
         },
         {
           title: '采购单价(元)',
           dataIndex: 'unitPrice',
-          width: '13%',
+          width: '14%',
           customRender (text) {
             return `￥${text}`
           }
@@ -111,7 +110,7 @@ export default {
         {
           title: '数量',
           dataIndex: 'total',
-          width: '8%',
+          width: '9%',
           customRender (text, record) {
             return `${text}${record.unitv || ''}`
           }
@@ -119,7 +118,7 @@ export default {
         {
           title: '金额',
           dataIndex: 'allPrice',
-          width: '10%',
+          width: '13%',
           customRender (text) {
             return `￥${text}`
           }

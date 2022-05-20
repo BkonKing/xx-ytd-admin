@@ -209,7 +209,7 @@ export default {
           this.tabList = [
             { key: '0', tab: '基本资料' },
             { key: '1', tab: '订单信息' },
-            { key: '3', tab: '付款信息' },
+            { key: '3', tab: '付款开票' },
             { key: '2', tab: '审批信息' }
           ]
         }

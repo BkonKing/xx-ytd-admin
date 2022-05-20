@@ -2,7 +2,6 @@
   <div>
     <a-card
       title="合同"
-      class="search-card"
       style="margin-top: 24px"
       :bordered="false"
     >
