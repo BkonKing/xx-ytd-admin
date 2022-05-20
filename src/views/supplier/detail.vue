@@ -85,6 +85,10 @@
       v-show="!isPass || tabActiveKey === '2'"
       :data="info.auditLeveLog"
     ></order-steps-info>
+    <contract-tab
+      v-if="!isPass || tabActiveKey === '3'"
+      :id="id"
+    ></contract-tab>
     <log-list
       ref="log-list"
       v-show="!isPass || tabActiveKey === '0'"
@@ -122,6 +126,7 @@ import OrderStepsInfo from '../order/components/Info.vue'
 import MaterialTable from './components/material.vue'
 import BasicInfo from './components/basicInfo.vue'
 import PayStatistics from './components/PayStatistics.vue'
+import contractTab from './components/contractTab.vue'
 import { CheckForm, LogList } from '@/components'
 import { getSuppInfo, auditSupp } from '@/api/supplier'
 import { getAllots } from '@/api/user'
@@ -136,7 +141,8 @@ export default {
     LogList,
     BasicInfo,
     CheckForm,
-    PayStatistics
+    PayStatistics,
+    contractTab
   },
   data () {
     return {
@@ -174,6 +180,7 @@ export default {
           this.tabList = [
             { key: '0', tab: '资料' },
             { key: '1', tab: '物料' },
+            { key: '3', tab: '合同' },
             { key: '2', tab: '审批' }
           ]
         }
@@ -263,9 +270,9 @@ export default {
       white-space: nowrap;
     }
   }
-  /deep/ .ant-pro-page-header-wrap-extraContent {
-    min-width: auto;
-  }
+  // /deep/ .ant-pro-page-header-wrap-extraContent {
+  //   min-width: auto;
+  // }
 }
 
 /deep/ .ant-pro-page-header-wrap-extraContent {

@@ -71,20 +71,6 @@
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="付款情况">
-                  <pay-status-select
-                    v-model="queryParam.payStatus"
-                  ></pay-status-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="开票情况">
-                  <kp-status-select
-                    v-model="queryParam.kpStatus"
-                  ></kp-status-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
                 <a-form-item label="订单日期">
                   <a-range-picker
                     v-model="queryParam.orderDate"
@@ -105,7 +91,7 @@
             </template>
             <advanced-form
               v-model="advanced"
-              :md="isParentCompany ? 8 : 16"
+              :md="isParentCompany ? 24 : 8"
               @reset="reset"
               @search="$refs.table.refresh(true)"
             ></advanced-form>
@@ -146,24 +132,6 @@
             :delay="60000"
           ></time-wait>
           <template v-else>--</template>
-        </span>
-
-        <span slot="paid" slot-scope="text, record">
-          <template v-if="record.status !== '1'">--</template>
-          <div
-            v-else
-            :class="[
-              'status-tag',
-              { 'success-tag': +record.paid },
-              { 'error-tag': +record.unpaid },
-              { 'warning-tag': +record.paid && +record.unpaid }
-            ]"
-          >
-            <div v-if="+record.paid"><span>已付</span>￥{{ record.paid }}</div>
-            <div v-if="+record.unpaid">
-              <span>未付</span>￥{{ record.unpaid }}
-            </div>
-          </div>
         </span>
 
         <span class="table-action" slot="action" slot-scope="text, record">
@@ -210,13 +178,6 @@
             :pagination="false"
             :showHeader="false"
           >
-            <div
-              slot="paid"
-              slot-scope="text, record"
-              style="white-space: nowrap;"
-            >
-              已付￥{{ record.allPaid }}， 未付￥{{ record.allUnpaid }}
-            </div>
           </a-table>
         </template>
       </s-table>
@@ -245,8 +206,6 @@ import {
   CheckForm,
   ProjectSelect,
   CompanySelect,
-  PayStatusSelect,
-  KpStatusSelect,
   AdvancedForm,
   TimeWait
 } from '@/components'
@@ -283,8 +242,6 @@ export default {
     CheckForm,
     ProjectSelect,
     CompanySelect,
-    PayStatusSelect,
-    KpStatusSelect,
     AdvancedForm,
     TimeWait
   },
@@ -340,12 +297,6 @@ export default {
           customRender (text) {
             return +text ? `￥${text}` : '--'
           }
-        },
-        {
-          title: '付款情况',
-          dataIndex: 'payStatus',
-          sorter: true,
-          scopedSlots: { customRender: 'paid' }
         },
         {
           title: '创建时间',

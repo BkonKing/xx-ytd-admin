@@ -14,10 +14,6 @@
       <span slot="taxRate" slot-scope="text">
         {{ +text ? `${parseFloat(text)}%` : "无" }}
       </span>
-      <span slot="paid" slot-scope="text, record">
-        <div v-if="+text">已付￥{{ text }}</div>
-        <div v-if="+record.unpaid">未付￥{{ record.unpaid }}</div>
-      </span>
       <span slot="action">
         <router-link
           :to="{ name: 'OrderEdit', query: { id: id } }"
@@ -127,11 +123,6 @@ export default {
           customRender (text) {
             return `￥${text}`
           }
-        },
-        {
-          title: '付款情况',
-          dataIndex: 'paid',
-          scopedSlots: { customRender: 'paid' }
         }
       ]
     }

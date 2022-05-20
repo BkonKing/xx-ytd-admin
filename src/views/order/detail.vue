@@ -76,27 +76,6 @@
         </div>
       </div>
     </template>
-    <a-card
-      v-if="isPass"
-      v-show="tabActiveKey === '0'"
-      style="margin-top: 24px"
-      :bordered="false"
-    >
-      <a-row type="flex">
-        <a-col flex="1">
-          <info title="已付款" :value="`￥${info.paid}`" :bordered="true" />
-        </a-col>
-        <a-col flex="1">
-          <info title="未付款" :value="`￥${info.unpaid}`" :bordered="true" />
-        </a-col>
-        <a-col flex="1">
-          <info title="已开票" :value="`￥${info.invoiced}`" :bordered="true" />
-        </a-col>
-        <a-col flex="1">
-          <info title="未开票" :value="`￥${info.notInvoiced}`" />
-        </a-col>
-      </a-row>
-    </a-card>
     <order-steps
       v-show="!isPass || tabActiveKey === '1'"
       :data="info.auditLeveArr"
@@ -113,14 +92,6 @@
       :unpaid="info.unpaid"
       :id="id"
     ></material-table>
-    <payment-table
-      v-if="isPass"
-      v-show="tabActiveKey === '0'"
-      :id="id"
-      :material="info.material"
-      :unpaid="info.unpaid"
-      @changePay="getOrderInfo"
-    ></payment-table>
     <order-info
       v-show="!isPass || tabActiveKey === '1'"
       :data="info.auditLeveLog"
@@ -150,11 +121,9 @@
 
 <script>
 import { appMixin } from '@/store/mixin'
-import OrderSteps from './components/Steps.vue'
-import OrderInfo from './components/Info.vue'
-import MaterialTable from './components/material.vue'
-import PaymentTable from './components/PaymentTable'
-import Info from '../project/components/Info'
+import OrderSteps from './components/Steps'
+import OrderInfo from './components/Info'
+import MaterialTable from './components/material'
 import { LogList, CheckForm } from '@/components'
 import { getOrderInfo, auditOrder } from '@/api/order'
 import { getAllots } from '@/api/user'
@@ -166,10 +135,8 @@ export default {
     OrderSteps,
     OrderInfo,
     MaterialTable,
-    PaymentTable,
     LogList,
-    CheckForm,
-    Info
+    CheckForm
   },
   data () {
     return {

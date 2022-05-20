@@ -89,6 +89,7 @@
         size="default"
         :columns="columns"
         :data="loadData"
+        :rowClassName="rowClass"
       >
         <span slot="contractNo" slot-scope="text, record">
           <router-link
@@ -190,6 +191,11 @@ export default {
         return getProjectContractList(
           Object.assign(parameter, this.queryParam)
         )
+      },
+      rowClass: (record) => {
+        if (+record.contractStatus === 3) {
+          return 'termination-row'
+        }
       }
     }
   },
@@ -208,4 +214,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="less" scoped>
+/deep/ .termination-row {
+  background: #FAFAFA;
+}
+</style>

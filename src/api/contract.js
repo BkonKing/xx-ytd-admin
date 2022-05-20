@@ -12,7 +12,15 @@ export const contract = {
   getPayType: '/public/common/getAllPayType',
   getOrderList: '/operate/order/orderList',
   getContOrderList: '/public/common/getContOrderList',
-  getOrderPayByContId: '/public/common/getOrderPayByContId'
+  getOrderPayByContId: '/public/common/getOrderPayByContId',
+  getContractKpByContractId: '/public/common/getContractKpByContractId',
+  getContractPayByContractId: '/public/common/getContractPayByContractId',
+  addContractPay: '/operate/contract/addContractPay',
+  updateContractPay: '/operate/contract/updateContractPay',
+  removeContractPay: '/operate/contract/removeContractPay',
+  addContractKp: '/operate/contract/addContractKp',
+  updateContractKp: '/operate/contract/updateContractKp',
+  removeContractKp: '/operate/contract/removeContractKp'
 }
 
 // 获取合同列表接口
@@ -120,5 +128,77 @@ export function getOrderPayByContId (params) {
     url: contract.getOrderPayByContId,
     method: 'get',
     params
+  })
+}
+
+// 合同详情开票列表接口
+export function getContractKpByContractId (params) {
+  return request({
+    url: contract.getContractKpByContractId,
+    method: 'get',
+    params
+  })
+}
+
+// 合同详情付款列表
+export function getContractPayByContractId (params) {
+  return request({
+    url: contract.getContractPayByContractId,
+    method: 'get',
+    params
+  })
+}
+
+// 创建合同付款接口
+export function addContractPay (data) {
+  return request({
+    url: contract.addContractPay,
+    method: 'post',
+    data
+  })
+}
+
+// 修改合同付款接口
+export function updateContractPay (data) {
+  return request({
+    url: contract.updateContractPay,
+    method: 'post',
+    data
+  })
+}
+
+// 删除合同付款接口
+export function removeContractPay (data) {
+  return request({
+    url: contract.removeContractPay,
+    method: 'post',
+    data
+  })
+}
+
+// 创建合同开票接口
+export function addContractKp (data) {
+  return request({
+    url: contract.addContractKp,
+    method: 'post',
+    data
+  })
+}
+
+// 修改合同开票接口
+export function updateContractKp (data) {
+  return request({
+    url: contract.updateContractKp,
+    method: 'post',
+    data
+  })
+}
+
+// 删除合同开票接口
+export function removeContractKp (data) {
+  return request({
+    url: contract.removeContractKp,
+    method: 'post',
+    data
   })
 }

@@ -4,38 +4,45 @@
       <a-col :span="10">
         <a-card>
           <div v-if="treeData.length > 0">
-          <a-tree
-            class="draggable-tree"
-            :tree-data="treeData"
-            @select="selectInfo"
-          >
-            <template slot="custom" slot-scope="item">
-              {{ item.menuText }}
+            <a-tree
+              class="draggable-tree"
+              :tree-data="treeData"
+              @select="selectInfo"
+            >
+              <template slot="custom" slot-scope="item">
+                {{ item.menuText }}
 
-              <a-icon class="icon" type="edit" @click="edit(item)" />
-              <a-icon class="icon" type="apartment" @click="selectItem(item)" />
-              <a-icon class="icon" type="delete" @click="del(item.id)" />
-            </template>
-          </a-tree>
+                <a-icon class="icon" type="edit" @click="edit(item)" />
+                <a-icon
+                  class="icon"
+                  type="apartment"
+                  @click="selectItem(item)"
+                />
+                <a-icon class="icon" type="delete" @click="del(item.id)" />
+              </template>
+            </a-tree>
           </div>
-           <div v-else>
+          <div v-else>
             当前还没有角色，请从右侧创建
           </div>
         </a-card>
       </a-col>
       <a-col :span="14">
-        <a-alert message="操作权限请统一在icon中填入以下几种类型：新增-CreatePermission、编辑-UpdatePermission、删除-RemovePermission、审核-AuditPermission" type="info" />
-            <a-card class="card2"  v-if="showInit">
-            <div class="title">新增</div>
-            <div class="content">
-              <div class="left">
-                <div>
-                  权限菜单
-                  <a-icon class="rightIcon" type="right" />
-                </div>
+        <a-alert
+          message="操作权限请统一在icon中填入以下几种类型：新增-CreatePermission、编辑-UpdatePermission、删除-RemovePermission、审核-AuditPermission"
+          type="info"
+        />
+        <a-card class="card2" v-if="showInit">
+          <div class="title">新增</div>
+          <div class="content">
+            <div class="left">
+              <div>
+                权限菜单
+                <a-icon class="rightIcon" type="right" />
               </div>
-              <div class="right">
-                    <div
+            </div>
+            <div class="right">
+              <div
                 class="r1 inputItem"
                 v-for="(item, index) in inputArr3"
                 :key="index"
@@ -55,7 +62,7 @@
                   style="width:120px"
                   placeholder="访问链接"
                 ></a-input>
-                  <a-input
+                <a-input
                   v-model="item.apiPath"
                   style="width:120px"
                   placeholder="接口路径"
@@ -81,11 +88,13 @@
                   @click="remove3(index)"
                 />
               </div>
-                <div class="addArea" @click="add3">+ <span>添加</span></div>
-                <a-button type="primary" :disabled='initBol' @click="initSave">保存</a-button>
-              </div>
+              <div class="addArea" @click="add3">+ <span>添加</span></div>
+              <a-button type="primary" :disabled="initBol" @click="initSave"
+                >保存</a-button
+              >
             </div>
-          </a-card>
+          </div>
+        </a-card>
         <a-card v-if="rightShow" class="card3">
           <div class="title">
             创建分支
@@ -124,11 +133,11 @@
                     style="width:120px"
                     placeholder="访问链接"
                   ></a-input>
-                         <a-input
-                  v-model="item.apiPath"
-                  style="width:120px"
-                  placeholder="接口路径"
-                ></a-input>
+                  <a-input
+                    v-model="item.apiPath"
+                    style="width:120px"
+                    placeholder="接口路径"
+                  ></a-input>
                   <a-input
                     v-model="item.listOrder"
                     style="width:60px"
@@ -171,7 +180,7 @@
                   style="width:120px"
                   placeholder="访问链接"
                 ></a-input>
-                       <a-input
+                <a-input
                   v-model="item.apiPath"
                   style="width:120px"
                   placeholder="接口路径"
@@ -198,7 +207,9 @@
                 />
               </div>
               <div class="addArea" @click="add">+ <span>添加</span></div>
-              <a-button type="primary" :disabled="createBol" @click="save">保存</a-button>
+              <a-button type="primary" :disabled="createBol" @click="save"
+                >保存</a-button
+              >
             </div>
           </div>
         </a-card>
@@ -216,7 +227,7 @@
               </div>
             </div>
             <div class="right">
-               <div>
+              <div>
                 <div
                   class="r2"
                   v-show="itemInfo"
@@ -238,11 +249,11 @@
                     style="width:120px"
                     placeholder="访问链接"
                   ></a-input>
-                       <a-input
-                  v-model="item.apiPath"
-                  style="width:120px"
-                  placeholder="接口路径"
-                ></a-input>
+                  <a-input
+                    v-model="item.apiPath"
+                    style="width:120px"
+                    placeholder="接口路径"
+                  ></a-input>
                   <a-input
                     v-model="item.listOrder"
                     style="width:60px"
@@ -265,7 +276,7 @@
                   />
                 </div>
               </div>
-               <div
+              <div
                 class="r1 inputItem"
                 v-for="(item, index) in inputArr2"
                 :key="index"
@@ -285,7 +296,7 @@
                   style="width:120px"
                   placeholder="访问链接"
                 ></a-input>
-                       <a-input
+                <a-input
                   v-model="item.apiPath"
                   style="width:120px"
                   placeholder="接口路径"
@@ -405,25 +416,27 @@ export default {
   methods: {
     // 创建初始角色
     async initSave () {
-      const arr = this.inputArr3.map(item => {
-        let id = item.id
-        let parentId = item.parentId
-        if (!parentId) {
-          id = 0
-          parentId = 0
-        }
-        return {
-          display: +item.display,
-          icon: item.icon,
-          id,
-          level: item.level,
-          limitsPath: item.limitsPath,
-          listOrder: item.listOrder,
-          menuText: item.menuText,
-          apiPath: item.apiPath,
-          parentId
-        }
-      }).filter(item => item.menuText)
+      const arr = this.inputArr3
+        .map(item => {
+          let id = item.id
+          let parentId = item.parentId
+          if (!parentId) {
+            id = 0
+            parentId = 0
+          }
+          return {
+            display: +item.display,
+            icon: item.icon,
+            id,
+            level: item.level,
+            limitsPath: item.limitsPath,
+            listOrder: item.listOrder,
+            menuText: item.menuText,
+            apiPath: item.apiPath,
+            parentId
+          }
+        })
+        .filter(item => item.menuText)
       if (!arr || arr.length === 0) {
         this.$message.warning('请输入菜单信息')
         return
@@ -564,7 +577,7 @@ export default {
         }
       } else {
         console.log('执行了2')
-        let menus = this.itemInfo.children.map(item => {
+        let menus = this.itemInfo && this.itemInfo.children ? this.itemInfo.children.map(item => {
           return {
             id: item.id,
             parentId: item.parentId,
@@ -575,7 +588,7 @@ export default {
             apiPath: item.apiPath,
             display: item.display
           }
-        })
+        }) : []
         const arr = this.inputArr.filter(item => {
           return item.menuText !== ''
         })
@@ -842,7 +855,7 @@ export default {
     }
 
     .title {
-     padding-left: 24px;
+      padding-left: 24px;
       height: 55px;
       line-height: 55px;
       border-bottom-width: 1px;
@@ -853,18 +866,18 @@ export default {
       font-size: 16px;
       color: rgba(0, 0, 0, 0.847058823529412);
     }
-    input{
+    input {
       margin-right: 10px;
     }
-    button{
+    button {
       margin-top: 32px;
     }
-    .r2{
+    .r2 {
       margin-bottom: 20px;
     }
   }
-  .card2{
-     /deep/ .ant-card-body {
+  .card2 {
+    /deep/ .ant-card-body {
       padding: 0;
     }
     .title {
@@ -879,13 +892,14 @@ export default {
       font-size: 16px;
       color: rgba(0, 0, 0, 0.847058823529412);
     }
-     input{
+    input {
       margin-right: 10px;
     }
-    .inputItem,.r2{
+    .inputItem,
+    .r2 {
       margin-bottom: 20px;
     }
-    button{
+    button {
       margin-top: 20px;
     }
   }

@@ -107,6 +107,7 @@
         :data="loadData"
         :alert="{ clear: true }"
         :rowSelection="rowSelection"
+        :rowClassName="rowClass"
         :rowSelectionPaging="true"
         :showPagination="true"
       >
@@ -149,6 +150,7 @@ import {
 import { getContractReport } from '@/api/report'
 import { changeJSON2QueryString } from '@/utils/util'
 import setCompanyId from '@/mixins/setCompanyId'
+import cloneDeep from 'lodash.clonedeep'
 
 export default {
   name: 'reportContract',
@@ -262,17 +264,14 @@ export default {
       footerData: [],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        const time = this.queryParam.time
-        let startDate = ''
-        let endDate = ''
+        const params = cloneDeep(this.queryParam)
+        const time = params.time
         if (time && time.length) {
-          startDate = time[0]
-          endDate = time[1]
+          params.startDate = time[0]
+          params.endDate = time[1]
         }
-        this.queryParam.startDate = startDate
-        this.queryParam.endDate = endDate
         return getContractReport(
-          Object.assign(parameter, this.queryParam)
+          Object.assign(parameter, params)
         ).then(res => {
           this.footerData = [
             {
@@ -286,7 +285,12 @@ export default {
         })
       },
       selectedRowKeys: [],
-      selectedRows: []
+      selectedRows: [],
+      rowClass: (record) => {
+        if (+record.contractStatus === 3) {
+          return 'termination-row'
+        }
+      }
     }
   },
   computed: {
@@ -346,5 +350,8 @@ export default {
       top: 16px;
     }
   }
+}
+/deep/ .termination-row {
+  background: #FAFAFA;
 }
 </style>

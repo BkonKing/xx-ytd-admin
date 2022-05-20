@@ -1,5 +1,5 @@
 <template>
-  <a-col :md="(!advanced && 8) || md" :sm="24">
+  <a-col :md="(!advanced && showAdvanced && 8) || md" :sm="24">
     <span
       class="table-page-search-submitButtons"
       :style="(advanced && { float: 'right', overflow: 'hidden' }) || {}"

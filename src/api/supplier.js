@@ -8,7 +8,8 @@ export const supplier = {
   suppInfo: '/operate/supplier/suppInfo',
   auditSupp: '/operate/supplier/auditSupp',
   auditBatchSupp: '/operate/supplier/auditBatchSupp',
-  getSuppMaterialList: '/public/common/getSuppMaterialList'
+  getSuppMaterialList: '/public/common/getSuppMaterialList',
+  getSupplierContractList: '/public/common/getSupplierContractList'
 }
 
 // 获取所有公司接口
@@ -78,6 +79,15 @@ export function auditBatchSupp (data) {
 export function getSuppMaterialList (params) {
   return request({
     url: supplier.getSuppMaterialList,
+    method: 'get',
+    params
+  })
+}
+
+// 供应商详情合同列表
+export function getSupplierContractList (params) {
+  return request({
+    url: supplier.getSupplierContractList,
     method: 'get',
     params
   })

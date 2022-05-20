@@ -26,14 +26,6 @@
             </template>
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
-                <a-form-item label="开票情况">
-                  <kp-status-select
-                    v-model="queryParam.kpStatus"
-                    type="1"
-                  ></kp-status-select>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
                 <a-form-item label="供应商">
                   <a-input
                     v-model="queryParam.serachSupplierText"
@@ -54,7 +46,7 @@
             </template>
             <advanced-form
               v-model="advanced"
-              :md="isParentCompany ? 24 : 8"
+              :md="isParentCompany ? 8 : 16"
               :showAdvanced="false"
               @reset="reset"
               @search="$refs.table.refresh(true)"
@@ -70,13 +62,14 @@
         >
       </div>
 
-      <s-table
+      <combined-table
         ref="table"
         size="default"
         rowKey="id"
         table-layout="fixed"
         :columns="columns"
         :data="loadData"
+        :footerData="footerData"
         :showPagination="true"
       >
         <template slot="supplierName" slot-scope="text, record">
@@ -95,7 +88,7 @@
           <template v-else>--</template>
         </template>
         <template slot="remarks" slot-scope="text, record">
-          <a-input v-if="record.editable" v-model="record.bbBz" />
+          <a-input v-if="record.editable" v-model="record.bz" />
           <template v-else>
             {{ text }}
           </template>
@@ -112,24 +105,7 @@
             >
           </span>
         </template>
-
-        <template slot="footer">
-          <a-table
-            v-if="footerData && footerData.length"
-            class="table-footer"
-            size="default"
-            rowKey="id"
-            :columns="columns"
-            :dataSource="footerData"
-            :pagination="false"
-            :showHeader="false"
-          >
-            <template slot="contractMoney" slot-scope="text">
-              {{+text ? `￥${text}` : '--' }}
-            </template></a-table
-          >
-        </template>
-      </s-table>
+      </combined-table>
     </a-card>
     <export-type-modal
       v-model="visible"
@@ -142,7 +118,7 @@
 
 <script>
 import {
-  STable,
+  CombinedTable,
   ProjectSelect,
   CompanySelect,
   KpStatusSelect,
@@ -157,7 +133,7 @@ export default {
   name: 'reportInvoiced',
   mixins: [setCompanyId],
   components: {
-    STable,
+    CombinedTable,
     ProjectSelect,
     CompanySelect,
     KpStatusSelect,
@@ -177,22 +153,29 @@ export default {
         {
           title: '所属项目',
           dataIndex: 'projectName',
-          width: '15%',
           customRender: (text) => {
             return <div class="two-Multi">{text}</div>
           }
         },
         {
           title: '开票日期',
-          dataIndex: 'kpDate'
+          dataIndex: 'kpTime'
         },
         {
-          title: '订单ID',
-          dataIndex: 'idv'
+          title: '开票金额',
+          dataIndex: 'kpMoney',
+          sorter: true,
+          customRender (text) {
+            return `￥${text}`
+          }
+        },
+        {
+          title: '合同编号',
+          dataIndex: 'contractNo'
         },
         {
           title: '供应商ID',
-          dataIndex: 'supplierIdv'
+          dataIndex: 'supplierId'
         },
         {
           title: '供应商',
@@ -202,34 +185,35 @@ export default {
         {
           title: '合同金额',
           dataIndex: 'contractMoney',
+          sorter: true,
           scopedSlots: { customRender: 'contractMoney' }
         },
         {
           title: '订单总额',
-          dataIndex: 'orderPrice',
+          dataIndex: 'orderMoney',
           customRender (text) {
             return +text ? `￥${text}` : '--'
           }
         },
         {
-          title: '已开票金额',
-          dataIndex: 'invoiced',
-          sort: true,
+          title: '合同已开票',
+          dataIndex: 'htInvoiced',
+          sorter: true,
           customRender (text) {
             return +text ? `￥${text}` : '--'
           }
         },
         {
-          title: '未开票金额',
-          dataIndex: 'notInvoiced',
-          sort: true,
+          title: '合同未开票',
+          dataIndex: 'htNotInvoiced',
+          sorter: true,
           customRender (text) {
             return +text ? `￥${text}` : '--'
           }
         },
         {
           title: '备注',
-          dataIndex: 'bbBz',
+          dataIndex: 'bz',
           scopedSlots: { customRender: 'remarks' },
           width: '14%'
         },
@@ -252,10 +236,11 @@ export default {
             {
               id: 'total',
               projectName: '合计',
-              contractMoney: res.data.allContractMoney,
-              orderPrice: res.data.allPrice,
-              invoiced: res.data.allInvoiced,
-              notInvoiced: res.data.allNotInvoiced
+              kpMoney: res.data.allKpMoneys,
+              contractMoney: `￥${res.data.allContractMoney}`,
+              orderMoney: res.data.allOrderPrice,
+              htInvoiced: res.data.contractInvoiceds,
+              htNotInvoiced: res.data.contractNotInvoiceds
             }
           ]
           return res
@@ -282,10 +267,10 @@ export default {
         this.setEditable(index, true)
       }
     },
-    save (index, { id, bbBz }) {
+    save (index, { id, bz }) {
       updateInvoicedRepBz({
         id,
-        bbBz
+        bbBz: bz
       }).then(({ data }) => {
         this.setEditable(index, false)
         this.cacheData = cloneDeep(this.tableData)

@@ -32,6 +32,9 @@ export default {
     rowSelection: {
       type: Object,
       default: null
+    },
+    rowClassName: {
+      type: Function
     }
   },
   watch: {
@@ -56,20 +59,28 @@ export default {
     }
   },
   render () {
-    const columns = this.$props.columns
-    const scroll = this.$props.scroll
-    const footerData = this.$props.footerData
-    const data = this.$props.data
-    const alert = this.$props.alert
-    const rowSelection = this.$props.rowSelection
+    const {
+      columns,
+      footerData,
+      data,
+      alert,
+      rowSelection,
+      rowClassName,
+      scroll
+    } = this.$props
     const footerColumns = cloneDeep(this.$props.columns).map((obj, index) => {
-      index === 0 && (obj.class = 'first-td')
+      index === 0 && scroll && (obj.class = 'first-td')
       obj.fixed && delete obj.fixed
       obj.sorter && delete obj.sorter
       // 如果有removeCustom，则删除customRender
       obj.removeFooterCustom && delete obj.customRender
       return obj
     })
+
+    const props = {}
+    if (scroll) {
+      props.scroll = scroll
+    }
 
     const table = footerData && footerData.length ? <template slot="footer"><a-table
       class="table-footer"
@@ -78,10 +89,10 @@ export default {
       tableLayout="fixed"
       columns={footerColumns}
       dataSource={footerData}
-      scroll={scroll}
       pagination={false}
       rowSelection={rowSelection ? {} : null}
       showHeader={false}
+      {...{ props }}
     >
     </a-table></template> : ''
     return (<s-table
@@ -90,12 +101,12 @@ export default {
       rowKey="id"
       tableLayout="fixed"
       class="combined-table"
-      {...{ scopedSlots: { ...this.$scopedSlots } }}
+      {...{ props, scopedSlots: { ...this.$scopedSlots } }}
       data={data}
       alert={alert}
       rowSelection={rowSelection}
       columns={columns}
-      scroll={scroll}
+      rowClassName={rowClassName}
     >
       {table}
     </s-table>)

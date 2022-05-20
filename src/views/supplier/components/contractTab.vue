@@ -1,20 +1,17 @@
 <template>
-  <page-header-wrapper
-    :tab-list="tabList"
-    :tab-active-key="tabActiveKey"
-    :tab-change="handleTabChange"
-  >
-    <a-card class="search-card" style="margin-top: 24px" :bordered="false">
+  <div>
+    <a-card
+      title="合同"
+      class="search-card"
+      style="margin-top: 24px"
+      :bordered="false"
+    >
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
               <a-form-item label="审核状态">
-                <a-select
-                  v-model="queryParam.status"
-                  placeholder="请选择"
-                  :disabled="statusAble"
-                >
+                <a-select v-model="queryParam.status" placeholder="请选择">
                   <a-select-option
                     v-for="option in statusOptions"
                     :value="option.value"
@@ -40,7 +37,6 @@
                 <a-select
                   v-model="queryParam.contractStatus"
                   placeholder="请选择"
-                  :disabled="contractStatusAble"
                 >
                   <a-select-option
                     v-for="option in contractStatusOptions"
@@ -79,14 +75,6 @@
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="供应商">
-                  <a-input
-                    v-model="queryParam.serachSupplierText"
-                    placeholder="ID、名称"
-                  ></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
                 <a-form-item label="付款情况">
                   <pay-status-select
                     v-model="queryParam.payStatus"
@@ -94,9 +82,9 @@
                 </a-form-item>
               </a-col>
               <a-col :md="8" :sm="24">
-                <a-form-item label="签订日期">
+                <a-form-item label="创建时间">
                   <a-range-picker
-                    v-model="queryParam.signDate"
+                    v-model="queryParam.time"
                     valueFormat="YYYY-MM-DD"
                     style="width: 100%;"
                   />
@@ -125,38 +113,15 @@
                   ></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="创建时间">
-                  <a-range-picker
-                    v-model="queryParam.time"
-                    valueFormat="YYYY-MM-DD"
-                    style="width: 100%;"
-                  />
-                </a-form-item>
-              </a-col>
             </template>
             <advanced-form
               v-model="advanced"
-              :md="isParentCompany ? 24 : 8"
+              :md="isParentCompany ? 16 : 24"
               @search="$refs.table.refresh(true)"
               @reset="reset"
             ></advanced-form>
           </a-row>
         </a-form>
-      </div>
-    </a-card>
-    <a-card style="margin-top: 24px" :bordered="false">
-      <div class="table-operator">
-        <a-button
-          v-if="permissions.AuditPermission"
-          type="primary"
-          :disabled="!selectedRowKeys.length"
-          @click="openCheck"
-          >审核</a-button
-        >
-        <a-button v-if="permissions.CreatePermission" @click="goEdit"
-          >新增</a-button
-        >
       </div>
 
       <combined-table
@@ -164,8 +129,6 @@
         :columns="columns"
         :data="loadData"
         :footerData="footerData"
-        :alert="{ clear: true }"
-        :rowSelection="rowSelection"
         :rowClassName="rowClass"
         :showPagination="true"
         :scroll="{ x: 3300 }"
@@ -180,57 +143,16 @@
           <template v-else>--</template>
         </span>
         <span class="table-action" slot="action" slot-scope="text, record">
-          <template>
-            <a @click="goDetail(record)">查看</a>
-            <a
-              v-if="
-                (permissions.UpdatePermission ||
-                  permissions.UpdatePartPermission) &&
-                  userCompanyId == record.companyId
-              "
-              @click="goEdit(record)"
-              >编辑</a
-            >
-            <a
-              v-if="
-                permissions.RemovePermission &&
-                  userCompanyId == record.companyId
-              "
-              @click="handleRemove(record)"
-              >删除</a
-            >
-            <a
-              v-if="
-                +record.status === 0 &&
-                  permissions.AuditPermission &&
-                  record.auditPermission
-              "
-              @click="openCheck(record)"
-              >审核</a
-            >
-          </template>
+          <a @click="goDetail(record)">查看</a>
         </span>
       </combined-table>
     </a-card>
-    <a-modal
-      title="审核"
-      :visible="visible"
-      :confirm-loading="confirmLoading"
-      @ok="handleCheckOk"
-      @cancel="handleCheckCancel"
-    >
-      <check-form
-        ref="CheckForm"
-        :selectedRowKeys="selectedRowKeys"
-      ></check-form>
-    </a-modal>
-  </page-header-wrapper>
+  </div>
 </template>
 
 <script>
 import {
   CombinedTable,
-  CheckForm,
   TimeWait,
   ProjectSelect,
   CompanySelect,
@@ -238,23 +160,19 @@ import {
   PayStatusSelect,
   AdvancedForm
 } from '@/components'
-import {
-  getContractList,
-  removeCont,
-  auditCont,
-  auditBatchCont
-} from '@/api/contract'
-import { getIsAuditSet } from '@/api/common'
-import setCompanyId from '@/mixins/setCompanyId'
-import beforeRouteLeave from '@/mixins/beforeRouteLeave'
+import { getSupplierContractList } from '@/api/supplier'
 import cloneDeep from 'lodash.clonedeep'
 
 export default {
-  name: 'ContractIndex',
-  mixins: [setCompanyId, beforeRouteLeave],
+  name: 'ContractTab',
+  props: {
+    id: {
+      type: [Number, String],
+      default: ''
+    }
+  },
   components: {
     CombinedTable,
-    CheckForm,
     TimeWait,
     ProjectSelect,
     CompanySelect,
@@ -264,10 +182,6 @@ export default {
   },
   data () {
     return {
-      tabActiveKey: '0',
-      // 审核弹窗
-      visible: false,
-      confirmLoading: false,
       // 高级搜索 展开/关闭
       advanced: false,
       // 审核状态：0=全部、1=待审核、2=已通过、3=未通过
@@ -296,17 +210,13 @@ export default {
           text: '终止'
         }
       ],
-      dsTotal: 0, // 待审核tab数量
-      yqTotal: 0, // 延期tab数量
-      zcTotal: 0, // 终止tab数量
       // 查询参数
       queryParam: {
         time: [],
-        signDate: [],
+        // signDate: [],
         companyId: undefined,
         status: undefined,
-        contractStatus: undefined,
-        tab: 0
+        contractStatus: undefined
       },
       columns: [
         {
@@ -340,9 +250,9 @@ export default {
           }
         },
         {
-          title: '供应商',
+          title: '物料',
           width: '140px',
-          dataIndex: 'supplierName',
+          dataIndex: 'categoryName1',
           customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
@@ -360,6 +270,7 @@ export default {
         {
           title: '总量',
           class: 'nowrap',
+          width: 100,
           dataIndex: 'contractTotal'
         },
         {
@@ -400,6 +311,7 @@ export default {
         {
           title: '订单',
           class: 'nowrap',
+          width: 110,
           dataIndex: 'orderNum',
           sorter: true
         },
@@ -418,7 +330,7 @@ export default {
           class: 'nowrap',
           width: 130,
           sorter: true,
-          dataIndex: 'orderPayMoney',
+          dataIndex: 'paid',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
           }
@@ -428,7 +340,7 @@ export default {
           class: 'nowrap',
           width: 130,
           sorter: true,
-          dataIndex: 'orderUnPayMoney',
+          dataIndex: 'unpaid',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
           }
@@ -438,7 +350,7 @@ export default {
           class: 'nowrap',
           width: 130,
           sorter: true,
-          dataIndex: 'orderInvoicedMoney',
+          dataIndex: 'invoiced',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
           }
@@ -448,20 +360,20 @@ export default {
           class: 'nowrap',
           width: 130,
           sorter: true,
-          dataIndex: 'orderUnInvoicedMoney',
+          dataIndex: 'notInvoiced',
           customRender (text) {
             return text === '--' ? '--' : `￥${text}`
           }
         },
         {
-          title: '审核状态',
-          width: '100px',
-          dataIndex: 'statusv'
-        },
-        {
           title: '合同状态',
           width: '100px',
           dataIndex: 'contractStatusv'
+        },
+        {
+          title: '审核状态',
+          width: '100px',
+          dataIndex: 'statusv'
         },
         {
           title: '审核时间',
@@ -486,6 +398,7 @@ export default {
           title: '操作',
           fixed: 'right',
           class: 'nowrap',
+          width: 45,
           scopedSlots: { customRender: 'action' }
         }
       ],
@@ -494,44 +407,38 @@ export default {
       loadData: parameter => {
         const params = cloneDeep(this.queryParam)
         const time = params.time
-        const signDate = params.signDate
         if (time && time.length) {
           params.startDate = time[0]
           params.endDate = time[1]
         }
-        if (signDate && signDate.length) {
-          params.signStartDate = signDate[0]
-          params.signEndDate = signDate[1]
-        }
-        return getContractList(Object.assign(parameter, params)).then(
-          res => {
-            this.dsTotal = res.data.dsTotal
-            this.yqTotal = res.data.yqTotal
-            this.zcTotal = res.data.zcTotal
-            if (+res.data.total) {
-              this.footerData = [
-                {
-                  id: 'total',
-                  projectName: '合计',
-                  action: '',
-                  contractMoney: res.data.allContractMoney,
-                  orderMoney: res.data.allOrderPrice,
-                  orderPayMoney: res.data.allPaid,
-                  orderUnPayMoney: res.data.allUnpaid,
-                  orderInvoicedMoney: res.data.allInvoiced,
-                  orderUnInvoicedMoney: res.data.allNotInvoiced
-                }
-              ]
-            } else {
-              this.footerData = []
-            }
-            return res
+        // const signDate = params.signDate
+        // if (signDate && signDate.length) {
+        //   params.signStartDate = signDate[0]
+        //   params.signEndDate = signDate[1]
+        // }
+        return getSupplierContractList(
+          Object.assign(parameter, params, { supplierId: this.id })
+        ).then(res => {
+          if (+res.data.total) {
+            this.footerData = [
+              {
+                id: 'total',
+                projectName: '合计',
+                action: '',
+                contractMoney: res.data.allContractMoney,
+                orderMoney: res.data.allOrderPrice,
+                paid: res.data.allPaid,
+                unpaid: res.data.allUnpaid,
+                invoiced: res.data.allInvoiced,
+                notInvoiced: res.data.allNotInvoiced
+              }
+            ]
+          } else {
+            this.footerData = []
           }
-        )
+          return res
+        })
       },
-      selectedRowKeys: [],
-      selectedRows: [],
-      checkId: '',
       rowClass: record => {
         if (+record.contractStatus === 3) {
           return 'termination-row'
@@ -539,190 +446,25 @@ export default {
       }
     }
   },
-  computed: {
-    tabList () {
-      // 0=全部、1=待审核、2=已通过、3=未通过、4=正常、5=延期、6=终止
-      // eslint-disable-next-line no-irregular-whitespace
-      const dsTotal = +this.dsTotal ? ` ${this.dsTotal}` : ''
-      const yqTotal = +this.yqTotal ? ` ${this.yqTotal}` : ''
-      const zcTotal = +this.zcTotal ? ` ${this.zcTotal}` : ''
-      return [
-        { key: '0', tab: '全部' },
-        { key: '1', tab: `待审核${dsTotal}` },
-        { key: '2', tab: '已通过' },
-        { key: '3', tab: '未通过' },
-        { key: '4', tab: `正常${zcTotal}` },
-        { key: '5', tab: `延期${yqTotal}` },
-        { key: '6', tab: '终止' }
-      ]
-    },
-    rowSelection () {
-      if (!this.permissions.AuditPermission) {
-        return null
-      }
-      return {
-        fixed: true,
-        selectedRowKeys: this.selectedRowKeys,
-        getCheckboxProps: record => ({
-          props: {
-            disabled: +record.status !== 0 || record.auditPermission === 0
-          }
-        }),
-        onChange: this.onSelectChange
-      }
-    },
-    statusAble () {
-      return this.tabActiveKey > 0 && +this.tabActiveKey < 4
-    },
-    contractStatusAble () {
-      return +this.tabActiveKey > 3
-    }
-  },
-  created () {
-    const tab = this.$route.query.tabActiveKey
-    if (tab) {
-      this.tabActiveKey = tab
-      this.changeStatus()
-    }
-  },
   methods: {
-    handleTabChange (key) {
-      this.tabActiveKey = key
-      this.changeStatus()
-      // this.changeColumns(+key)
-      this.$refs.table.refresh()
-    },
-    changeColumns (index) {
-      // 是否有审核时间
-      const isAudit =
-        this.columns.findIndex(column => column.dataIndex === 'auditTime') > -1
-      // 是否有审核状态
-      const isStatus =
-        this.columns.findIndex(column => column.dataIndex === 'statusv') > -1
-      if (index === 1) {
-        isStatus && this.columns.shift()
-        // !isAudit && this.columns.unshift(...checkTimec)
-      } else if (index === 0 || index > 10) {
-        isAudit && this.columns.shift()
-        // !isStatus && this.columns.unshift(...checkStatusC)
-      } else {
-        isAudit && this.columns.shift()
-        isStatus && this.columns.shift()
-      }
-    },
     reset () {
-      this.changeStatus()
-      this.setcompanyId()
-      this.$refs.table.refresh(true)
-    },
-    changeStatus () {
-      const index = +this.tabActiveKey
       this.queryParam = {
         time: [],
+        // signDate: [],
         companyId: undefined,
         status: undefined,
-        contractStatus: undefined,
-        tab: index
+        contractStatus: undefined
       }
-      this.setcompanyId()
-      if (index > 0 && index < 4) {
-        this.queryParam.status = this.tabActiveKey
-      } else if (index > 3) {
-        this.queryParam.contractStatus = String(index - 3)
-      }
-    },
-    openCheck ({ id }) {
-      id && (this.checkId = id)
-      this.visible = true
-      this.$refs.CheckForm && this.$refs.CheckForm.resetFields()
-    },
-    handleCheckOk () {
-      this.confirmLoading = true
-      this.$refs.CheckForm.handleSubmit()
-        .then(value => {
-          if (this.checkId) {
-            this.auditCont(value)
-          } else if (this.selectedRowKeys) {
-            this.auditBatchCont(value)
-          }
-        })
-        .finally(() => {
-          this.confirmLoading = false
-        })
-    },
-    auditCont (value) {
-      auditCont({
-        ...value,
-        id: this.checkId
-      }).then(({ data, message }) => {
-        this.checkId = ''
-        this.checkCall(message)
-      })
-    },
-    auditBatchCont (value) {
-      auditBatchCont({
-        ...value,
-        ids: this.selectedRowKeys
-      }).then(({ data, message }) => {
-        this.$refs.table.clearSelected()
-        this.checkCall(message)
-      })
-    },
-    checkCall (message) {
-      this.$message.success(message)
-      this.visible = false
-      this.$refs.table.refresh()
-    },
-    handleCheckCancel () {
-      this.checkId = ''
-      this.visible = false
-    },
-    handleRemove ({ id, contractName }) {
-      const that = this
-      this.$confirm({
-        title: '删除合同',
-        content: `确认删除 "${contractName}" 吗？`,
-        icon: () =>
-          this.$createElement('a-icon', {
-            props: {
-              type: 'exclamation-circle',
-              theme: 'filled'
-            }
-          }),
-        onOk () {
-          removeCont({
-            id
-          }).then(({ data }) => {
-            that.$message.success('删除合同成功')
-            that.$refs.table.refresh()
-          })
-        }
-      })
-    },
-    goEdit ({ id }) {
-      getIsAuditSet({
-        auditType: 2
-      }).then(({ success }) => {
-        success &&
-          this.$router.push({
-            name: 'ContractEdit',
-            query: {
-              id
-            }
-          })
-      })
+      this.$refs.table.refresh(true)
     },
     goDetail ({ id }) {
-      this.$router.push({
+      const routeUrl = this.$router.resolve({
         name: 'ContractDetail',
         query: {
           id
         }
       })
-    },
-    onSelectChange (selectedRowKeys, selectedRows) {
-      this.selectedRowKeys = selectedRowKeys
-      this.selectedRows = selectedRows
+      window.open(routeUrl.href, '_blank')
     }
   }
 }

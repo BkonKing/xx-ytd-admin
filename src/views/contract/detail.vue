@@ -60,7 +60,7 @@
     </template>
 
     <a-card
-      v-show="isPass && tabActiveKey !== '2'"
+      v-show="isPass && [0, 3].includes(+tabActiveKey)"
       style="margin-top: 24px"
       :bordered="false"
     >
@@ -74,30 +74,27 @@
         </a-col>
         <a-col flex="1">
           <info
-            :title="`已付款（${info.orderPayNum}个订单）`"
+            :title="`已付款`"
             :value="`￥${info.orderPayMoney}`"
             :bordered="true"
           />
         </a-col>
         <a-col flex="1">
           <info
-            :title="`未付款（${info.orderUnPayNum}个订单）`"
+            :title="`未付款`"
             :value="`￥${info.orderUnPayMoney}`"
             :bordered="true"
           />
         </a-col>
         <a-col flex="1">
           <info
-            :title="`已开票（${info.orderInvoicedNum}个订单）`"
+            :title="`已开票`"
             :value="`￥${info.orderInvoicedMoney}`"
             :bordered="true"
           />
         </a-col>
         <a-col flex="1">
-          <info
-            :title="`未开票（${info.orderUnInvoicedNum}个订单）`"
-            :value="`￥${info.orderUnInvoicedMoney}`"
-          />
+          <info :title="`未开票`" :value="`￥${info.orderUnInvoicedMoney}`" />
         </a-col>
       </a-row>
     </a-card>
@@ -129,6 +126,13 @@
       :companyId="info.companyId"
     ></order-tab>
 
+    <payment-tab
+      v-show="tabActiveKey === '3'"
+      :id="id"
+      :data="info"
+      @change="getContractInfo"
+    ></payment-tab>
+
     <a-modal
       title="审核"
       :visible="visible"
@@ -149,6 +153,7 @@
 import Info from '../project/components/Info'
 import BasicInfo from './components/BasicInfo'
 import OrderTab from './components/OrderTab'
+import paymentTab from './components/paymentTab'
 import cSteps from '../order/components/Steps.vue'
 import cStepsInfo from '../order/components/Info.vue'
 import { CheckForm, LogList } from '@/components'
@@ -164,6 +169,7 @@ export default {
     Info,
     BasicInfo,
     OrderTab,
+    paymentTab,
     cSteps,
     cStepsInfo,
     LogList
@@ -201,9 +207,10 @@ export default {
           this.tabList = []
         } else {
           this.tabList = [
-            { key: '0', tab: '资料' },
-            { key: '1', tab: '订单' },
-            { key: '2', tab: '审批' }
+            { key: '0', tab: '基本资料' },
+            { key: '1', tab: '订单信息' },
+            { key: '3', tab: '付款信息' },
+            { key: '2', tab: '审批信息' }
           ]
         }
       })
