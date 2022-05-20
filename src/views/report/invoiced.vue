@@ -175,7 +175,7 @@ export default {
         },
         {
           title: '供应商ID',
-          dataIndex: 'supplierId'
+          dataIndex: 'supplierIdv'
         },
         {
           title: '供应商',

@@ -173,7 +173,7 @@ export default {
         },
         {
           title: '供应商ID',
-          dataIndex: 'supplierId',
+          dataIndex: 'supplierIdv',
           customRender: text => {
             return <div class="two-Multi">{text}</div>
           }
