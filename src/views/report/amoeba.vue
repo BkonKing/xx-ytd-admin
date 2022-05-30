@@ -280,13 +280,13 @@
                   资<br />金<br />流<br />出
                 </td>
                 <td>{{ tr.categoryName }}</td>
-                <td>{{ tr.children[tr.children.length - 1].masterBudgets }}</td>
-                <td>{{ tr.children[tr.children.length - 1].payableLastMonthTotal }}</td>
-                <td>{{ tr.children[tr.children.length - 1].monthBudget }}</td>
-                <td>{{ tr.children[tr.children.length - 1].monthPayTotal }}</td>
-                <td>{{ tr.children[tr.children.length - 1].allPayTotal }}</td>
-                <td>{{ tr.children[tr.children.length - 1].monthBalance || "--" }}</td>
-                <td>{{ tr.children[tr.children.length - 1].budgetsBalance || "--" }}</td>
+                <td>{{ tr.masterBudgets }}</td>
+                <td>{{ tr.payableLastMonthTotal }}</td>
+                <td>{{ tr.monthBudget }}</td>
+                <td>{{ tr.monthPayTotal }}</td>
+                <td>{{ tr.allPayTotal }}</td>
+                <td>{{ tr.monthBalance || "--" }}</td>
+                <td>{{ tr.budgetsBalance || "--" }}</td>
                 <td></td>
               </tr>
             </template>
@@ -416,10 +416,23 @@ export default {
       const [y, m] = this.queryParam.month.split('-')
       this.monthText = `${y}年${m}月`
       getAmbReport(this.queryParam).then(({ data }) => {
+        if (data && data.length) {
+          const countArray = data.splice(data.length - 1, 1)
+          const countRowData = countArray[0]
+          this.masterBudgets = countRowData.masterBudgets
+          this.payableTotal = countRowData.payableTotal
+          this.payableLastMonthTotal = countRowData.payableLastMonthTotal
+          this.monthBudget = countRowData.monthBudget
+          this.monthPayTotal = countRowData.monthPayTotal
+          this.allPayTotal = countRowData.allPayTotal
+          this.allUnPayTotal = countRowData.allUnPayTotal
+          this.monthBalance = countRowData.monthBalance
+          this.budgetsBalance = countRowData.budgetsBalance
+        }
         this.completeData = data
         this.updateParam = clonedeep(this.queryParam)
         this.updateTypes = this.types
-        this.count()
+        // this.count()
       })
     },
     // 更新报表

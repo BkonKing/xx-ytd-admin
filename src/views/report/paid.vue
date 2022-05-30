@@ -197,7 +197,7 @@ export default {
           }
         },
         {
-          title: '合同已付款',
+          title: '订单已付款',
           dataIndex: 'htPaid',
           sorter: true,
           customRender (text) {
@@ -205,7 +205,7 @@ export default {
           }
         },
         {
-          title: '合同未付款',
+          title: '订单未付款',
           dataIndex: 'htUnpaid',
           sorter: true,
           customRender (text) {

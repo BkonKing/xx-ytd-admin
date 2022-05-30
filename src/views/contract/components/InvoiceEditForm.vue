@@ -6,7 +6,7 @@
     :label-col="labelCol"
     :wrapper-col="wrapperCol"
   >
-    <a-form-model-item label="合同未开票">
+    <a-form-model-item label="订单未开票">
       ￥{{unpaid}}
     </a-form-model-item>
     <a-form-model-item label="开票金额" prop="kpMoney" required>

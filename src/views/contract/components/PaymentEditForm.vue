@@ -6,7 +6,7 @@
     :label-col="labelCol"
     :wrapper-col="wrapperCol"
   >
-    <a-form-model-item label="合同未付款">
+    <a-form-model-item label="订单未付款">
       ￥{{unpaid}}
     </a-form-model-item>
     <a-form-model-item label="付款金额" prop="paid" required>

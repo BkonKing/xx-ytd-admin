@@ -196,7 +196,7 @@ export default {
           }
         },
         {
-          title: '合同已开票',
+          title: '订单已开票',
           dataIndex: 'htInvoiced',
           sorter: true,
           customRender (text) {
@@ -204,7 +204,7 @@ export default {
           }
         },
         {
-          title: '合同未开票',
+          title: '订单未开票',
           dataIndex: 'htNotInvoiced',
           sorter: true,
           customRender (text) {
