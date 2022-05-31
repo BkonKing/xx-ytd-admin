@@ -12,7 +12,7 @@
     <a-form-model-item label="开票金额" prop="kpMoney" required>
       <a-input
         v-model="form.kpMoney"
-        v-number-input="{ min: 0.1, decimal: 1 }"
+        v-number-input="{ min: 0.1, decimal: 2 }"
         :maxLength="20"
         prefix="￥"
         placeholder="请输入"

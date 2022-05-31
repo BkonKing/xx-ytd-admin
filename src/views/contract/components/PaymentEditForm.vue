@@ -12,7 +12,7 @@
     <a-form-model-item label="付款金额" prop="paid" required>
       <a-input
         v-model="form.paid"
-        v-number-input="{ min: 0.1, decimal: 1 }"
+        v-number-input="{ min: 0.1, decimal: 2 }"
         :maxLength="20"
         prefix="￥"
         placeholder="请输入"
